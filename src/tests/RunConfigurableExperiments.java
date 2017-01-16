@@ -1,8 +1,10 @@
 package tests;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.io.Writer;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -43,6 +45,7 @@ import ai.puppet.PuppetSearchMCTS;
 import ai.puppet.SingleChoiceConfigurableScript;
 import rts.PhysicalGameState;
 import rts.units.UnitTypeTable;
+import tournaments.RoundRobinTournament;
 import ai.core.InterruptibleAI;
 
 public class RunConfigurableExperiments {
@@ -366,12 +369,16 @@ public class RunConfigurableExperiments {
         String traceDir = null;
         boolean saveTrace = false;
         boolean saveZip = false;
-        if (args.length >= 6) {
+        Writer writer = new FileWriter(new File(args[5]));
+        if (args.length >= 7) {
             saveTrace = true;
             saveZip = true;
-            traceDir = args[5];
+            traceDir = args[6];
         }
-        if (true) {
+        
+        RoundRobinTournament.runTournament(bots1, maps, iterations, MAX_ACTIONS, 10000, 10000, true, true, true, true, utt, null, out, writer);
+        
+        /*if (maps.size() == 1) {
             if (asymetric) {
                 ExperimenterAsymmetric.runExperiments(bots1, bots2,
                         maps, utt, iterations, 3000, 300, false, out, saveTrace, saveZip, traceDir);
@@ -390,7 +397,7 @@ public class RunConfigurableExperiments {
                             -1, true, false, saveTrace, saveZip, traceDir);
                 }
             }
-        }
+        }*/
     }
 
 }

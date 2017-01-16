@@ -10,6 +10,7 @@ import ai.core.AIWithComputationBudget;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintStream;
 import java.io.Writer;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -33,7 +34,7 @@ public class FixedOpponentsTournament {
         
     public static void runTournament(List<AI> AIs,
                                      List<AI> opponentAIs,
-                                     List<String> maps,
+                                     List<PhysicalGameState> maps,
                                      int iterations,
                                      int maxGameLength,
                                      int timeBudget,
@@ -43,7 +44,7 @@ public class FixedOpponentsTournament {
                                      boolean runGC,
                                      UnitTypeTable utt,
                                      String traceOutputfolder,
-                                     Writer out,
+                                     PrintStream out,
                                      Writer progress) throws Exception {
         if (progress!=null) progress.write("FixedOpponentsTournament: Starting tournament\n");
 
@@ -55,31 +56,31 @@ public class FixedOpponentsTournament {
         int opponentAItimeout[][] = new int[AIs.size()][opponentAIs.size()];
         double accumTime[][] = new double[AIs.size()][opponentAIs.size()];
 
-        out.write("FixedOpponentsTournament\n");
-        out.write("AIs\n");
+        out.println("FixedOpponentsTournament\n");
+        out.println("AIs\n");
         for(int i = 0;i<AIs.size();i++) {
-            out.write("\t" + AIs.get(i).toString());
+            out.println("\t" + AIs.get(i).toString());
         }
-        out.write("opponent AIs\n");
+        out.println("opponent AIs\n");
         for(int i = 0;i<opponentAIs.size();i++) {
-            out.write("\t" + opponentAIs.get(i).toString());
+            out.println("\t" + opponentAIs.get(i).toString());
         }
-        out.write("maps\n");
+        out.println("maps\n");
         for(int i = 0;i<maps.size();i++) {
-            out.write("\t" + maps.get(i));
+            out.println("\t" + maps.get(i));
         }
-        out.write("iterations\t"+iterations+"\n");
-        out.write("maxGameLength\t"+maxGameLength+"\n");
-        out.write("timeBudget\t"+timeBudget+"\n");
-        out.write("iterationsBudget\t"+iterationsBudget+"\n");
-        out.write("fullObservability\t"+fullObservability+"\n");
-        out.write("timeoutCheck\t"+timeoutCheck+"\n");
-        out.write("runGC\t"+runGC+"\n");
-        out.write("iteration\tmap\tai1\tai2\ttime\twinner\tcrashed\ttimedout\n");
+        out.println("iterations\t"+iterations+"\n");
+        out.println("maxGameLength\t"+maxGameLength+"\n");
+        out.println("timeBudget\t"+timeBudget+"\n");
+        out.println("iterationsBudget\t"+iterationsBudget+"\n");
+        out.println("fullObservability\t"+fullObservability+"\n");
+        out.println("timeoutCheck\t"+timeoutCheck+"\n");
+        out.println("runGC\t"+runGC+"\n");
+        out.println("iteration\tmap\tai1\tai2\ttime\twinner\tcrashed\ttimedout\n");
         out.flush();
         for(int iteration = 0;iteration<iterations;iteration++) {
             for(int map_idx = 0;map_idx<maps.size();map_idx++) {
-                PhysicalGameState pgs = PhysicalGameState.load(maps.get(map_idx),utt);
+                PhysicalGameState pgs = maps.get(map_idx);
                 for(int ai1_idx = 0;ai1_idx<AIs.size();ai1_idx++) {
                     for(int ai2_idx = 0;ai2_idx<AIs.size();ai2_idx++) {
                         AI ai1 = AIs.get(ai1_idx).clone();
@@ -214,7 +215,7 @@ public class FixedOpponentsTournament {
                         } else {
                             winner = gs.winner();
                         }
-                        out.write(iteration + "\t" + map_idx + "\t" + ai1_idx + "\t" + ai2_idx + "\t" + 
+                        out.println(iteration + "\t" + map_idx + "\t" + ai1_idx + "\t" + ai2_idx + "\t" + 
                                   gs.getTime() + "\t" + winner + "\t"  + crashed + "\t" + timedout + "\n");
                         out.flush();
                         if (progress!=null) progress.write("Winner: " + winner + "  in " + gs.getTime() + " cycles");
@@ -232,54 +233,54 @@ public class FixedOpponentsTournament {
             }
         }
 
-        out.write("Wins:\n");
+        out.println("Wins:\n");
         for (int ai1_idx = 0; ai1_idx < AIs.size(); ai1_idx++) {
             for (int ai2_idx = 0; ai2_idx < opponentAIs.size(); ai2_idx++) {
-                out.write(wins[ai1_idx][ai2_idx] + "\t");
+                out.println(wins[ai1_idx][ai2_idx] + "\t");
             }
-            out.write("\n");
+            out.println("\n");
         }
-        out.write("Ties:\n");
+        out.println("Ties:\n");
         for (int ai1_idx = 0; ai1_idx < AIs.size(); ai1_idx++) {
             for (int ai2_idx = 0; ai2_idx < opponentAIs.size(); ai2_idx++) {
-                out.write(ties[ai1_idx][ai2_idx] + "\t");
+                out.println(ties[ai1_idx][ai2_idx] + "\t");
             }
-            out.write("\n");
+            out.println("\n");
         }
-        out.write("Average Game Length:\n");
+        out.println("Average Game Length:\n");
         for (int ai1_idx = 0; ai1_idx < AIs.size(); ai1_idx++) {
             for (int ai2_idx = 0; ai2_idx < opponentAIs.size(); ai2_idx++) {
-                out.write(accumTime[ai1_idx][ai2_idx]/(maps.size()*iterations) + "\t");
+                out.println(accumTime[ai1_idx][ai2_idx]/(maps.size()*iterations) + "\t");
             }
-            out.write("\n");
+            out.println("\n");
         }
-        out.write("AI crashes:\n");
+        out.println("AI crashes:\n");
         for (int ai1_idx = 0; ai1_idx < AIs.size(); ai1_idx++) {
             for (int ai2_idx = 0; ai2_idx < opponentAIs.size(); ai2_idx++) {
-                out.write(AIcrashes[ai1_idx][ai2_idx] + "\t");
+                out.println(AIcrashes[ai1_idx][ai2_idx] + "\t");
             }
-            out.write("\n");
+            out.println("\n");
         }
-        out.write("opponent AI crashes:\n");
+        out.println("opponent AI crashes:\n");
         for (int ai1_idx = 0; ai1_idx < AIs.size(); ai1_idx++) {
             for (int ai2_idx = 0; ai2_idx < opponentAIs.size(); ai2_idx++) {
-                out.write(opponentAIcrashes[ai1_idx][ai2_idx] + "\t");
+                out.println(opponentAIcrashes[ai1_idx][ai2_idx] + "\t");
             }
-            out.write("\n");
+            out.println("\n");
         }
-        out.write("AI timeout:\n");
+        out.println("AI timeout:\n");
         for (int ai1_idx = 0; ai1_idx < AIs.size(); ai1_idx++) {
             for (int ai2_idx = 0; ai2_idx < opponentAIs.size(); ai2_idx++) {
-                out.write(AItimeout[ai1_idx][ai2_idx] + "\t");
+                out.println(AItimeout[ai1_idx][ai2_idx] + "\t");
             }
-            out.write("\n");
+            out.println("\n");
         }
-        out.write("opponent AI timeout:\n");
+        out.println("opponent AI timeout:\n");
         for (int ai1_idx = 0; ai1_idx < AIs.size(); ai1_idx++) {
             for (int ai2_idx = 0; ai2_idx < opponentAIs.size(); ai2_idx++) {
-                out.write(opponentAItimeout[ai1_idx][ai2_idx] + "\t");
+                out.println(opponentAItimeout[ai1_idx][ai2_idx] + "\t");
             }
-            out.write("\n");
+            out.println("\n");
         }
         out.flush();
         if (progress!=null) progress.write("FixedOpponentsTournament: tournament ended\n");
