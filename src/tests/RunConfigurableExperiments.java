@@ -11,6 +11,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Stream;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
 import ai.RandomAI;
 import ai.RandomBiasedAI;
 import ai.abstraction.HeavyRush;
@@ -301,33 +309,53 @@ public class RunConfigurableExperiments {
 
     }
 
-    public static void loadBots1(String botFileName) throws IOException {
-        try (Stream<String> lines = Files.lines(Paths.get(botFileName), Charset.defaultCharset())) {
-            lines.forEachOrdered(line -> {
-                try {
-                    if (!line.startsWith("#") && !line.isEmpty()) {
-                        bots1.add(getBot(line));
-                    }
-                } catch (Exception ex) {
-                    throw new RuntimeException(ex);
-                }
-            });
-        }
-    }
+	public static void loadBots1(String botFileName) throws IOException {
+		// create a new DocumentBuilderFactory
+		try {
+			File fXmlFile = new File(botFileName);
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			Document doc = dBuilder.parse(fXmlFile);
 
-    public static void loadBots2(String botFileName) throws IOException {
-        try (Stream<String> lines = Files.lines(Paths.get(botFileName), Charset.defaultCharset())) {
-            lines.forEachOrdered(line -> {
-                try {
-                    if (!line.startsWith("#") && !line.isEmpty()) {
-                        bots2.add(getBot(line));
-                    }
-                } catch (Exception ex) {
-                    throw new RuntimeException(ex);
-                }
-            });
-        }
-    }
+			doc.getDocumentElement().normalize();
+			NodeList nList = doc.getElementsByTagName("bot");
+
+			for (int i = 0; i < nList.getLength(); i++) {
+				Node nNode = nList.item(i);
+
+				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+					Element eElement = (Element) nNode;
+					bots1.add(getBot(eElement.getAttribute("name")));
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void loadBots2(String botFileName) throws IOException {
+		// create a new DocumentBuilderFactory
+		try {
+			File fXmlFile = new File(botFileName);
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			Document doc = dBuilder.parse(fXmlFile);
+
+			doc.getDocumentElement().normalize();
+			NodeList nList = doc.getElementsByTagName("bot");
+
+			for (int i = 0; i < nList.getLength(); i++) {
+				Node nNode = nList.item(i);
+
+				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+					Element eElement = (Element) nNode;
+					bots2.add(getBot(eElement.getAttribute("name")));
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
     public static void processBots(List<AI> bots) throws Exception {
         if (CONTINUING) {
@@ -371,7 +399,7 @@ public class RunConfigurableExperiments {
             saveZip = true;
             traceDir = args[5];
         }
-        if (true) {
+        if (maps.size() == 1) {
             if (asymetric) {
                 ExperimenterAsymmetric.runExperiments(bots1, bots2,
                         maps, utt, iterations, 3000, 300, false, out, saveTrace, saveZip, traceDir);
