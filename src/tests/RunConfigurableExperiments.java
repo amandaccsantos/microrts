@@ -21,6 +21,7 @@ import org.w3c.dom.NodeList;
 
 import ai.RandomAI;
 import ai.RandomBiasedAI;
+import ai.abstraction.Expand;
 import ai.abstraction.HeavyRush;
 import ai.abstraction.LightRush;
 import ai.abstraction.RangedRush;
@@ -116,6 +117,8 @@ public class RunConfigurableExperiments {
                 return new RandomAI();
             case "RandomBiasedAI":
                 return new RandomBiasedAI();
+            case "Expand":
+        		return new Expand(utt, getPathFinding());
             case "LightRush":
                 return new LightRush(utt, getPathFinding());
             case "RangedRush":
