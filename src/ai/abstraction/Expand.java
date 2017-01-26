@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+
+import javax.swing.plaf.basic.BasicInternalFrameTitlePane.MaximizeAction;
+
 import rts.GameState;
 import rts.PhysicalGameState;
 import rts.Player;
@@ -154,20 +157,26 @@ public class Expand extends AbstractionLayerAI {
 			}
 		} else if (nbases > 0 && !freeWorkers.isEmpty()) {
 			// build a base:
+			int min_d = Integer.MAX_VALUE;
+			int best_resource_x = 0;
+			int best_resource_y = 0;
 			for (Unit resource : resources) {
 				for (Unit u2 : pgs.getUnits()) {
 					if (u2.getType() == baseType && u2.getPlayer() == p.getID()) {
 						int d = Math.abs(u2.getX() - resource.getX()) + Math.abs(u2.getY() - resource.getY());
-						if (d > 5) {
-							if (p.getResources() >= baseType.cost + resourcesUsed) {
-								Unit u = freeWorkers.remove(0);
-								buildIfNotAlreadyBuilding(u, baseType, resource.getX(), resource.getY(),
-										reservedPositions, p, pgs);
-								resourcesUsed += baseType.cost;
-							}
+						if (d < min_d && d > 5){
+							min_d = d;
+							best_resource_x = resource.getX();
+							best_resource_y = resource.getY();
 						}
 					}
 				}
+			}
+			if (p.getResources() >= baseType.cost + resourcesUsed) {
+				Unit u = freeWorkers.remove(0);
+				buildIfNotAlreadyBuilding(u, baseType, best_resource_x, best_resource_y,
+						reservedPositions, p, pgs);
+				resourcesUsed += baseType.cost;
 			}
 		}
 
