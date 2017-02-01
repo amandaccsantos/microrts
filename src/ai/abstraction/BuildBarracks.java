@@ -93,7 +93,7 @@ public class BuildBarracks extends AbstractionLayerAI {
 				nworkers++;
 			}
 		}
-		if (nworkers < 5 && p.getResources() >= workerType.cost) {
+		if (nworkers < 1 && p.getResources() >= workerType.cost) {
 			train(u, workerType);
 		}
 	}
@@ -134,19 +134,47 @@ public class BuildBarracks extends AbstractionLayerAI {
 		List<Integer> reservedPositions = new LinkedList<Integer>();
 		if (nbarracks < 10) {
 			// build a barracks:
+			int n_barracks = nbarracks;
+
 			if (p.getResources() >= barracksType.cost + resourcesUsed && !freeWorkers.isEmpty()) {
 				Unit u = freeWorkers.remove(0);
 				int posX = u.getX();
 				int posY = u.getY();
-				for (int x = -posX; x < pgs.getWidth(); x++) {
-					for (int y = -posY; y < pgs.getHeight(); y++) {
-						if (posX + x > 0 && posX + x <= pgs.getWidth() && posY + y > 0 && posY + y <= pgs.getHeight()) {
+				for (int x = 0; x < pgs.getWidth(); x++) {
+					for (int y = 0; y < pgs.getHeight(); y++) {
+						boolean[][] free = pgs.getAllFree();
+						if (posX + x < pgs.getWidth() && posY + y < pgs.getHeight() && free[posX + x][posY + y]) {
 							Collection<Unit> Units = pgs.getUnitsAround(posX + x, posY + y, 1);
 							if (Units.size() == 0) {
-								buildIfNotAlreadyBuilding(u, barracksType, posX + x, posY + y, reservedPositions, p, pgs);
-								resourcesUsed += barracksType.cost;
-								break;
+								if (buildIfNotAlreadyBuilding(u, barracksType, posX + x, posY + y, reservedPositions, p, pgs)) {
+									resourcesUsed += barracksType.cost;
+									nbarracks++;
+									break;
+								}
 							}
+						}
+					}
+					if (n_barracks != nbarracks) {
+						break;
+					}
+				}
+				if (n_barracks == nbarracks) {
+					for (int x = 0; x < pgs.getWidth(); x++) {
+						for (int y = 0; y < pgs.getHeight(); y++) {
+							boolean[][] free = pgs.getAllFree();
+							if (posX - x > 0 && posY - y > 0 && free[posX - x][posY - y]) {
+								Collection<Unit> Units = pgs.getUnitsAround(posX - x, posY - y, 1);
+								if (Units.size() == 0) {
+									if (buildIfNotAlreadyBuilding(u, barracksType, posX - x, posY - y, reservedPositions, p, pgs)) {
+										resourcesUsed += barracksType.cost;
+										nbarracks++;
+										break;
+									}
+								}
+							}
+						}
+						if (n_barracks != nbarracks) {
+							break;
 						}
 					}
 				}
