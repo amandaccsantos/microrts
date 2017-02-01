@@ -15,6 +15,7 @@ import ai.core.AI;
 import burlap.mdp.auxiliary.DomainGenerator;
 import burlap.mdp.core.Domain;
 import burlap.mdp.core.action.UniversalActionType;
+import burlap.mdp.core.state.State;
 import burlap.mdp.stochasticgames.SGDomain;
 import rts.GameState;
 import rts.PhysicalGameState;
@@ -48,6 +49,14 @@ public class MicroRTSGame implements DomainGenerator {
 		
 		gameover = false;
 		
+	}
+	
+	/**
+	 * Returns the initial state for the game
+	 * @return
+	 */
+	public State getInitialState(){
+		return new MicroRTSState(gs);
 	}
 	
 	@Override
