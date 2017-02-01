@@ -15,9 +15,10 @@ enum GameStage{
 }
 
 public class MicroRTSState implements State{
-	int frameNumber;
 	
 	GameStage stage;
+	
+	public static int STAGE_DURATION = 600;
 	
 	/**
 	 * The underlying game state related to this state
@@ -31,28 +32,36 @@ public class MicroRTSState implements State{
 	public MicroRTSState(GameState gameState) {
 		this.gameState = gameState;
 		
-		this.frameNumber = gameState.getTime();
+		//this.frameNumber = gameState.getTime();
 		
-		if(frameNumber < 600){
-			stage = GameStage.OPENING;
-		}
-		else if (frameNumber < 1200){
-			stage = GameStage.EARLY;
-		}
-		else if (frameNumber < 1800){
-			stage = GameStage.MID;
-		}
-		else if (frameNumber < 2400){
-			stage = GameStage.LATE;
-		}
-		else {
-			stage = GameStage.END;
-		}
+		stage = frameToStage(gameState.getTime());
 	}
 	
 	public GameStage getStage(){
 		return stage;
 	}
+	
+	public static GameStage frameToStage(int frameNumber){
+		if(frameNumber < STAGE_DURATION){
+			return GameStage.OPENING;
+		}
+		else if (frameNumber < 2 * STAGE_DURATION){
+			return GameStage.EARLY;
+		}
+		else if (frameNumber < 3 * STAGE_DURATION){
+			return GameStage.MID;
+		}
+		else if (frameNumber < 4 * STAGE_DURATION){
+			return GameStage.LATE;
+		}
+		else {
+			return GameStage.END;
+		}
+	}
+	
+	/*public static GameStage nextStage(G){
+		
+	}*/
 	
 	/**
 	 * Returns the microRTS game state related to high-level state
