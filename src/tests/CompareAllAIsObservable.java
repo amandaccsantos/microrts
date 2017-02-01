@@ -106,7 +106,7 @@ public class CompareAllAIsObservable {
         maps.clear();
         maps.add(PhysicalGameState.load("maps/basesWorkers8x8.xml",utt));
 //        Experimenter.runExperimentsPartiallyObservable(bots, maps, 10, 3000, 300, true, out);
-        Experimenter.runExperiments(bots, maps, utt, 10, 3000, 300, true, out);
+        Experimenter.runExperiments(bots, maps, utt, 10, 3000, 300, false, out);
       
         maps.clear();
         maps.add(PhysicalGameState.load("maps/melee12x12mixed12.xml",utt));

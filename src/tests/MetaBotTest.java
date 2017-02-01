@@ -4,11 +4,14 @@ import java.io.PrintStream;
 import java.util.LinkedList;
 import java.util.List;
 
+import ai.abstraction.HeavyRush;
+import ai.abstraction.LightRush;
 import ai.abstraction.WorkerRush;
 import ai.core.AI;
 import ai.metabot.MetaBot;
 import rts.PhysicalGameState;
 import rts.units.UnitTypeTable;
+
 
 public class MetaBotTest {
 	public static void main(String args[]) throws Exception {
@@ -19,7 +22,7 @@ public class MetaBotTest {
         int iterationsBudget = -1;
         
         bots.add(new MetaBot(timeBudget, iterationsBudget, unitTypeTable));
-        bots.add(new WorkerRush(unitTypeTable));
+        bots.add(new LightRush(unitTypeTable));
         PrintStream out = System.out;
         
         // Separate the matchs by map:
