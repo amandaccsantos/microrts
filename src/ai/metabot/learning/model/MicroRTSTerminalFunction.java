@@ -7,8 +7,8 @@ public class MicroRTSTerminalFunction implements TerminalFunction {
 
 	@Override
 	public boolean isTerminal(State s) {
-		// TODO Auto-generated method stub
-		return false;
+		MicroRTSState state = (MicroRTSState) s;
+		return state.getUnderlyingState().gameover();
 	}
 
 }
