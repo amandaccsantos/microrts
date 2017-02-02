@@ -83,7 +83,7 @@ public class MetaGameLearningExample {
 		System.out.println("Finished training");
 		//Visualizer v = new Visualizer(); // GGVisualizer.getVisualizer(9, 9);
 		//new GameSequenceVisualizer(v, microRTSDomain, episodes);
-		System.out.println("Now I'll show the value functions agent 0");
+		System.out.println("Now I'll show the value functions for agent 0");
 		for (MicroRTSState s : MicroRTSState.allStates()){
 			System.out.println(String.format("%s: %.3f", s, ql1.value(s)));
 			
@@ -92,7 +92,7 @@ public class MetaGameLearningExample {
 			}
 		}
 		
-		System.out.println("Now I'll show the value functions agent 1");
+		System.out.println("Now I'll show the value functions for agent 1");
 		for (MicroRTSState s : MicroRTSState.allStates()){
 			System.out.println(String.format("%s: %.3f", s, ql2.value(s)));
 			
