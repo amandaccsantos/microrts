@@ -29,11 +29,10 @@ public class MicroRTSGame implements DomainGenerator {
 	public static final String EXPAND = Expand.class.getSimpleName();
 	public static final String BUILD_BARRACKS = BuildBarracks.class.getSimpleName();
 	
-	
+	//some game parameters
 	public static final int MAXCYCLES = 3000;
 	public static final int PERIOD = 20;
 	
-	boolean gameover;// = false;
 	UnitTypeTable unitTypeTable;
 	PhysicalGameState physicalGameState;
 	GameState gs;
@@ -46,8 +45,6 @@ public class MicroRTSGame implements DomainGenerator {
 		// PhysicalGameState pgs = MapGenerator.basesWorkers8x8Obstacle();
 
 		gs = new GameState(physicalGameState, unitTypeTable);
-		
-		gameover = false;
 		
 	}
 	
@@ -63,6 +60,14 @@ public class MicroRTSGame implements DomainGenerator {
 	public Domain generateDomain() {
 		SGDomain domain = new SGDomain();
 		
+		//adds actions to the domain via their names
+		domain.addActionType(new UniversalActionType(WORKER_RUSH))
+			.addActionType(new UniversalActionType(LIGHT_RUSH))
+			.addActionType(new UniversalActionType(RANGED_RUSH))
+			.addActionType(new UniversalActionType(EXPAND))
+			.addActionType(new UniversalActionType(BUILD_BARRACKS));
+		
+		//creates a map string -> AI for the joint action model
 		Map<String, AI> actions = new HashMap<>();	//actions correspond to selection of a behavior
 		actions.put(WorkerRush.class.getSimpleName(), new WorkerRush(unitTypeTable));
 		actions.put(LightRush.class.getSimpleName(), new LightRush(unitTypeTable));
@@ -70,13 +75,7 @@ public class MicroRTSGame implements DomainGenerator {
 		actions.put(Expand.class.getSimpleName(), new Expand(unitTypeTable));
 		actions.put(BuildBarracks.class.getSimpleName(), new BuildBarracks(unitTypeTable));
 
-		domain.addActionType(new UniversalActionType(WORKER_RUSH))
-			.addActionType(new UniversalActionType(LIGHT_RUSH))
-			.addActionType(new UniversalActionType(RANGED_RUSH))
-			.addActionType(new UniversalActionType(EXPAND))
-			.addActionType(new UniversalActionType(BUILD_BARRACKS));
-
-
+		//sets the joint action model containing the valid actions
 		domain.setJointActionModel(new MicroRTSJointActionModel(actions));
 		
 		return domain;

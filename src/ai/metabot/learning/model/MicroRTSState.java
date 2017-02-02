@@ -18,12 +18,20 @@ public class MicroRTSState implements State{
 	
 	GameStage stage;
 	
-	public static int STAGE_DURATION = 600;
+	public static final int STAGE_DURATION = 600;
 	
 	/**
 	 * The underlying game state related to this state
 	 */
 	GameState gameState;
+	
+	/**
+	 * Private constructor that receives frameNumber 
+	 * Used ONLY to enumerate all states
+	 */
+	private MicroRTSState(){
+		
+	}
 	
 	/**
 	 * Constructs a state based on a microRTS game state
@@ -37,10 +45,36 @@ public class MicroRTSState implements State{
 		stage = frameToStage(gameState.getTime());
 	}
 	
+	/**
+	 * Returns the GameStage that this state refers to
+	 * @return
+	 */
 	public GameStage getStage(){
 		return stage;
 	}
 	
+	
+	/**
+	 * Returns all possible states
+	 * @return
+	 */
+	public static List<MicroRTSState> allStates(){
+		List<MicroRTSState> states = new ArrayList<>();
+		
+		for(int frameNumber = 0; frameNumber < 3000; frameNumber += STAGE_DURATION){
+			MicroRTSState s = new MicroRTSState();
+			s.stage = frameToStage(frameNumber);
+			states.add(s);
+		}
+		
+		return states;
+	}
+	
+	/**
+	 * Returns the GameStage that this frame is in
+	 * @param frameNumber
+	 * @return
+	 */
 	public static GameStage frameToStage(int frameNumber){
 		if(frameNumber < STAGE_DURATION){
 			return GameStage.OPENING;
@@ -58,11 +92,6 @@ public class MicroRTSState implements State{
 			return GameStage.END;
 		}
 	}
-	
-	/*public static GameStage nextStage(G){
-		
-	}*/
-	
 	/**
 	 * Returns the microRTS game state related to high-level state
 	 * @return
@@ -97,6 +126,10 @@ public class MicroRTSState implements State{
 	@Override
 	public State copy() {
 		return new MicroRTSState(gameState.clone());
+	}
+	
+	public String toString(){
+		return "Stage: " + stage;
 	}
 	
 	

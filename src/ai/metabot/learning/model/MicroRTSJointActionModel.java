@@ -38,7 +38,7 @@ public class MicroRTSJointActionModel implements JointModel {
 		//instantiates the AIs that players selected (clones the objects)
 		AI ai1 = actions.get(ja.action(0).actionName()).clone();
 		AI ai2 = actions.get(ja.action(1).actionName()).clone();
-		System.out.println("Actions: P1: " + ai1 + " / P2: " + ai2);
+		//System.out.println("Actions: P1: " + ai1 + " / P2: " + ai2);
 		
 		//advance game until next stage is reached or game finishes
 		do {
