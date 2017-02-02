@@ -78,6 +78,8 @@ public class MetaGameLearningExample {
 				System.out.println("Game: " + i + ": " + episode.maxTimeStep());
 			}
 			episode.write("/tmp/qltest/qltest_" + i);
+			ql1.writeQTable("/tmp/qltest/qtable0_" + i);
+			ql2.writeQTable("/tmp/qltest/qtable1_" + i);
 		}
 
 		System.out.println("Finished training");

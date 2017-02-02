@@ -11,14 +11,24 @@ enum GameStage{
 	EARLY,		//600 - 1199
 	MID,		//1200 - 1799
 	LATE,		//1800 - 2399
-	END			//2400 - 3000
+	END,		//2400 - 3000
+	FINISHED	//whenever the game is over
 }
 
 public class MicroRTSState implements State{
 	
 	GameStage stage;
 	
+	
+	/**
+	 * Duration of a stage, in microRTS frames
+	 */
 	public static final int STAGE_DURATION = 600;
+	
+	/**
+	 * 'name' of the stage field
+	 */
+	public static final String KEY_STAGE = "stage";
 	
 	/**
 	 * The underlying game state related to this state
@@ -26,10 +36,10 @@ public class MicroRTSState implements State{
 	GameState gameState;
 	
 	/**
-	 * Private constructor that receives frameNumber 
-	 * Used ONLY to enumerate all states
+	 * An attempt to make the object serializable 
+	 * (must have default constructor and get/set methods 
 	 */
-	private MicroRTSState(){
+	public MicroRTSState(){
 		
 	}
 	
@@ -40,9 +50,15 @@ public class MicroRTSState implements State{
 	public MicroRTSState(GameState gameState) {
 		this.gameState = gameState;
 		
-		//this.frameNumber = gameState.getTime();
+		//if game is over, stage is FINISHED
+		if(gameState.gameover()) {
+			stage = GameStage.FINISHED;
+		}
 		
-		stage = frameToStage(gameState.getTime());
+		//otherwise get the stage according to the time
+		else {
+			stage = frameToStage(gameState.getTime());
+		}
 	}
 	
 	/**
@@ -53,6 +69,22 @@ public class MicroRTSState implements State{
 		return stage;
 	}
 	
+	
+	public void setStage(GameStage theStage){
+		stage = theStage;
+	}
+	
+	/**
+	 * Alias of {@link getUnderlyingGameState} for the sake of serializability
+	 * @return
+	 *
+	public GameState getGameState(){
+		return getUnderlyingState();
+	}
+	
+	public void setGameState(GameState theState){
+		gameState = theState;
+	}*/
 	
 	/**
 	 * Returns all possible states
@@ -111,13 +143,13 @@ public class MicroRTSState implements State{
 	public List<Object> variableKeys() {
 		List<Object> keys = new ArrayList<Object>();
 		
-		keys.add(GameStage.class);
+		keys.add(KEY_STAGE);
 		return keys;
 	}
 
 	@Override
 	public Object get(Object variableKey) {
-		if (variableKey.equals(GameStage.class)){
+		if (variableKey.equals(KEY_STAGE)){
 			return stage;
 		}
 		return null;
