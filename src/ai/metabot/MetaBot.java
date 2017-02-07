@@ -77,6 +77,14 @@ public class MetaBot extends AIWithComputationBudget {
 		currentAIName = "WorkerRush";
 		
 	}
+	
+	/**
+	 * Configures a policy for this bot
+	 * @param policy
+	 */
+	void setPolicy(Policy policy){
+		this.policy = policy;
+	}
 		
 	@Override
 	public void reset() {
