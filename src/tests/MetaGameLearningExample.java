@@ -28,6 +28,11 @@ import burlap.mdp.stochasticgames.world.World;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
 import burlap.visualizer.Visualizer;
 
+/**
+ * An example of the Algorithm Selection Metagame in microRTS
+ * @author anderson
+ *
+ */
 public class MetaGameLearningExample {
 	public MetaGameLearningExample(){
 		MicroRTSGame microRTSGame = null;

@@ -21,7 +21,7 @@ public class MetaBotTest {
         int timeBudget = 100;
         int iterationsBudget = -1;
         
-        bots.add(new MetaBot(timeBudget, iterationsBudget, unitTypeTable));
+        bots.add(new MetaBot(timeBudget, iterationsBudget, unitTypeTable, "/tmp/qltest/qtable0_99"));
         bots.add(new LightRush(unitTypeTable));
         PrintStream out = System.out;
         

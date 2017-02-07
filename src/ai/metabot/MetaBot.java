@@ -14,6 +14,14 @@ import ai.abstraction.WorkerRush;
 import ai.core.AI;
 import ai.core.AIWithComputationBudget;
 import ai.core.ParameterSpecification;
+import ai.metabot.learning.model.MicroRTSState;
+import burlap.behavior.policy.GreedyDeterministicQPolicy;
+import burlap.behavior.policy.Policy;
+import burlap.behavior.singleagent.learning.tdmethods.QLearning;
+import burlap.behavior.valuefunction.QValue;
+import burlap.mdp.core.action.Action;
+import burlap.mdp.core.state.State;
+import burlap.statehashing.simple.SimpleHashableStateFactory;
 import rts.GameState;
 import rts.PlayerAction;
 import rts.units.UnitTypeTable;
@@ -30,21 +38,35 @@ public class MetaBot extends AIWithComputationBudget {
 	private int timeBudget;
 	private int iterationsBudget;
 	
+	private Policy policy;
+	
+	private String pathToQ; 
+	
 	/**
 	 * Default constructor with same parameters as AIWithComputationBudget.
 	 * Initializes a default portfolio
 	 * @param timeBudget
 	 * @param iterationsBudget
 	 */
-	public MetaBot(int timeBudget, int iterationsBudget, UnitTypeTable unitTypeTable){
+	public MetaBot(int timeBudget, int iterationsBudget, UnitTypeTable unitTypeTable, String pathToQ){
 		super(timeBudget, iterationsBudget);
 		
 		this.unitTypeTable = unitTypeTable;
 		this.timeBudget = timeBudget;
 		this.iterationsBudget = iterationsBudget;
+		this.pathToQ = pathToQ;
 		
+		//discount = 0.9, defaultQ = 1, learningRate = 0.1
+		QLearning qLearner = new QLearning(null, 0.9, new SimpleHashableStateFactory(false), 1, 0.1);
+		
+		//loads Q 'table' from given path and extracts the policy
+		qLearner.loadQTable(pathToQ); 
+		//qLearner.loadQTable();
+		System.out.println("Loaded Q values from " + pathToQ);
+		policy = new GreedyDeterministicQPolicy(qLearner);
+		
+		//loads AIs into the portfolio
 		portfolio = new HashMap<>();
-		
 		
 		portfolio.put(WorkerRush.class.getSimpleName(), new WorkerRush(unitTypeTable));
 		portfolio.put(LightRush.class.getSimpleName(), new LightRush(unitTypeTable));
@@ -67,13 +89,30 @@ public class MetaBot extends AIWithComputationBudget {
 	@Override
 	public PlayerAction getAction(int player, GameState gs) throws Exception {
 		if (gs.canExecuteAnyAction(player)) {
+			
+			String oldBehavior = currentAIName;	//stores current AI to check for changes
+			
+			//retrieves the AI dictated by the policy
+			State state = new MicroRTSState(gs);
+			Action action = policy.action(state);
+			
+			currentAIName = action.actionName();
+			
+			if (! oldBehavior.equals(currentAIName)){
+				System.out.println(String.format(
+					"[%d] Changed from %s to %s", gs.getTime(), oldBehavior, currentAIName
+				));
+			}
+			
+			return portfolio.get(currentAIName).getAction(player, gs);
+			
 			//cycles through AIs every 200 frames
-			if(gs.getTime() % 200 == 0){
+			/*if(gs.getTime() % 200 == 0){
 				currentAIIndex = (currentAIIndex + 1) % portfolio.values().size();
 				currentAIName = (String)portfolio.keySet().toArray()[currentAIIndex];
 				System.out.println("MetaBot: changed to " + currentAIName);
 			}
-			return portfolio.get(currentAIName).getAction(player, gs); 
+			return portfolio.get(currentAIName).getAction(player, gs);*/ 
         } else {
             return new PlayerAction();        
         }       
@@ -81,7 +120,7 @@ public class MetaBot extends AIWithComputationBudget {
 
 	@Override
 	public AI clone() {
-		return new MetaBot(timeBudget, iterationsBudget, unitTypeTable);
+		return new MetaBot(timeBudget, iterationsBudget, unitTypeTable, pathToQ);
 	}
 
 	@Override

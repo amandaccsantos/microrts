@@ -21,6 +21,11 @@ import rts.GameState;
 import rts.PhysicalGameState;
 import rts.units.UnitTypeTable;
 
+/**
+ * A stochastic game domain  generator for a particular representation of microRTS environment 
+ * @author anderson
+ *
+ */
 public class MicroRTSGame implements DomainGenerator {
 	//action names
 	public static final String WORKER_RUSH = WorkerRush.class.getSimpleName();
@@ -57,6 +62,9 @@ public class MicroRTSGame implements DomainGenerator {
 	}
 	
 	@Override
+	/**
+	 * Generates a stochastic game domain with a particular representation of microRTS environment
+	 */
 	public Domain generateDomain() {
 		SGDomain domain = new SGDomain();
 		
