@@ -10,6 +10,8 @@ import java.util.List;
 
 import org.jdom.JDOMException;
 
+import ai.abstraction.LightRush;
+import ai.metabot.DummyPolicy;
 import ai.metabot.learning.model.MicroRTSGame;
 import ai.metabot.learning.model.MicroRTSJointRewardFunction;
 import ai.metabot.learning.model.MicroRTSState;
@@ -32,6 +34,11 @@ import burlap.mdp.stochasticgames.world.World;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
 import burlap.visualizer.Visualizer;
 
+/**
+ * An example of the Algorithm Selection Metagame in microRTS
+ * @author anderson
+ *
+ */
 public class MetaGameLearningExample {
 	public MetaGameLearningExample() {
 		MicroRTSGame microRTSGame = null;
@@ -62,6 +69,9 @@ public class MetaGameLearningExample {
 		QLearning ql1 = new QLearning(null, discount, new SimpleHashableStateFactory(false), defaultQ, learningRate);
 		QLearning ql2 = new QLearning(null, discount, new SimpleHashableStateFactory(false), defaultQ, learningRate);
 
+		//ql2 will be a dummy, always selecting the same behavior
+		ql2.setLearningPolicy(new DummyPolicy(MicroRTSGame.RANGED_RUSH, ql2));
+		
 		// create a single-agent interface for each of our learning algorithm instances
 		LearningAgentToSGAgentInterface a1 = new LearningAgentToSGAgentInterface(microRTSDomain, ql1, "agent0", agentType);
 		LearningAgentToSGAgentInterface a2 = new LearningAgentToSGAgentInterface(microRTSDomain, ql2, "agent1",	agentType);
