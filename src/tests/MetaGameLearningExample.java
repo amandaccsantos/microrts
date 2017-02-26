@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +37,7 @@ import burlap.visualizer.Visualizer;
 
 /**
  * An example of the Algorithm Selection Metagame in microRTS
+ * 
  * @author anderson
  *
  */
@@ -64,17 +66,22 @@ public class MetaGameLearningExample {
 
 		World w = new World(microRTSDomain, rwdFunc, terminalFunc, microRTSGame.getInitialState());
 
-		// single agent Q-learning algorithms which will operate in our stochastic game
-		// don't need to specify the domain, because the single agent interface will provide it
+		// single agent Q-learning algorithms which will operate in our
+		// stochastic game
+		// don't need to specify the domain, because the single agent interface
+		// will provide it
 		QLearning ql1 = new QLearning(null, discount, new SimpleHashableStateFactory(false), defaultQ, learningRate);
 		QLearning ql2 = new QLearning(null, discount, new SimpleHashableStateFactory(false), defaultQ, learningRate);
 
-		//ql2 will be a dummy, always selecting the same behavior
+		// ql2 will be a dummy, always selecting the same behavior
 		ql2.setLearningPolicy(new DummyPolicy(MicroRTSGame.RANGED_RUSH, ql2));
-		
-		// create a single-agent interface for each of our learning algorithm instances
-		LearningAgentToSGAgentInterface a1 = new LearningAgentToSGAgentInterface(microRTSDomain, ql1, "agent0", agentType);
-		LearningAgentToSGAgentInterface a2 = new LearningAgentToSGAgentInterface(microRTSDomain, ql2, "agent1",	agentType);
+
+		// create a single-agent interface for each of our learning algorithm
+		// instances
+		LearningAgentToSGAgentInterface a1 = new LearningAgentToSGAgentInterface(microRTSDomain, ql1, "agent0",
+				agentType);
+		LearningAgentToSGAgentInterface a2 = new LearningAgentToSGAgentInterface(microRTSDomain, ql2, "agent1",
+				agentType);
 
 		w.join(a1);
 		w.join(a2);
@@ -91,45 +98,44 @@ public class MetaGameLearningExample {
 		if (file.exists()) {
 			file.delete();
 		}
-		
-		PrintWriter rewards = null;
+
+		/*PrintWriter rewards = null;
 		File file2 = new File("action_ep.txt");
 		if (file2.exists()) {
 			file2.delete();
 		}
 		double reward0 = 0;
-		double reward1 = 0;
+		double reward1 = 0;*/
 
-		for (int i = 0; i < ngames; i++) {
-			GameEpisode episode = w.runGame();
-			for (int j = 1; j < episode.numTimeSteps(); j++) {
-				reward0 = episode.agentReward(j, 0);
-				reward1 = episode.agentReward(j, 1);
-				try {
-					rewards = new PrintWriter(new BufferedWriter(new FileWriter("action_ep.txt", true)));
-					rewards.println("reward0 " + reward0);
-					rewards.println("reward1 " + reward1);
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+		try {
+			output = new PrintWriter(new BufferedWriter(new FileWriter("output.txt", true)));
+			for (int i = 0; i < ngames; i++) {
+				GameEpisode episode = w.runGame();
+				/*for (int j = 1; j < episode.numTimeSteps(); j++) {
+					reward0 = episode.agentReward(j, 0);
+					reward1 = episode.agentReward(j, 1);
+					try {
+						rewards = new PrintWriter(new BufferedWriter(new FileWriter("action_ep.txt", true)));
+						rewards.println("reward0 " + reward0);
+						rewards.println("reward1 " + reward1);
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 				}
-			}
-			rewards.close();
+				rewards.close();*/
 
-			episodes.add(episode);
-			if (i % 10 == 0) {
-				System.out.println("Game: " + i + ": " + episode.maxTimeStep());
-			}
-			episode.write("/tmp/qltest/qltest_" + i);
-			ql1.writeQTable("/tmp/qltest/qtable0_" + i);
-			ql2.writeQTable("/tmp/qltest/qtable1_" + i);
-			
-			try {
-				output = new PrintWriter(new BufferedWriter(new FileWriter("output.txt", true)));
+				episodes.add(episode);
+				if (i % 10 == 0) {
+					System.out.println("Game: " + i + ": " + episode.maxTimeStep());
+				}
+				episode.write("/tmp/qltest/qltest_" + i);
+				ql1.writeQTable("/tmp/qltest/qtable0_" + i);
+				ql2.writeQTable("/tmp/qltest/qtable1_" + i);
 
 				output.println("Game: " + i);
 				output.println("Value functions for agent 0");
-				
+
 				for (MicroRTSState s : MicroRTSState.allStates()) {
 					output.println(String.format("%s: %.3f", s, ql1.value(s)));
 
@@ -146,13 +152,13 @@ public class MetaGameLearningExample {
 						output.println(String.format("%s: %.3f", q.a, q.q));
 					}
 				}
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
 			}
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
 		output.close();
-
+		
 		System.out.println("Finished training");
 		// Visualizer v = new Visualizer(); // GGVisualizer.getVisualizer(9, 9);
 		// new GameSequenceVisualizer(v, microRTSDomain, episodes);
@@ -180,6 +186,12 @@ public class MetaGameLearningExample {
 
 		new MetaGameLearningExample();
 
+		try {
+			Runtime.getRuntime().exec("python python/plot_actions.py");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

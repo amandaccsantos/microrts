@@ -1,26 +1,224 @@
 import matplotlib.pyplot as plt
 
+dict = {}
+
 if __name__ == '__main__':
-    agent0 = []
-    agent1 = []
-    f = open("../action_ep.txt", 'r')
+    number = 0
+    game = ''
+    agent = ''
+
+    ranged_opening = []
+    worker_opening = []
+    light_opening = []
+    barracks_opening = []
+    expand_opening = []
+
+    ranged_early = []
+    worker_early = []
+    light_early = []
+    barracks_early = []
+    expand_early = []
+
+    ranged_mid = []
+    worker_mid = []
+    light_mid = []
+    barracks_mid = []
+    expand_mid = []
+
+    ranged_late = []
+    worker_late = []
+    light_late = []
+    barracks_late = []
+    expand_late = []
+
+    ranged_end = []
+    worker_end = []
+    light_end = []
+    barracks_end = []
+    expand_end = []
+
+    f = open("output.txt", 'r')
     for line in f:
-        if line.startswith("reward0"):
+        if line.startswith("Game: "):
             line = line.strip()
-            agent, value = line.split("reward0")
-            agent0.append(value)
-        elif line.startswith("reward1"):
+            game, number = line.split(": ")
+        elif line.startswith("Value"):
             line = line.strip()
-            agent, value = line.split("reward1")
-            agent1.append(value)
+            a, agent = line.split("agent ")
+        elif line.startswith("Stage: ") and agent == '0':
+            line = line.strip()
+            line = line.replace(',', '.')
+            a, stage, value = line.split(": ")
+            dict.update({stage: value})
+            line = f.next()
+            if stage == "OPENING":
+                line = line.strip()
+                line = line.replace(',', '.')
+                behavior, b_value = line.split(": ")
+                light_opening.append((number, b_value))
+                line = f.next()
+                line = line.strip()
+                line = line.replace(',', '.')
+                behavior, b_value = line.split(": ")
+                barracks_opening.append((number, b_value))
+                line = f.next()
+                line = line.strip()
+                line = line.replace(',', '.')
+                behavior, b_value = line.split(": ")
+                ranged_opening.append((number, b_value))
+                line = f.next()
+                line = line.strip()
+                line = line.replace(',', '.')
+                behavior, b_value = line.split(": ")
+                expand_opening.append((number, b_value))
+                line = f.next()
+                line = line.strip()
+                line = line.replace(',', '.')
+                behavior, b_value = line.split(": ")
+                worker_opening.append((number, b_value))
+            elif stage == "EARLY":
+                line = line.strip()
+                line = line.replace(',', '.')
+                behavior, b_value = line.split(": ")
+                light_early.append((number, b_value))
+                line = f.next()
+                line = line.strip()
+                line = line.replace(',', '.')
+                behavior, b_value = line.split(": ")
+                barracks_early.append((number, b_value))
+                line = f.next()
+                line = line.strip()
+                line = line.replace(',', '.')
+                behavior, b_value = line.split(": ")
+                ranged_early.append((number, b_value))
+                line = f.next()
+                line = line.strip()
+                line = line.replace(',', '.')
+                behavior, b_value = line.split(": ")
+                expand_early.append((number, b_value))
+                line = f.next()
+                line = line.strip()
+                line = line.replace(',', '.')
+                behavior, b_value = line.split(": ")
+                worker_early.append((number, b_value))
+            elif stage == "MID":
+                line = line.strip()
+                line = line.replace(',', '.')
+                behavior, b_value = line.split(": ")
+                light_mid.append((number, b_value))
+                line = f.next()
+                line = line.strip()
+                line = line.replace(',', '.')
+                behavior, b_value = line.split(": ")
+                barracks_mid.append((number, b_value))
+                line = f.next()
+                line = line.strip()
+                line = line.replace(',', '.')
+                behavior, b_value = line.split(": ")
+                ranged_mid.append((number, b_value))
+                line = f.next()
+                line = line.strip()
+                line = line.replace(',', '.')
+                behavior, b_value = line.split(": ")
+                expand_mid.append((number, b_value))
+                line = f.next()
+                line = line.strip()
+                line = line.replace(',', '.')
+                behavior, b_value = line.split(": ")
+                worker_mid.append((number, b_value))
+            elif stage == "LATE":
+                line = line.strip()
+                line = line.replace(',', '.')
+                behavior, b_value = line.split(": ")
+                light_late.append((number, b_value))
+                line = f.next()
+                line = line.strip()
+                line = line.replace(',', '.')
+                behavior, b_value = line.split(": ")
+                barracks_late.append((number, b_value))
+                line = f.next()
+                line = line.strip()
+                line = line.replace(',', '.')
+                behavior, b_value = line.split(": ")
+                ranged_late.append((number, b_value))
+                line = f.next()
+                line = line.strip()
+                line = line.replace(',', '.')
+                behavior, b_value = line.split(": ")
+                expand_late.append((number, b_value))
+                line = f.next()
+                line = line.strip()
+                line = line.replace(',', '.')
+                behavior, b_value = line.split(": ")
+                worker_late.append((number, b_value))
+            elif stage == "END":
+                line = line.strip()
+                line = line.replace(',', '.')
+                behavior, b_value = line.split(": ")
+                light_end.append((number, b_value))
+                line = f.next()
+                line = line.strip()
+                line = line.replace(',', '.')
+                behavior, b_value = line.split(": ")
+                barracks_end.append((number, b_value))
+                line = f.next()
+                line = line.strip()
+                line = line.replace(',', '.')
+                behavior, b_value = line.split(": ")
+                ranged_end.append((number, b_value))
+                line = f.next()
+                line = line.strip()
+                line = line.replace(',', '.')
+                behavior, b_value = line.split(": ")
+                expand_end.append((number, b_value))
+                line = f.next()
+                line = line.strip()
+                line = line.replace(',', '.')
+                behavior, b_value = line.split(": ")
+                worker_end.append((number, b_value))
+    f.close()
 
-    plt.switch_backend('TkAgg')
-    plt.plot(list(range(0, 100)), agent0, color='b', label='Agent 1')
-    plt.plot(list(range(0, 100)), agent1, color='r', label='Agent 2')
-    plt.axis([0, 100, -2, 2])
-    plt.legend(loc=2, borderaxespad=0.)
+    plt.figure(1)
+    plt.plot(*zip(*light_opening), label='LightRush')
+    plt.plot(*zip(*barracks_opening), label='BuildBarracks')
+    plt.plot(*zip(*ranged_opening), label='RangedRush')
+    plt.plot(*zip(*expand_opening), label='Expand')
+    plt.plot(*zip(*worker_opening), label='WorkerRush')
+    plt.legend(loc=3, borderaxespad=0.)
+    plt.savefig("python/plots/opening.png")
 
-    mng = plt.get_current_fig_manager()
-    mng.window.state('zoomed')
+    plt.figure(2)
+    plt.plot(*zip(*light_early), label='LightRush')
+    plt.plot(*zip(*barracks_early), label='BuildBarracks')
+    plt.plot(*zip(*ranged_early), label='RangedRush')
+    plt.plot(*zip(*expand_early), label='Expand')
+    plt.plot(*zip(*worker_early), label='WorkerRush')
+    plt.legend(loc=3, borderaxespad=0.)
+    plt.savefig("python/plots/early.png")
 
-    plt.show()
+    plt.figure(3)
+    plt.plot(*zip(*light_mid), label='LightRush')
+    plt.plot(*zip(*barracks_mid), label='BuildBarracks')
+    plt.plot(*zip(*ranged_mid), label='RangedRush')
+    plt.plot(*zip(*expand_mid), label='Expand')
+    plt.plot(*zip(*worker_mid), label='WorkerRush')
+    plt.legend(loc=3, borderaxespad=0.)
+    plt.savefig("python/plots/mid.png")
+
+    plt.figure(4)
+    plt.plot(*zip(*light_late), label='LightRush')
+    plt.plot(*zip(*barracks_late), label='BuildBarracks')
+    plt.plot(*zip(*ranged_late), label='RangedRush')
+    plt.plot(*zip(*expand_late), label='Expand')
+    plt.plot(*zip(*worker_late), label='WorkerRush')
+    plt.legend(loc=3, borderaxespad=0.)
+    plt.savefig("python/plots/late.png")
+
+    plt.figure(5)
+    plt.plot(*zip(*light_end), label='LightRush')
+    plt.plot(*zip(*barracks_end), label='BuildBarracks')
+    plt.plot(*zip(*ranged_end), label='RangedRush')
+    plt.plot(*zip(*expand_end), label='Expand')
+    plt.plot(*zip(*worker_end), label='WorkerRush')
+    plt.legend(loc=3, borderaxespad=0.)
+    plt.savefig("python/plots/end.png")
