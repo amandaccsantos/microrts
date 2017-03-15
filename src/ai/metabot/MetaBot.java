@@ -28,6 +28,10 @@ import rts.units.UnitTypeTable;
 
 public class MetaBot extends AIWithComputationBudget {
 
+	final static int DEFAULT_TIME_BUDGET = 100;
+	final static int DEFAULT_ITERATIONS_BUDGET = -1;
+	final static String DEFAULT_AI = "WorkerRush";
+	
 	//private Map<String, AI> portfolio;
 	//private String currentAI;
 	private Map<String, AI> portfolio;
@@ -41,6 +45,22 @@ public class MetaBot extends AIWithComputationBudget {
 	private Policy policy;
 	
 	private String pathToQ; 
+	
+	/**
+	 * Default constructor with no parameters
+	 * TODO: create setters for the attributes!
+	 */
+	public MetaBot(){
+		super(DEFAULT_TIME_BUDGET, DEFAULT_ITERATIONS_BUDGET);
+		
+		this.unitTypeTable = new UnitTypeTable();
+		this.timeBudget = DEFAULT_TIME_BUDGET;
+		this.iterationsBudget = DEFAULT_ITERATIONS_BUDGET;
+		this.pathToQ = "";
+		
+		loadDefaultPortfolio();
+		currentAIName = DEFAULT_AI;
+	}
 	
 	/**
 	 * Default constructor with same parameters as AIWithComputationBudget.
@@ -65,6 +85,17 @@ public class MetaBot extends AIWithComputationBudget {
 		System.out.println("Loaded Q values from " + pathToQ);
 		policy = new GreedyDeterministicQPolicy(qLearner);
 		
+		loadDefaultPortfolio();
+		
+		currentAIName = "WorkerRush";
+		
+	}
+
+	/**
+	 * Loads a portfolio with default behaviors
+	 * @param unitTypeTable
+	 */
+	private void loadDefaultPortfolio() {
 		//loads AIs into the portfolio
 		portfolio = new HashMap<>();
 		
@@ -73,9 +104,6 @@ public class MetaBot extends AIWithComputationBudget {
 		portfolio.put(RangedRush.class.getSimpleName(), new RangedRush(unitTypeTable));
 		portfolio.put(Expand.class.getSimpleName(), new Expand(unitTypeTable));
 		portfolio.put(BuildBarracks.class.getSimpleName(), new BuildBarracks(unitTypeTable));
-		
-		currentAIName = "WorkerRush";
-		
 	}
 	
 	/**
