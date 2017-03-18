@@ -1,7 +1,6 @@
 package ailoader;
 
 import ai.core.AI;
-import ai.RandomAI;
 
 /**
  * Singleton class that takes care of loading AIs 

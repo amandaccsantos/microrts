@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import ai.RandomAI;
+import ai.metabot.MetaBot;
 import ailoader.AILoader;
 
 public class AILoaderTest {
@@ -15,7 +16,7 @@ public class AILoaderTest {
 		assertTrue(AILoader.loadAI("ai.RandomAI") instanceof RandomAI);
 		
 		//test for MetaBot
-		assertTrue(AILoader.loadAI("ai.metabot.MetaBot") instanceof RandomAI);
+		assertTrue(AILoader.loadAI("ai.metabot.MetaBot") instanceof MetaBot);
 	}
 
 }
