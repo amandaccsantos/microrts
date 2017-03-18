@@ -32,6 +32,7 @@ public class DummyPolicy implements Policy {
 	protected QLearning qLearner;
 	/**
 	 * Creates a DummyPolicy
+	 * TODO: remove the need for the QLearning object
 	 * @param behavior
 	 * @param unitTypeTable
 	 * @param learner QLearning instance is needed in order to retrieve actions

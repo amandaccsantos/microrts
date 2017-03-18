@@ -185,10 +185,13 @@ public class RLParameters {
 					else if (floatParameters().contains(param.getNodeName())){
 						params.put(param.getNodeName(), Float.parseFloat(e.getAttribute("value")));
 					}
-					else {	//parameter is a string (probably)
+					//if node is 'abstraction-model', retrieves the appropriate model
+					else if(param.getNodeName().equals(RLParamNames.ABSTRACTION_MODEL)){
+						params.put(param.getNodeName(), AbstractionModels.fromString(e.getAttribute("value")));
+					}
+					else {	//parameter is an ordinary string (probably)
 						params.put(param.getNodeName(), e.getAttribute("value"));
 					}
-					//TODO process 'abstraction model'
 				}
 			}
 			
@@ -197,7 +200,6 @@ public class RLParameters {
 				newPlayers.add(processPlayerNode(n));
 			}
 			
-			//if node is 'abstraction-model', 
 		}
 		
 		//replace default players if new ones were specified in xml
