@@ -29,6 +29,9 @@ import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.mdp.stochasticgames.world.World;
 import burlap.statehashing.HashableStateFactory;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
+import rl.adapters.PersistentLearner;
+import rl.adapters.PersistentMultiAgentQLearning;
+import rl.adapters.SGQLearningAdapter;
 
 
 /**
@@ -162,7 +165,7 @@ public class RLParameters {
 		//Map<String, Object> params = defaultParameters();
 		
 		//initializes a list to load specified players, if there are any in the xml
-		List<SGAgent> newPlayers = new ArrayList<>();
+		List<PersistentLearner> newPlayers = new ArrayList<>();
 		
 		//opens xml file
 		DocumentBuilder dBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -217,7 +220,7 @@ public class RLParameters {
 	 * Extracts all relevant information about the player node
 	 * @param playerNode
 	 */
-	private SGAgent processPlayerNode(Node playerNode){
+	private PersistentLearner processPlayerNode(Node playerNode){
 
 		
 		//retrieves the world model (needed for agent creation)
@@ -239,7 +242,7 @@ public class RLParameters {
 			);
 
 			// create a single-agent interface for the learning algorithm
-			LearningAgentToSGAgentInterface agent = new LearningAgentToSGAgentInterface(
+			SGQLearningAdapter agent = new SGQLearningAdapter(
 					world.getDomain(), ql, e.getAttribute("name"), 
 					new SGAgentType("QLearning", world.getDomain().getActionTypes())
 			);
@@ -264,7 +267,7 @@ public class RLParameters {
 			);
 
 			// create a single-agent interface the learning algorithm
-			LearningAgentToSGAgentInterface agent = new LearningAgentToSGAgentInterface(
+			SGQLearningAdapter agent = new SGQLearningAdapter(
 					world.getDomain(), ql, e.getAttribute("name"), 
 					new SGAgentType("Dummy", world.getDomain().getActionTypes())
 			);
@@ -274,7 +277,7 @@ public class RLParameters {
 		else if(e.getAttribute("type").equalsIgnoreCase("minimaxQ")) {
 		
 			//MinimaxQ example: https://groups.google.com/forum/#!topic/burlap-discussion/QYP6FKDGDnM
-			MultiAgentQLearning mmq = new MultiAgentQLearning(
+			PersistentMultiAgentQLearning mmq = new PersistentMultiAgentQLearning(
 				world.getDomain(), .9, .1, new SimpleHashableStateFactory(),
 				1, new MinMaxQ(), true, e.getAttribute("name"), 
 				new SGAgentType("MiniMaxQ", world.getDomain().getActionTypes())

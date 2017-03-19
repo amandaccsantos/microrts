@@ -18,6 +18,7 @@ import burlap.behavior.valuefunction.QValue;
 import burlap.debugtools.DPrint;
 import burlap.mdp.stochasticgames.agent.SGAgent;
 import burlap.mdp.stochasticgames.world.World;
+import rl.adapters.PersistentLearner;
 
 /**
  * Manages a Reinforcement Learning experiment in microRTS
@@ -42,7 +43,7 @@ public class RLExperiment {
 		
 		//adds players to the world
 		World gameWorld = (World) parameters.get(RLParamNames.ABSTRACTION_MODEL);
-		List<SGAgent> agents = (List<SGAgent>) parameters.get(RLParamNames.PLAYERS);
+		List<PersistentLearner> agents = (List<PersistentLearner>) parameters.get(RLParamNames.PLAYERS);
 		
 		if(agents.size() < 2){
 			throw new RuntimeException("Less than 2 players were specified for the experiment");
@@ -60,7 +61,6 @@ public class RLExperiment {
 		//DPrint.toggleCode(theWorld.getDebugId(), false);
 		int numEpisodes = (int) parameters.get(RLParamNames.EPISODES);
 		List<GameEpisode> episodes = new ArrayList<GameEpisode>(numEpisodes);
-		PrintWriter output = null;
 		
 		//retrieves output dir
 		String outDir = (String) parameters.get(RLParamNames.OUTPUT_DIR);
@@ -69,26 +69,20 @@ public class RLExperiment {
 			GameEpisode episode = gameWorld.runGame();
 			episodes.add(episode);
 			
-			System.out.print(String.format("\bGame: #%7d finished.", episodeNumber));
+			System.out.print(String.format("\bEpisode #%7d finished.", episodeNumber));
 			
-			/*if (i % 10 == 0) {
-				System.out.println("Game: " + i + ": " + episode.maxTimeStep());
-			}*/
+			
 			//writes episode data and q-values
 			episode.write(String.format("%s/episode_%d", outDir, episodeNumber));
-			for(SGAgent agent : gameWorld.getRegisteredAgents()){
-				/**
-				 * TODO here's what you gonna do: instead of referring to
-				 * SGAgent, you'll store the primitive agent: QLearning, MAQL, wathever.
-				 * Then here you'll write out the q table of that primitive agent. 
-				 * It would be something like:
-				 * primitiveAgent.writeQTable(String.format("%s/q_%s_%d", outDir, agentName, i))
-				 * 
-				 * Deal?
-				 */
+			for(PersistentLearner agent : agents){
 				
+				agent.saveKnowledge(
+					String.format("%s/q_%s_%d.txt", outDir, agent.agentName(), episodeNumber)
+				);
 			}
 		}
+		//finished training
+		System.out.println("\nTraining finished"); //has leading \n because previous print has no trailing \n
 	}
 		
 }
