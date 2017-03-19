@@ -22,9 +22,12 @@ import org.xml.sax.SAXException;
 import ai.metabot.DummyPolicy;
 import burlap.behavior.singleagent.learning.tdmethods.QLearning;
 import burlap.behavior.stochasticgames.agents.interfacing.singleagent.LearningAgentToSGAgentInterface;
+import burlap.behavior.stochasticgames.agents.maql.MultiAgentQLearning;
+import burlap.behavior.stochasticgames.madynamicprogramming.backupOperators.MinMaxQ;
 import burlap.mdp.stochasticgames.agent.SGAgent;
 import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.mdp.stochasticgames.world.World;
+import burlap.statehashing.HashableStateFactory;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
 
 
@@ -238,7 +241,7 @@ public class RLParameters {
 			// create a single-agent interface for the learning algorithm
 			LearningAgentToSGAgentInterface agent = new LearningAgentToSGAgentInterface(
 					world.getDomain(), ql, e.getAttribute("name"), 
-					new SGAgentType("qlearning", world.getDomain().getActionTypes())
+					new SGAgentType("QLearning", world.getDomain().getActionTypes())
 			);
 			
 			return agent;
@@ -250,10 +253,10 @@ public class RLParameters {
 			
 			QLearning ql = new QLearning(
 				null, 
-				(float) qlParams.get(RLParamNames.DISCOUNT), 
+				0, //(float) qlParams.get(RLParamNames.DISCOUNT), 
 				new SimpleHashableStateFactory(false), 
-				(float) qlParams.get(RLParamNames.INITIAL_Q), 
-				(float) qlParams.get(RLParamNames.LEARNING_RATE)
+				0, //(float) qlParams.get(RLParamNames.INITIAL_Q), 
+				0 //(float) qlParams.get(RLParamNames.LEARNING_RATE)
 			);
 			
 			ql.setLearningPolicy(
@@ -263,13 +266,22 @@ public class RLParameters {
 			// create a single-agent interface the learning algorithm
 			LearningAgentToSGAgentInterface agent = new LearningAgentToSGAgentInterface(
 					world.getDomain(), ql, e.getAttribute("name"), 
-					new SGAgentType("dummy", world.getDomain().getActionTypes())
+					new SGAgentType("Dummy", world.getDomain().getActionTypes())
 			);
 			return agent;
 		}
 		
-		//MinimaxQ? (from: https://groups.google.com/forum/#!topic/burlap-discussion/QYP6FKDGDnM
-		//MultiAgentQLearning a0 = new MultiAgentQLearning(domain, discount, learningRate, hashingFactory, defaultQ, new MinMaxQ(), true);
+		else if(e.getAttribute("type").equalsIgnoreCase("minimaxQ")) {
+		
+			//MinimaxQ example: https://groups.google.com/forum/#!topic/burlap-discussion/QYP6FKDGDnM
+			MultiAgentQLearning mmq = new MultiAgentQLearning(
+				world.getDomain(), .9, .1, new SimpleHashableStateFactory(),
+				1, new MinMaxQ(), true, e.getAttribute("name"), 
+				new SGAgentType("MiniMaxQ", world.getDomain().getActionTypes())
+			);
+			
+			return mmq;
+		}
 		
 		throw new RuntimeException("Could not load player from file.");
 	}
