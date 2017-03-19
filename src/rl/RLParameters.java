@@ -38,7 +38,7 @@ public class RLParameters {
 	/**
 	 * The singleton instance of this class
 	 */
-	private RLParameters instance;
+	private static RLParameters instance;
 	
 	/**
 	 * A {@link Set} with names of integer parameters
@@ -66,7 +66,7 @@ public class RLParameters {
 	 * Returns the singleton instance of this class
 	 * @return
 	 */
-	public RLParameters getInstance(){
+	public static RLParameters getInstance(){
 		if (instance == null){
 			instance = new RLParameters();
 		}
@@ -154,7 +154,7 @@ public class RLParameters {
 	 * @throws IOException
 	 * @throws ParserConfigurationException
 	 */
-	public Map<String, Object> parametersFromFile(String path) throws SAXException, IOException, ParserConfigurationException{
+	public Map<String, Object> loadFromFile(String path) throws SAXException, IOException, ParserConfigurationException{
 		//initializes default parameters
 		//Map<String, Object> params = defaultParameters();
 		
@@ -267,6 +267,9 @@ public class RLParameters {
 			);
 			return agent;
 		}
+		
+		//MinimaxQ? (from: https://groups.google.com/forum/#!topic/burlap-discussion/QYP6FKDGDnM
+		//MultiAgentQLearning a0 = new MultiAgentQLearning(domain, discount, learningRate, hashingFactory, defaultQ, new MinMaxQ(), true);
 		
 		throw new RuntimeException("Could not load player from file.");
 	}
