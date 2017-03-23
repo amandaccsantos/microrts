@@ -51,7 +51,7 @@ public class PersistentMultiAgentQLearning extends MultiAgentQLearning implement
 				
 				for (JointAction ja : JointAction.getAllJointActionsFromTypes((State) s, agents)) {
 					JAQValue value = this.myQSource.getQValueFor(s, ja);
-					output.println(value);
+					output.println(String.format("%s %s %s", value.s, value.ja, value.q));
 				}
 			}
 			output.close();		
