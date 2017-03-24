@@ -21,6 +21,7 @@ import burlap.behavior.singleagent.auxiliary.StateReachability;
 import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.behavior.singleagent.learning.tdmethods.QLearning;
 import burlap.behavior.stochasticgames.GameEpisode;
+import burlap.behavior.stochasticgames.PolicyFromJointPolicy;
 import burlap.behavior.stochasticgames.agents.interfacing.singleagent.LearningAgentToSGAgentInterface;
 import burlap.behavior.stochasticgames.agents.maql.MultiAgentQLearning;
 import burlap.behavior.stochasticgames.auxiliary.GameSequenceVisualizer;
@@ -32,6 +33,7 @@ import burlap.mdp.auxiliary.DomainGenerator;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.action.ActionType;
 import burlap.mdp.stochasticgames.SGDomain;
+import burlap.mdp.stochasticgames.agent.SGAgent;
 import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.mdp.stochasticgames.model.JointRewardFunction;
 import burlap.mdp.stochasticgames.world.World;
@@ -82,6 +84,8 @@ public class MetaGameLearningExample {
 				learningRate, new SimpleHashableStateFactory(false), defaultQ, null,
 				false, "agent2", agentType);
 		
+		//ql3.loadKnowledge("/tmp/qltest/qtable2");
+		
 		// loads previous match values to initialize function
 		for (int i = 0; i < ngames; i++) {							
 			ql1.loadQTable("/tmp/qltest/qtable0_" + i);
@@ -97,8 +101,6 @@ public class MetaGameLearningExample {
 		LearningAgentToSGAgentInterface a2 = new LearningAgentToSGAgentInterface(microRTSDomain, ql2, "agent1",
 				agentType);
 		
-		//LearningAgentToSGAgentInterface a3 = new LearningAgentToSGAgentInterface(microRTSDomain, ql3, "agent2", agentType);
-
 		w.join(a1);
 		w.join(a2);
 
@@ -123,8 +125,7 @@ public class MetaGameLearningExample {
 				episode.write("/tmp/qltest/qltest_" + i);
 				ql1.writeQTable("/tmp/qltest/qtable0_" + i);
 				ql2.writeQTable("/tmp/qltest/qtable1_" + i);
-				ql3.saveKnowledge("/tmp/qltest/qtable2_" + i);
-
+				
 				output.println("Game: " + i);
 				output.println("Value functions for agent 0");
 
@@ -143,6 +144,7 @@ public class MetaGameLearningExample {
 					}
 				}
 			}
+			ql3.saveKnowledge("/tmp/qltest/qtable2");
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();

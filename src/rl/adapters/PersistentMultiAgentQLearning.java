@@ -1,15 +1,28 @@
 package rl.adapters;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import org.yaml.snakeyaml.Yaml;
 
 import ai.metabot.learning.model.MicroRTSState;
 import burlap.behavior.learningrate.LearningRate;
+import burlap.behavior.singleagent.learning.tdmethods.QLearningStateNode;
 import burlap.behavior.stochasticgames.agents.maql.MultiAgentQLearning;
 import burlap.behavior.stochasticgames.madynamicprogramming.JAQValue;
+import burlap.behavior.stochasticgames.madynamicprogramming.QSourceForSingleAgent;
 import burlap.behavior.stochasticgames.madynamicprogramming.SGBackupOperator;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.mdp.core.state.State;
@@ -17,6 +30,7 @@ import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.SGDomain;
 import burlap.mdp.stochasticgames.agent.SGAgent;
 import burlap.mdp.stochasticgames.agent.SGAgentType;
+import burlap.statehashing.HashableState;
 import burlap.statehashing.HashableStateFactory;
 
 /**
@@ -43,26 +57,30 @@ public class PersistentMultiAgentQLearning extends MultiAgentQLearning implement
 
 	@Override
 	public void saveKnowledge(String path) {
+		Yaml yaml = new Yaml();
+		BufferedWriter file = null;
 		try {
-			PrintWriter output = new PrintWriter(new BufferedWriter(new FileWriter(path, false)));
+			file = new BufferedWriter(new FileWriter(path));
 			List<SGAgentType> agents = new ArrayList<>();
 			for (MicroRTSState s : MicroRTSState.allStates()){
-				agents.add(this.agentType);
-				
+				agents.add(this.agentType);				
 				for (JointAction ja : JointAction.getAllJointActionsFromTypes((State) s, agents)) {
 					JAQValue value = this.myQSource.getQValueFor(s, ja);
-					output.println(String.format("%s %s %s", value.s, value.ja, value.q));
+					yaml.dump(value, file);
 				}
-			}
-			output.close();		
-		} catch (Exception e) {
-			e.printStackTrace();
-		}		
+			}	
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
 	}
 
 	@Override
-	public void loadKnowledge(String path) {
-		//FIXME implement this method
-		System.err.println("NON-FATAL ERROR: method loadKnowledge of PersistentMultiAgentQLearning not implemented");
+	public void loadKnowledge(String path) {		
+		Yaml yaml = new Yaml();
+		try( InputStream in = Files.newInputStream(Paths.get(path))) {
+			this.myQSource = (QSourceForSingleAgent) yaml.load(in);
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
