@@ -2,6 +2,7 @@ package rl;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,6 +21,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import ai.metabot.DummyPolicy;
+import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.learning.tdmethods.QLearning;
 import burlap.behavior.stochasticgames.agents.interfacing.singleagent.LearningAgentToSGAgentInterface;
 import burlap.behavior.stochasticgames.agents.maql.MultiAgentQLearning;
@@ -266,12 +268,36 @@ public class RLParameters {
 			ql.setLearningPolicy(
 				new DummyPolicy((String) qlParams.get(RLParamNames.DUMMY_POLICY), ql)
 			);
+			
+			Field policyField = null;
+			try {
+				policyField = ql.getClass().getDeclaredField("learningPolicy");
+			} catch (NoSuchFieldException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (SecurityException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			policyField.setAccessible(true);
+			Policy thePolicy = null;
+			try {
+				thePolicy = (Policy) policyField.get(ql);
+			} catch (IllegalArgumentException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (IllegalAccessException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			System.out.println(thePolicy.getClass().getName());
 
 			// create a single-agent interface the learning algorithm
 			SGQLearningAdapter agent = new SGQLearningAdapter(
 					world.getDomain(), ql, e.getAttribute("name"), 
 					new SGAgentType("Dummy", world.getDomain().getActionTypes())
 			);
+			System.out.println(agent);
 			return agent;
 		}
 		

@@ -12,8 +12,12 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
+import ai.metabot.DummyPolicy;
 import ai.metabot.learning.model.MicroRTSGame;
 import burlap.behavior.learningrate.LearningRate;
+import burlap.behavior.policy.Policy;
+import burlap.behavior.singleagent.learning.LearningAgent;
+import burlap.behavior.singleagent.learning.tdmethods.QLearning;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.mdp.stochasticgames.agent.SGAgent;
 import rl.RLParamNames;
@@ -42,37 +46,43 @@ public class RLParametersTest {
 		
 		for(SGAgent player : players){
 			
-			
-			if (player instanceof PersistentMultiAgentQLearning){
-				//casts the player and tests its attributes 
-				PersistentMultiAgentQLearning pmaq = (PersistentMultiAgentQLearning) player;
+			//casts the player and tests its attributes 
+			SGQLearningAdapter sgql = (SGQLearningAdapter) player;
+			if (sgql.agentName().equals("learner")){ // instanceof PersistentMultiAgentQLearning){
 				
+				QLearning ql = (QLearning) sgql.getSingleAgentLearner();
 				//tests whether attributes were correctly loaded
 				//first is learning rate
-				Field lrField = revealField(pmaq, "learningRate");
-				LearningRate lr = (LearningRate) lrField.get(pmaq);
+				Field lrField = revealField(ql, "learningRate");
+				LearningRate lr = (LearningRate) lrField.get(ql);
 				assertEquals(0.1, lr.peekAtLearningRate(null, null), 0.00000001);
 				
-				//second is discount
-				Field discountField = revealField(pmaq, "discount");
-				double discount = (double) discountField.get(pmaq);
+				//second is discount - TODO: it is hidden on MDPSolver class 
+				/*Field discountField = revealField(ql, "discount");
+				double discount = (double) discountField.get(ql);
 				assertEquals(0.9, discount, 0.00000001);
-				
+				*/
 				//last is initial-q
-				Field initialQField = revealField(pmaq, "qInit");
-				QFunction initialQ = (QFunction) initialQField.get(pmaq);
+				Field initialQField = revealField(ql, "qInit");
+				QFunction initialQ = (QFunction) initialQField.get(ql);
 				assertEquals(1, initialQ.value(null), 0.00000001);
 				
 			}
-			else if (player instanceof SGQLearningAdapter){
+			else if (player.agentName().equals("dummy")){ // instanceof SGQLearningAdapter){	//both agents in example are SGQLearningAdapter
 				//casts the player and tests its attributes 
-				SGQLearningAdapter sgql = (SGQLearningAdapter) player;
+
+				QLearning ql = (QLearning) sgql.getSingleAgentLearner();
+				//tests whether we have a dummy policy
+				Field policyField = revealField(ql, "learningPolicy");
+				Policy thePolicy = (Policy) policyField.get(ql);
+				System.out.println(thePolicy.getClass().getName());
+				assertTrue(thePolicy instanceof DummyPolicy);
 				
 			}
 			else {
 				fail(
-					"Player does not belong to neither expected class. It is a: " + 
-					player.getClass().getName()
+					"Player name is neither learner or dummy. It is: " + 
+					player.agentName()
 				);
 			}
 		}

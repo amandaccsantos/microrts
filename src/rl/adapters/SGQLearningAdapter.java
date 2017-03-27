@@ -30,6 +30,14 @@ public class SGQLearningAdapter extends LearningAgentToSGAgentInterface implemen
 			//TODO make SGQLearningAdapter accept other single agent learning algorithms
 		}
 	}
+	
+	/**
+	 * Returns the single agent learner object
+	 * @return
+	 */
+	public LearningAgent getSingleAgentLearner(){
+		return learner;
+	}
 
 	@Override
 	public void saveKnowledge(String path) {
