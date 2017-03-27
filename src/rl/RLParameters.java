@@ -162,7 +162,7 @@ public class RLParameters {
 	 */
 	public Map<String, Object> loadFromFile(String path) throws SAXException, IOException, ParserConfigurationException{
 		//initializes default parameters
-		//Map<String, Object> params = defaultParameters();
+		params = defaultParameters();
 		
 		//initializes a list to load specified players, if there are any in the xml
 		List<PersistentLearner> newPlayers = new ArrayList<>();
@@ -201,7 +201,7 @@ public class RLParameters {
 				}
 			}
 			
-			//if node is 'player', creates the player specified 
+			//if node is 'player', creates the specified player 
 			else if (n.getNodeName().equals("player")){
 				newPlayers.add(processPlayerNode(n));
 			}
@@ -232,6 +232,7 @@ public class RLParameters {
 		if (e.getAttribute("type").equalsIgnoreCase("QLearning")){
 			//loads parameters in a map
 			Map<String, Object> qlParams = fillParameters(playerNode);
+			
 			
 			QLearning ql = new QLearning(
 				null, 
@@ -302,16 +303,15 @@ public class RLParameters {
 			
 			Element paramElement = (Element) parameter;
 			if (integerParameters().contains(parameter.getNodeName())){
-				params.put(parameter.getNodeName(), Integer.parseInt(paramElement.getAttribute("value")));
+				parameters.put(parameter.getNodeName(), Integer.parseInt(paramElement.getAttribute("value")));
 			}
 			else if (floatParameters().contains(parameter.getNodeName())){
-				params.put(parameter.getNodeName(), Float.parseFloat(paramElement.getAttribute("value")));
+				parameters.put(parameter.getNodeName(), Float.parseFloat(paramElement.getAttribute("value")));
 			}
 			else {	//parameter is a string (probably)
-				params.put(parameter.getNodeName(), paramElement.getAttribute("value"));
+				parameters.put(parameter.getNodeName(), paramElement.getAttribute("value"));
 			}
 		}
-		
 		return parameters;
 	}
 }

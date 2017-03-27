@@ -27,6 +27,7 @@ public class SGQLearningAdapter extends LearningAgentToSGAgentInterface implemen
 			throw new RuntimeException(
 				"SGQLearningAdapter supports only QLearning as single agent learner"
 			);
+			//TODO make SGQLearningAdapter accept other single agent learning algorithms
 		}
 	}
 

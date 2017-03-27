@@ -50,7 +50,6 @@ public class AbstractionModels {
 		TerminalFunction terminalFunc = new MicroRTSTerminalFunction();
 
 		World w = new World(microRTSDomain, rwdFunc, terminalFunc, microRTSGame.getInitialState());
-		
 		return w;
 	}
 
