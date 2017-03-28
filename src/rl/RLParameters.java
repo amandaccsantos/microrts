@@ -290,14 +290,12 @@ public class RLParameters {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			System.out.println(thePolicy.getClass().getName());
 
 			// create a single-agent interface the learning algorithm
 			SGQLearningAdapter agent = new SGQLearningAdapter(
 					world.getDomain(), ql, e.getAttribute("name"), 
 					new SGAgentType("Dummy", world.getDomain().getActionTypes())
 			);
-			System.out.println(agent);
 			return agent;
 		}
 		

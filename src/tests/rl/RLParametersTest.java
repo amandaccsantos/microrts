@@ -16,6 +16,7 @@ import ai.metabot.DummyPolicy;
 import ai.metabot.learning.model.MicroRTSGame;
 import burlap.behavior.learningrate.LearningRate;
 import burlap.behavior.policy.Policy;
+import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.behavior.singleagent.learning.tdmethods.QLearning;
 import burlap.behavior.valuefunction.QFunction;
@@ -52,20 +53,20 @@ public class RLParametersTest {
 				
 				QLearning ql = (QLearning) sgql.getSingleAgentLearner();
 				//tests whether attributes were correctly loaded
-				//first is learning rate
+				//code to test learning rate:
 				Field lrField = revealField(ql, "learningRate");
 				LearningRate lr = (LearningRate) lrField.get(ql);
-				assertEquals(0.1, lr.peekAtLearningRate(null, null), 0.00000001);
+				assertEquals(0.1, lr.peekAtLearningRate(null, null), 0.0000001);
 				
-				//second is discount - TODO: it is hidden on MDPSolver class 
-				/*Field discountField = revealField(ql, "discount");
-				double discount = (double) discountField.get(ql);
-				assertEquals(0.9, discount, 0.00000001);
-				*/
-				//last is initial-q
-				Field initialQField = revealField(ql, "qInit");
+				//code to test: initialQ
+				Field initialQField = revealField(ql, "qInitFunction");
 				QFunction initialQ = (QFunction) initialQField.get(ql);
-				assertEquals(1, initialQ.value(null), 0.00000001);
+				assertEquals(1, initialQ.value(null), 0.0000001);
+				
+				//code to test discount 
+				Field discountField = revealField(MDPSolver.class, "gamma");
+				double discount = (double) discountField.get(ql);
+				assertEquals(0.9, discount, 0.0000001);
 				
 			}
 			else if (player.agentName().equals("dummy")){ // instanceof SGQLearningAdapter){	//both agents in example are SGQLearningAdapter
@@ -75,7 +76,6 @@ public class RLParametersTest {
 				//tests whether we have a dummy policy
 				Field policyField = revealField(ql, "learningPolicy");
 				Policy thePolicy = (Policy) policyField.get(ql);
-				System.out.println(thePolicy.getClass().getName());
 				assertTrue(thePolicy instanceof DummyPolicy);
 				
 			}
@@ -101,6 +101,21 @@ public class RLParametersTest {
 	 */
 	private Field revealField(Object obj, String fieldName) throws NoSuchFieldException, SecurityException{
 		Field theField = obj.getClass().getDeclaredField(fieldName);
+		theField.setAccessible(true);
+		return theField;
+	}
+	
+	/**
+	 * Changes visibility (private -> public) of a specified class field
+	 * and returns it  
+	 * @param cls
+	 * @param fieldName
+	 * @return
+	 * @throws NoSuchFieldException
+	 * @throws SecurityException
+	 */
+	private Field revealField(Class<?> cls, String fieldName) throws NoSuchFieldException, SecurityException{
+		Field theField = cls.getDeclaredField(fieldName);
 		theField.setAccessible(true);
 		return theField;
 	}
