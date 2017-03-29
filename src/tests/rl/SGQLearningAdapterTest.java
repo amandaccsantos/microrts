@@ -2,11 +2,14 @@ package tests.rl;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+
 import org.junit.Before;
 import org.junit.Test;
 
 import ai.metabot.learning.model.GameStage;
-import ai.metabot.learning.model.MetaBotAction;
 import ai.metabot.learning.model.MicroRTSState;
 import burlap.behavior.singleagent.learning.tdmethods.QLearning;
 import burlap.behavior.valuefunction.QValue;
@@ -15,14 +18,13 @@ import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.mdp.stochasticgames.world.World;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
 import rl.AbstractionModels;
-import rl.RLParamNames;
 import rl.adapters.SGQLearningAdapter;
-import rts.GameState;
 
 public class SGQLearningAdapterTest {
 	
 	SGQLearningAdapter sgql;
 	World world;
+	final static String EXAMPLE_QTABLE_FILE = "src/tests/rl/qtable-example.yaml";
 	
 	@Before
 	public void setUp(){
@@ -41,17 +43,8 @@ public class SGQLearningAdapterTest {
 	}
 
 	@Test
-	public void testSaveKnowledge() {
-		
-		
-		//TODO: saveKnowledge prior to any training yields an empty file.
-		
-		fail("Not yet implemented");
-	}
-	
-	@Test
 	public void testLoadKnowledge(){
-		sgql.loadKnowledge("src/tests/rl/qtable-example.yaml");
+		sgql.loadKnowledge(EXAMPLE_QTABLE_FILE);
 		
 		MicroRTSState state = new MicroRTSState();
 		QLearning qLearner = (QLearning) sgql.getSingleAgentLearner();
@@ -110,6 +103,24 @@ public class SGQLearningAdapterTest {
 				assertEquals(1.0, q.q, 0.00001);
 			}
 		}
+	}
+	
+	@Test
+	/**
+	 * This test assumes {@link testLoadKnowledge} is working properly
+	 * @throws FileNotFoundException
+	 */
+	public void testSaveKnowledge() throws FileNotFoundException {
+		//if loadKnowledge is working properly, saveKnowledge should yield the same file
+		
+		String tmpQTableFile = "/tmp/test-save-knowledge-sgql.yaml";
+		sgql.loadKnowledge(EXAMPLE_QTABLE_FILE);
+		sgql.saveKnowledge(tmpQTableFile);
+		
+		String expected = new Scanner(new File(EXAMPLE_QTABLE_FILE)).useDelimiter("\\Z").next();
+		String actual = new Scanner(new File(tmpQTableFile)).useDelimiter("\\Z").next();
+		
+		assertEquals(expected, actual);
 	}
 
 }
