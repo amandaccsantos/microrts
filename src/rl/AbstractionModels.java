@@ -11,6 +11,7 @@ import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.stochasticgames.SGDomain;
 import burlap.mdp.stochasticgames.model.JointRewardFunction;
 import burlap.mdp.stochasticgames.world.World;
+import rl.models.GameStagesDomain;
 
 /**
  * Concentrates different World models
@@ -34,9 +35,9 @@ public class AbstractionModels {
 	 * @return {@link World}
 	 */
 	public static World stages() {
-		MicroRTSGame microRTSGame = null;
+		GameStagesDomain stagesDomain = null;
 		try {
-			microRTSGame = new MicroRTSGame();
+			stagesDomain = new GameStagesDomain();
 		} catch (JDOMException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -44,12 +45,11 @@ public class AbstractionModels {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		SGDomain microRTSDomain = (SGDomain) microRTSGame.generateDomain();
 
 		JointRewardFunction rwdFunc = new MicroRTSJointRewardFunction();
 		TerminalFunction terminalFunc = new MicroRTSTerminalFunction();
 
-		World w = new World(microRTSDomain, rwdFunc, terminalFunc, microRTSGame.getInitialState());
+		World w = new World(stagesDomain, rwdFunc, terminalFunc, stagesDomain.getInitialState());
 		return w;
 	}
 

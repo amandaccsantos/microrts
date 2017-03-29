@@ -12,7 +12,7 @@ public abstract class EnumerableSGDomain extends SGDomain {
 	}
 	
 	/**
-	 * Returns a list with all states in this domain
+	 * Returns a list with ALL states in this domain
 	 * @return
 	 */
 	public abstract List<? extends State> enumerate();
