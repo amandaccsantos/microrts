@@ -1,4 +1,4 @@
-package rl.adapters;
+package rl.adapters.learners;
 
 import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.behavior.singleagent.learning.tdmethods.QLearning;

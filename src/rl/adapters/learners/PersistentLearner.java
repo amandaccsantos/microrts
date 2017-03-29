@@ -1,4 +1,4 @@
-package rl.adapters;
+package rl.adapters.learners;
 
 import burlap.mdp.stochasticgames.agent.SGAgent;
 

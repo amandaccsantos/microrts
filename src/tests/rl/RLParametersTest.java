@@ -23,8 +23,8 @@ import burlap.behavior.valuefunction.QFunction;
 import burlap.mdp.stochasticgames.agent.SGAgent;
 import rl.RLParamNames;
 import rl.RLParameters;
-import rl.adapters.PersistentMultiAgentQLearning;
-import rl.adapters.SGQLearningAdapter;
+import rl.adapters.learners.PersistentMultiAgentQLearning;
+import rl.adapters.learners.SGQLearningAdapter;
 
 public class RLParametersTest {
 

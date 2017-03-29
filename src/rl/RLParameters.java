@@ -31,9 +31,9 @@ import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.mdp.stochasticgames.world.World;
 import burlap.statehashing.HashableStateFactory;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
-import rl.adapters.PersistentLearner;
-import rl.adapters.PersistentMultiAgentQLearning;
-import rl.adapters.SGQLearningAdapter;
+import rl.adapters.learners.PersistentLearner;
+import rl.adapters.learners.PersistentMultiAgentQLearning;
+import rl.adapters.learners.SGQLearningAdapter;
 
 
 /**

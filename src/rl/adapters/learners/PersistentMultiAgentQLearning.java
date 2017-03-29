@@ -1,4 +1,4 @@
-package rl.adapters;
+package rl.adapters.learners;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;

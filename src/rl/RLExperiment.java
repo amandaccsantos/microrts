@@ -18,7 +18,7 @@ import burlap.behavior.valuefunction.QValue;
 import burlap.debugtools.DPrint;
 import burlap.mdp.stochasticgames.agent.SGAgent;
 import burlap.mdp.stochasticgames.world.World;
-import rl.adapters.PersistentLearner;
+import rl.adapters.learners.PersistentLearner;
 
 /**
  * Manages a Reinforcement Learning experiment in microRTS

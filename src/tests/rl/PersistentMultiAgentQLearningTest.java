@@ -10,7 +10,7 @@ import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.mdp.stochasticgames.world.World;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
 import rl.AbstractionModels;
-import rl.adapters.PersistentMultiAgentQLearning;
+import rl.adapters.learners.PersistentMultiAgentQLearning;
 
 public class PersistentMultiAgentQLearningTest {
 
