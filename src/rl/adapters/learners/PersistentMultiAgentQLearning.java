@@ -26,6 +26,7 @@ import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.SGDomain;
 import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.statehashing.HashableStateFactory;
+import rl.adapters.domain.EnumerableSGDomain;
 
 /**
  * Extends {@link MultiAgentQLearning} class by implementing {@link PersistentLearner}
@@ -55,21 +56,22 @@ public class PersistentMultiAgentQLearning extends MultiAgentQLearning implement
 		try {
 			fileWriter = new BufferedWriter(new FileWriter(path));
 
-			/* 
-			 * TODO: o codigo abaixo so vai funcionar para essa representacao simples do mundo.
-			 * Para ficar generico, tem que extender o {@link StateReachability} ou
-			 * o {@link StateEnumerator} para trabalharem com SGDomain
-			 */
-			for (MicroRTSState s : MicroRTSState.allStates()) {
-				fileWriter.write(String.format("state: %s\n"));
-				
-				List<JointAction> jointActions = JointAction.getAllJointActions(s, world.getRegisteredAgents());
-				
-				for(JointAction jointAction : jointActions){
-					fileWriter.write(String.format(
-						"\t%s: %.3f\n", jointAction, getMyQSource().getQValueFor(s, jointAction).q
-					));
+			if (domain instanceof EnumerableSGDomain){
+				EnumerableSGDomain enumDomain = (EnumerableSGDomain) domain;
+				for (State s : enumDomain.enumerate()) {
+					fileWriter.write(String.format("state: %s\n"));
+					
+					List<JointAction> jointActions = JointAction.getAllJointActions(s, world.getRegisteredAgents());
+					
+					for(JointAction jointAction : jointActions){
+						fileWriter.write(String.format(
+							"\t%s: %.3f\n", jointAction, getMyQSource().getQValueFor(s, jointAction).q
+						));
+					}
 				}
+			}
+			else {
+				System.err.println("Cannot save knowledge to this type of domain: " + domain.getClass().getName());
 			}
 		
 		} catch (IOException e) {

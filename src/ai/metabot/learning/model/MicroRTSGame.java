@@ -24,7 +24,7 @@ import rts.units.UnitTypeTable;
 /**
  * A stochastic game domain  generator for a particular representation of microRTS environment 
  * @author anderson
- *
+ * TODO migrate this to {@link GameStagesDomain} class
  */
 public class MicroRTSGame implements DomainGenerator {
 	//action names
