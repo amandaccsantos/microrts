@@ -1,25 +1,21 @@
 package rl.adapters;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.yaml.snakeyaml.Yaml;
 
+import ai.metabot.learning.model.MicroRTSGame;
 import ai.metabot.learning.model.MicroRTSState;
 import burlap.behavior.learningrate.LearningRate;
-import burlap.behavior.singleagent.learning.tdmethods.QLearningStateNode;
+import burlap.behavior.singleagent.auxiliary.StateEnumerator;
+import burlap.behavior.singleagent.auxiliary.StateReachability;
 import burlap.behavior.stochasticgames.agents.maql.MultiAgentQLearning;
 import burlap.behavior.stochasticgames.madynamicprogramming.JAQValue;
 import burlap.behavior.stochasticgames.madynamicprogramming.QSourceForSingleAgent;
@@ -28,9 +24,7 @@ import burlap.behavior.valuefunction.QFunction;
 import burlap.mdp.core.state.State;
 import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.SGDomain;
-import burlap.mdp.stochasticgames.agent.SGAgent;
 import burlap.mdp.stochasticgames.agent.SGAgentType;
-import burlap.statehashing.HashableState;
 import burlap.statehashing.HashableStateFactory;
 
 /**
@@ -57,13 +51,39 @@ public class PersistentMultiAgentQLearning extends MultiAgentQLearning implement
 
 	@Override
 	public void saveKnowledge(String path) {
+		BufferedWriter fileWriter;
+		try {
+			fileWriter = new BufferedWriter(new FileWriter(path));
+
+			/* 
+			 * TODO: o codigo abaixo so vai funcionar para essa representacao simples do mundo.
+			 * Para ficar generico, tem que extender o {@link StateReachability} ou
+			 * o {@link StateEnumerator} para trabalharem com SGDomain
+			 */
+			for (MicroRTSState s : MicroRTSState.allStates()) {
+				fileWriter.write(String.format("state: %s\n"));
+				
+				List<JointAction> jointActions = JointAction.getAllJointActions(s, world.getRegisteredAgents());
+				
+				for(JointAction jointAction : jointActions){
+					fileWriter.write(String.format(
+						"\t%s: %.3f\n", jointAction, getMyQSource().getQValueFor(s, jointAction).q
+					));
+				}
+			}
+		
+		} catch (IOException e) {
+			System.err.println("ERROR: Unable to save knowledge to file " + path);
+			e.printStackTrace();
+		}
+		/*
 		Yaml yaml = new Yaml();
 		BufferedWriter file = null;
 		try {
 			file = new BufferedWriter(new FileWriter(path));
 			List<SGAgentType> agents = new ArrayList<>();
+			agents.add(this.agentType);	
 			for (MicroRTSState s : MicroRTSState.allStates()){
-				agents.add(this.agentType);				
 				for (JointAction ja : JointAction.getAllJointActionsFromTypes((State) s, agents)) {
 					JAQValue value = this.myQSource.getQValueFor(s, ja);
 					yaml.dump(value, file);
@@ -72,6 +92,7 @@ public class PersistentMultiAgentQLearning extends MultiAgentQLearning implement
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
+		*/
 	}
 
 	@Override
