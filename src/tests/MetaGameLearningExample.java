@@ -1,15 +1,24 @@
 package tests;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.jdom.JDOMException;
+import org.xml.sax.SAXException;
 
 import ai.abstraction.LightRush;
 import ai.metabot.DummyPolicy;
@@ -17,6 +26,9 @@ import ai.metabot.learning.model.MicroRTSGame;
 import ai.metabot.learning.model.MicroRTSJointRewardFunction;
 import ai.metabot.learning.model.MicroRTSState;
 import ai.metabot.learning.model.MicroRTSTerminalFunction;
+import burlap.behavior.learningrate.LearningRate;
+import burlap.behavior.policy.Policy;
+import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.auxiliary.StateReachability;
 import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.behavior.singleagent.learning.tdmethods.QLearning;
@@ -26,6 +38,7 @@ import burlap.behavior.stochasticgames.agents.interfacing.singleagent.LearningAg
 import burlap.behavior.stochasticgames.agents.maql.MultiAgentQLearning;
 import burlap.behavior.stochasticgames.auxiliary.GameSequenceVisualizer;
 import burlap.behavior.stochasticgames.madynamicprogramming.SGBackupOperator;
+import burlap.behavior.valuefunction.QFunction;
 import burlap.behavior.valuefunction.QValue;
 import burlap.debugtools.DPrint;
 import burlap.domain.stochasticgames.gridgame.GGVisualizer;
@@ -40,7 +53,10 @@ import burlap.mdp.stochasticgames.world.World;
 import burlap.statehashing.HashableStateFactory;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
 import burlap.visualizer.Visualizer;
-import rl.adapters.PersistentMultiAgentQLearning;
+import rl.RLParamNames;
+import rl.RLParameters;
+import rl.adapters.learners.SGQLearningAdapter;
+import tests.rl.RLParametersTest;
 
 /**
  * An example of the Algorithm Selection Metagame in microRTS
@@ -66,40 +82,82 @@ public class MetaGameLearningExample {
 		JointRewardFunction rwdFunc = new MicroRTSJointRewardFunction();
 		TerminalFunction terminalFunc = new MicroRTSTerminalFunction();
 
-		// learning parameters
-		final double discount = 0.95;
-		final double learningRate = 0.1;
-		final double defaultQ = 1;
-
-		int ngames = 100;
-		
 		World w = new World(microRTSDomain, rwdFunc, terminalFunc, microRTSGame.getInitialState());
-
-		// single agent Q-learning algorithms which will operate in our stochastic game
-		// don't need to specify the domain, because the single agent interface will provide it
-		QLearning ql1 = new QLearning(null, discount, new SimpleHashableStateFactory(false), defaultQ, learningRate);
-		QLearning ql2 = new QLearning(null, discount, new SimpleHashableStateFactory(false), defaultQ, learningRate);
-
-		PersistentMultiAgentQLearning ql3 = new PersistentMultiAgentQLearning(null, discount, 
-				learningRate, new SimpleHashableStateFactory(false), defaultQ, null,
-				false, "agent2", agentType);
 		
-		//ql3.loadKnowledge("/tmp/qltest/qtable2");
+		RLParameters rlParams = RLParameters.getInstance();
 		
-		// loads previous match values to initialize function
-		for (int i = 0; i < ngames; i++) {							
-			ql1.loadQTable("/tmp/qltest/qtable0_" + i);
-			ql1.setQInitFunction(ql1);
-		}	
+		Map<String, Object> parameters = null;
+		try {
+			parameters = rlParams.loadFromFile("experiments/example_SGQLearningAdapter_Light.xml");
+		} catch (SAXException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ParserConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} //may throw exceptions
+				
+		int ngames = (int) parameters.get(RLParamNames.EPISODES);
+		List<GameEpisode> episodes = new ArrayList<GameEpisode>(ngames);
+	
+		List<SGAgent> players = (List<SGAgent>) parameters.get(RLParamNames.PLAYERS);
 		
-		// ql2 will be a dummy, always selecting the same behavior
-		ql2.setLearningPolicy(new DummyPolicy(MicroRTSGame.RANGED_RUSH, ql2));
-
-		// create a single-agent interface for each of our learning algorithm instances
-		LearningAgentToSGAgentInterface a1 = new LearningAgentToSGAgentInterface(microRTSDomain, ql1, "agent0",
-				agentType);
-		LearningAgentToSGAgentInterface a2 = new LearningAgentToSGAgentInterface(microRTSDomain, ql2, "agent1",
-				agentType);
+		QLearning ql1 = null;
+		QLearning ql2 = null;
+		
+		SGQLearningAdapter a1 = null;
+		SGQLearningAdapter a2 = null;
+		
+		for(SGAgent player : players){			
+			
+			SGQLearningAdapter sgql = (SGQLearningAdapter) player;
+			if (sgql.agentName().equals("learner")){ // instanceof PersistentMultiAgentQLearning){
+				final float discount = ((float) parameters.get(RLParamNames.DISCOUNT));
+				final float learningRate = ((float) parameters.get(RLParamNames.LEARNING_RATE));
+				final float defaultQ = ((float) parameters.get(RLParamNames.INITIAL_Q));
+				
+				ql1 = new QLearning(null, discount, new SimpleHashableStateFactory(false), defaultQ, learningRate);
+				
+				// create a single-agent interface for each of our learning algorithm instances
+				a1 = new SGQLearningAdapter(microRTSDomain, ql1, "agent0", new SGAgentType("SGQLearningAdapter", w.getDomain().getActionTypes()));
+			}
+			else if (player.agentName().equals("dummy")){ // instanceof SGQLearningAdapter){	//both agents in example are SGQLearningAdapter
+				//casts the player and tests its attributes 
+				ql2 = new QLearning(null, 0, new SimpleHashableStateFactory(false), 0, 0);
+						
+				String policy = (String) parameters.get(RLParamNames.DUMMY_POLICY);
+				// ql2 will be a dummy, always selecting the same behavior
+				ql2.setLearningPolicy(new DummyPolicy(policy, ql2));
+				
+				Field policyField = null;
+				try {
+					policyField = ql2.getClass().getDeclaredField("learningPolicy");
+				} catch (NoSuchFieldException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (SecurityException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				policyField.setAccessible(true);
+				Policy thePolicy = null;
+				try {
+					thePolicy = (Policy) policyField.get(ql2);
+				} catch (IllegalArgumentException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (IllegalAccessException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+				// create a single-agent interface for each of our learning algorithm instances
+				a2 = new SGQLearningAdapter(microRTSDomain, ql2, "agent1", new SGAgentType("Dummy", w.getDomain().getActionTypes()));
+			}
+		}
 		
 		w.join(a1);
 		w.join(a2);
@@ -110,7 +168,6 @@ public class MetaGameLearningExample {
 
 		System.out.println("Starting training");
 		
-		List<GameEpisode> episodes = new ArrayList<GameEpisode>(ngames);
 		PrintWriter output = null;
 		
 		try {
@@ -144,7 +201,6 @@ public class MetaGameLearningExample {
 					}
 				}
 			}
-			ql3.saveKnowledge("/tmp/qltest/qtable2");
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
