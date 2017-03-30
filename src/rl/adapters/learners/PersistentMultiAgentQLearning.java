@@ -67,7 +67,6 @@ public class PersistentMultiAgentQLearning extends MultiAgentQLearning implement
 				EnumerableSGDomain enumDomain = (EnumerableSGDomain) domain;
 				for (State s : enumDomain.enumerate()) {
 					fileWriter.write(String.format("state: %s\n", s));
-					System.out.println(world);
 					List<JointAction> jointActions = JointAction.getAllJointActions(
 						s, 
 						world.getRegisteredAgents()
