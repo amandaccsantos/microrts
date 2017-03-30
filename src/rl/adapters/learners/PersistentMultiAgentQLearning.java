@@ -52,6 +52,13 @@ public class PersistentMultiAgentQLearning extends MultiAgentQLearning implement
 
 	@Override
 	public void saveKnowledge(String path) {
+		if(world == null){
+			System.err.println(
+				"ERROR: cannot save knowledge because world is null. Have I been initialized?"
+			);
+			return;
+		}
+		
 		BufferedWriter fileWriter;
 		try {
 			fileWriter = new BufferedWriter(new FileWriter(path));
@@ -59,9 +66,12 @@ public class PersistentMultiAgentQLearning extends MultiAgentQLearning implement
 			if (domain instanceof EnumerableSGDomain){
 				EnumerableSGDomain enumDomain = (EnumerableSGDomain) domain;
 				for (State s : enumDomain.enumerate()) {
-					fileWriter.write(String.format("state: %s\n"));
-					
-					List<JointAction> jointActions = JointAction.getAllJointActions(s, world.getRegisteredAgents());
+					fileWriter.write(String.format("state: %s\n", s));
+					System.out.println(world);
+					List<JointAction> jointActions = JointAction.getAllJointActions(
+						s, 
+						world.getRegisteredAgents()
+					);
 					
 					for(JointAction jointAction : jointActions){
 						fileWriter.write(String.format(
