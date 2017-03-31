@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import burlap.behavior.stochasticgames.madynamicprogramming.backupOperators.MinMaxQ;
+import burlap.debugtools.DPrint;
 import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.mdp.stochasticgames.world.World;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
@@ -42,6 +43,7 @@ public class PersistentMultiAgentQLearningTest {
 		microRTSStages.join(maql);
 		microRTSStages.join(rival);
 		
+		DPrint.toggleCode(microRTSStages.getDebugId(), false);
 		for (int i = 0; i < 20; i++)
 			microRTSStages.runGame();	//run a game with zero stages, so that functions are not updated (?)
 		

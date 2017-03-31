@@ -21,9 +21,11 @@ import burlap.behavior.stochasticgames.madynamicprogramming.JAQValue;
 import burlap.behavior.stochasticgames.madynamicprogramming.QSourceForSingleAgent;
 import burlap.behavior.stochasticgames.madynamicprogramming.SGBackupOperator;
 import burlap.behavior.valuefunction.QFunction;
+import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.SGDomain;
+import burlap.mdp.stochasticgames.agent.SGAgent;
 import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.statehashing.HashableStateFactory;
 import rl.adapters.domain.EnumerableSGDomain;
@@ -78,9 +80,9 @@ public class PersistentMultiAgentQLearning extends MultiAgentQLearning implement
 				// xml root node
 				fileWriter.write("<knowledge>\n\n"); 
 				
-				// information 'bout me
+				// information about who is saving knowledge, i.e., myself
 				fileWriter.write(String.format(
-					"<me worldAgentName='%s' id='%d' />\n\n", worldAgentName, agentNum
+					"<learner name='%s' id='%d' />\n\n", worldAgentName, agentNum
 				));
 				
 				
@@ -95,14 +97,23 @@ public class PersistentMultiAgentQLearning extends MultiAgentQLearning implement
 					);
 					
 					for(JointAction jointAction : jointActions){
-						//TODO test whether order is preserved in joint actions
-						
-						// writes the action tag
+						// opens the joint action tag
 						fileWriter.write(String.format(
-							"\t<action name='%s' value='%s' />\n", 
-							jointAction.actionName(), 
-							getMyQSource().getQValueFor(s, jointAction).q
+							"\t<jointAction value='%s'>\n", getMyQSource().getQValueFor(s, jointAction).q
 						));
+						
+						for(SGAgent agent : world.getRegisteredAgents()){
+							int id = world.getPlayerNumberForAgent(agent.agentName());
+							// writes the action tag
+							fileWriter.write(String.format(
+								"\t\t<action name='%s' agentID='%s' />\n", 
+								jointAction.action(id).actionName(),
+								id
+							));
+						}
+						
+						fileWriter.write("\t</jointAction>\n");
+						
 						//yaml.dump(getMyQSource().getQValueFor(s, jointAction), fileWriter);
 					}
 					
