@@ -59,27 +59,60 @@ public class PersistentMultiAgentQLearning extends MultiAgentQLearning implement
 			return;
 		}
 		
+		/*if(world.getRegisteredAgents().size() != 2){
+			System.err.println(
+				"ERROR: cannot save knowledge because world does not have 2 agents. It has: " +
+				world.getRegisteredAgents().size()
+			);
+			return;
+		}*/
+		
 		BufferedWriter fileWriter;
-		Yaml yaml = new Yaml();
+		//Yaml yaml = new Yaml();
 		try {
 			fileWriter = new BufferedWriter(new FileWriter(path));
 
 			if (domain instanceof EnumerableSGDomain){
 				EnumerableSGDomain enumDomain = (EnumerableSGDomain) domain;
+				
+				// xml root node
+				fileWriter.write("<knowledge>\n\n"); 
+				
+				// information 'bout me
+				fileWriter.write(String.format(
+					"<me worldAgentName='%s' id='%d' />\n\n", worldAgentName, agentNum
+				));
+				
+				
 				for (State s : enumDomain.enumerate()) {
-					fileWriter.write(String.format("state: %s\n", s));
+					// opens state tag
+					fileWriter.write(String.format("<state id='%s'>\n", s)); 
+					
+					// runs through joint actions and write their values
 					List<JointAction> jointActions = JointAction.getAllJointActions(
 						s, 
 						world.getRegisteredAgents()
 					);
 					
 					for(JointAction jointAction : jointActions){
-						/*fileWriter.write(String.format(
-							"\t%s: %.3f\n", jointAction, getMyQSource().getQValueFor(s, jointAction).q
-						));*/
-						yaml.dump(getMyQSource().getQValueFor(s, jointAction), fileWriter);
+						//TODO test whether order is preserved in joint actions
+						
+						// writes the action tag
+						fileWriter.write(String.format(
+							"\t<action name='%s' value='%s' />\n", 
+							jointAction.actionName(), 
+							getMyQSource().getQValueFor(s, jointAction).q
+						));
+						//yaml.dump(getMyQSource().getQValueFor(s, jointAction), fileWriter);
 					}
+					
+					// closes state tag
+					fileWriter.write("\t</state>\n\n");
 				}
+				
+				// closes xml root
+				fileWriter.write("</knowledge>\n"); 
+				fileWriter.close();
 			}
 			else {
 				System.err.println("Cannot save knowledge to this type of domain: " + domain.getClass().getName());

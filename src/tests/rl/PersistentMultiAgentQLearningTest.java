@@ -42,19 +42,21 @@ public class PersistentMultiAgentQLearningTest {
 		microRTSStages.join(maql);
 		microRTSStages.join(rival);
 		
-		microRTSStages.runGame(0);	//run a game with zero stages, so that functions are not updated (?)
+		for (int i = 0; i < 20; i++)
+			microRTSStages.runGame();	//run a game with zero stages, so that functions are not updated (?)
 		
 		
 	}
 
 	@Test
 	public void testLoadKnowledge() {
-		maql.loadKnowledge("/tmp/saved.sav");
+		//maql.loadKnowledge("/tmp/saved.sav");
 	}
 	
 	@Test
 	public void testSaveKnowledge() {
-		maql.saveKnowledge("/tmp/saved.sav");
+		maql.saveKnowledge("/tmp/maql.xml");
+		rival.saveKnowledge("/tmp/rival.xml");
 		fail("not tested yet");
 	}
 
