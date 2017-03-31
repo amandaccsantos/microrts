@@ -33,8 +33,10 @@ public class RLExperiment {
 		//loads parameters from file
 		Map<String, Object> parameters = null;
 		
+		RLParameters rlParams = RLParameters.getInstance();
+		
 		try {
-			parameters = RLParameters.getInstance().loadFromFile(args[1]);
+			parameters = rlParams.loadFromFile(args[0]);
 		} catch (SAXException | IOException | ParserConfigurationException e) {
 			System.err.println("An error has occurred...");
 			e.printStackTrace();
@@ -65,20 +67,21 @@ public class RLExperiment {
 		//retrieves output dir
 		String outDir = (String) parameters.get(RLParamNames.OUTPUT_DIR);
 		
-		for (int episodeNumber = 0; episodeNumber < numEpisodes; episodeNumber++) {
-			GameEpisode episode = gameWorld.runGame();
-			episodes.add(episode);
-			
-			System.out.print(String.format("\rEpisode #%7d finished.", episodeNumber));
-			
-			
-			//writes episode data and q-values
-			episode.write(String.format("%s/episode_%d", outDir, episodeNumber));
-			for(PersistentLearner agent : agents){
+		for (int repetitions = 0; repetitions < 30; repetitions++){
+			for (int episodeNumber = 0; episodeNumber < numEpisodes; episodeNumber++) {
+				GameEpisode episode = gameWorld.runGame();
+				episodes.add(episode);
 				
-				agent.saveKnowledge(
-					String.format("%s/q_%s_%d.txt", outDir, agent.agentName(), episodeNumber)
-				);
+				System.out.print(String.format("\rEpisode #%7d finished.", episodeNumber));
+						
+				//writes episode data and q-values
+				episode.write(String.format("%s/repetition %s/episode_%d", outDir, repetitions, episodeNumber));
+				for(PersistentLearner agent : agents){
+					
+					agent.saveKnowledge(
+						String.format("%s/repetition %s/q_%s_%d.txt", outDir, repetitions, agent.agentName(), episodeNumber)
+					);
+				}
 			}
 		}
 		//finished training
