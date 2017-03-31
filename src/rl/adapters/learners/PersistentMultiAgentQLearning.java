@@ -60,6 +60,7 @@ public class PersistentMultiAgentQLearning extends MultiAgentQLearning implement
 		}
 		
 		BufferedWriter fileWriter;
+		Yaml yaml = new Yaml();
 		try {
 			fileWriter = new BufferedWriter(new FileWriter(path));
 
@@ -73,9 +74,10 @@ public class PersistentMultiAgentQLearning extends MultiAgentQLearning implement
 					);
 					
 					for(JointAction jointAction : jointActions){
-						fileWriter.write(String.format(
+						/*fileWriter.write(String.format(
 							"\t%s: %.3f\n", jointAction, getMyQSource().getQValueFor(s, jointAction).q
-						));
+						));*/
+						yaml.dump(getMyQSource().getQValueFor(s, jointAction), fileWriter);
 					}
 				}
 			}

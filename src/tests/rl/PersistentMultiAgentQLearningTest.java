@@ -15,6 +15,8 @@ import rl.adapters.learners.PersistentMultiAgentQLearning;
 public class PersistentMultiAgentQLearningTest {
 
 	PersistentMultiAgentQLearning maql;
+	PersistentMultiAgentQLearning rival;
+	
 	World microRTSStages;
 	
 	@Before
@@ -22,21 +24,38 @@ public class PersistentMultiAgentQLearningTest {
 		
 		microRTSStages = AbstractionModels.stages();
 		
+		//agent to be tested
 		maql = new PersistentMultiAgentQLearning(
 			microRTSStages.getDomain(), .9, .1, new SimpleHashableStateFactory(),
 			1, new MinMaxQ(), true, "MAQL", 
 			new SGAgentType("MiniMaxQ", microRTSStages.getDomain().getActionTypes())
 		);
+		
+		//another agent
+		rival = new PersistentMultiAgentQLearning(
+			microRTSStages.getDomain(), .9, .1, new SimpleHashableStateFactory(),
+			1, new MinMaxQ(), true, "RIVAL", 
+			new SGAgentType("MiniMaxQ", microRTSStages.getDomain().getActionTypes())
+		);
+		
+		//must 'prepare' a match so that agents initialize their structures
+		microRTSStages.join(maql);
+		microRTSStages.join(rival);
+		
+		microRTSStages.runGame(0);	//run a game with zero stages, so that functions are not updated (?)
+		
+		
 	}
 
 	@Test
 	public void testLoadKnowledge() {
-		fail("Not yet implemented"); // TODO
+		maql.loadKnowledge("/tmp/saved.sav");
 	}
 	
 	@Test
 	public void testSaveKnowledge() {
-		fail("Not yet implemented"); // TODO
+		maql.saveKnowledge("/tmp/saved.sav");
+		fail("not tested yet");
 	}
 
 	@Test
