@@ -152,7 +152,7 @@ public class MicroRTSState implements State{
 	}
 	
 	public String toString(){
-		return "Stage: " + stage;
+		return stage.toString();
 	}
 	
 	
