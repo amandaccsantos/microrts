@@ -81,10 +81,17 @@ public class PersistentMultiAgentQLearning extends MultiAgentQLearning implement
 				fileWriter.write("<knowledge>\n\n"); 
 				
 				// information about who is saving knowledge, i.e., myself
+				// this might be useful when retrieving the joint action later
 				fileWriter.write(String.format(
 					"<learner name='%s' id='%d' />\n\n", worldAgentName, agentNum
 				));
 				
+				// a friendly remark
+				fileWriter.write(
+					"<!-- Note: 'ja' stands for joint action\n"
+					+ "Joint action name is agent0Action;agent1Action;... "
+					+ " always in this order -->\n\n"
+				);
 				
 				for (State s : enumDomain.enumerate()) {
 					// opens state tag
@@ -97,11 +104,15 @@ public class PersistentMultiAgentQLearning extends MultiAgentQLearning implement
 					);
 					
 					for(JointAction jointAction : jointActions){
-						// opens the joint action tag
+						// writes the joint action tag
+						// action name is agent0Action;agent1Action;...
+						// always in this order
 						fileWriter.write(String.format(
-							"\t<jointAction value='%s'>\n", getMyQSource().getQValueFor(s, jointAction).q
+							"\t<ja name='%s' value='%s' />\n",
+							jointAction.actionName(),
+							getMyQSource().getQValueFor(s, jointAction).q
 						));
-						
+						/*
 						for(SGAgent agent : world.getRegisteredAgents()){
 							int id = world.getPlayerNumberForAgent(agent.agentName());
 							// writes the action tag
@@ -111,14 +122,14 @@ public class PersistentMultiAgentQLearning extends MultiAgentQLearning implement
 								id
 							));
 						}
-						
 						fileWriter.write("\t</jointAction>\n");
+						*/
 						
 						//yaml.dump(getMyQSource().getQValueFor(s, jointAction), fileWriter);
 					}
 					
 					// closes state tag
-					fileWriter.write("\t</state>\n\n");
+					fileWriter.write("</state>\n\n");
 				}
 				
 				// closes xml root

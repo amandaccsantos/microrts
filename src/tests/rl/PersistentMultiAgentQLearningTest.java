@@ -15,7 +15,7 @@ import rl.adapters.learners.PersistentMultiAgentQLearning;
 
 public class PersistentMultiAgentQLearningTest {
 
-	PersistentMultiAgentQLearning maql;
+	PersistentMultiAgentQLearning player;
 	PersistentMultiAgentQLearning rival;
 	
 	World microRTSStages;
@@ -26,9 +26,9 @@ public class PersistentMultiAgentQLearningTest {
 		microRTSStages = AbstractionModels.stages();
 		
 		//agent to be tested
-		maql = new PersistentMultiAgentQLearning(
+		player = new PersistentMultiAgentQLearning(
 			microRTSStages.getDomain(), .9, .1, new SimpleHashableStateFactory(),
-			1, new MinMaxQ(), true, "MAQL", 
+			1, new MinMaxQ(), true, "PLAYER", 
 			new SGAgentType("MiniMaxQ", microRTSStages.getDomain().getActionTypes())
 		);
 		
@@ -40,12 +40,12 @@ public class PersistentMultiAgentQLearningTest {
 		);
 		
 		//must 'prepare' a match so that agents initialize their structures
-		microRTSStages.join(maql);
+		microRTSStages.join(player);
 		microRTSStages.join(rival);
 		
 		DPrint.toggleCode(microRTSStages.getDebugId(), false);
-		for (int i = 0; i < 20; i++)
-			microRTSStages.runGame();	//run a game with zero stages, so that functions are not updated (?)
+		//for (int i = 0; i < 20; i++)
+			microRTSStages.runGame(0);	//run a game with zero stages, so that functions are not updated (?)
 		
 		
 	}
@@ -57,7 +57,7 @@ public class PersistentMultiAgentQLearningTest {
 	
 	@Test
 	public void testSaveKnowledge() {
-		maql.saveKnowledge("/tmp/maql.xml");
+		player.saveKnowledge("/tmp/maql.xml");
 		rival.saveKnowledge("/tmp/rival.xml");
 		fail("not tested yet");
 	}
