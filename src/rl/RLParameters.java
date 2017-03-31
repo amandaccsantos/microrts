@@ -231,7 +231,8 @@ public class RLParameters {
 		// tests which type of player is specified and properly loads an agent
 		Element e = (Element) playerNode;
 		
-		if (e.getAttribute("type").equalsIgnoreCase("QLearning")){
+		if ((e.getAttribute("type").equalsIgnoreCase("QLearning")) || 
+				(e.getAttribute("type").equalsIgnoreCase("SGQLearningAdapter"))){
 			//loads parameters in a map
 			Map<String, Object> qlParams = fillParameters(playerNode);
 			
@@ -309,27 +310,6 @@ public class RLParameters {
 			);
 			
 			return mmq;
-		}
-		
-		else if (e.getAttribute("type").equalsIgnoreCase("SGQLearningAdapter")){
-			//loads parameters in a map
-			Map<String, Object> qlParams = fillParameters(playerNode);
-			
-			QLearning ql = new QLearning(
-				null, 
-				(float) qlParams.get(RLParamNames.DISCOUNT), 
-				new SimpleHashableStateFactory(false), 
-				(float) qlParams.get(RLParamNames.INITIAL_Q), 
-				(float) qlParams.get(RLParamNames.LEARNING_RATE)
-			);
-
-			// create a single-agent interface for the learning algorithm
-			SGQLearningAdapter agent = new SGQLearningAdapter(
-					world.getDomain(), ql, e.getAttribute("name"), 
-					new SGAgentType("SGQLearningAdapter", world.getDomain().getActionTypes())
-			);
-			
-			return agent;
 		}
 		
 		throw new RuntimeException("Could not load player from file.");
