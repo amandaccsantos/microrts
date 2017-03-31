@@ -69,7 +69,7 @@ public class RLExperiment {
 			GameEpisode episode = gameWorld.runGame();
 			episodes.add(episode);
 			
-			System.out.print(String.format("\bEpisode #%7d finished.", episodeNumber));
+			System.out.print(String.format("\rEpisode #%7d finished.", episodeNumber));
 			
 			
 			//writes episode data and q-values
