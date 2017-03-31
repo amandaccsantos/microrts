@@ -33,8 +33,10 @@ public class RLExperiment {
 		//loads parameters from file
 		Map<String, Object> parameters = null;
 		
+		RLParameters rlParams = RLParameters.getInstance();
+		
 		try {
-			parameters = RLParameters.getInstance().loadFromFile(args[1]);
+			parameters = rlParams.loadFromFile(args[0]);
 		} catch (SAXException | IOException | ParserConfigurationException e) {
 			System.err.println("An error has occurred...");
 			e.printStackTrace();

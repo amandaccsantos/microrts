@@ -113,8 +113,8 @@ public class MetaGameLearningExample {
 		
 		//Uncomment the two players who will join the game
 		w.join(sgql);
-		w.join(minimaxQ);
-		//w.join(dummy);
+		//w.join(minimaxQ);
+		w.join(dummy);
 		
 		//sgql.saveKnowledge("/tmp/qtable.sav");
 		//ql3.saveKnowledge("/tmp/qtable-maql.sav");
@@ -142,7 +142,7 @@ public class MetaGameLearningExample {
 				}*/
 				episode.write("/tmp/qltest/qltest_" + i);
 				sgql.saveKnowledge("/tmp/qltest/qtable0_" + i);
-				minimaxQ.saveKnowledge("/tmp/qltest/qtable1_" + i);
+				//minimaxQ.saveKnowledge("/tmp/qltest/qtable1_" + i);
 				
 				output.println("Game: " + i);
 				output.println("Value functions for agent 0");
