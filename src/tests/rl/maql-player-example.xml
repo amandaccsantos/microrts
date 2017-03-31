@@ -1,12 +1,5 @@
 <knowledge>
 
-<!-- 
-	IMPORTANT! 
-
-	This file is associated with PersistentMultiAgentQLearningTest
-	Don't change the file without changing the respective test!
--->
-
 <learner name='PLAYER' id='0' />
 
 <!-- Note: 'ja' stands for joint action

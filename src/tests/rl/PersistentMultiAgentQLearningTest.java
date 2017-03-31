@@ -2,9 +2,12 @@ package tests.rl;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -25,6 +28,8 @@ import rl.adapters.learners.PersistentMultiAgentQLearning;
 
 public class PersistentMultiAgentQLearningTest {
 
+	final String PATH_TO_KNOWLEDGE = "src/tests/rl/maql-player-example.xml";
+	
 	PersistentMultiAgentQLearning player;
 	PersistentMultiAgentQLearning rival;
 	
@@ -62,16 +67,22 @@ public class PersistentMultiAgentQLearningTest {
 
 	@Test
 	public void testLoadKnowledge() {
-		player.loadKnowledge("src/tests/rl/maql-player-example.xml");
+		this.assertLoadedKnowledge(PATH_TO_KNOWLEDGE);
+	}
+	
+	/**
+	 * Checks whether loaded knowledge in specified path 
+	 * matches the one defined in 'PATH_TO_KNOWLEDGE' file
+	 * with some tolerance for numeric errors
+	 * @param path
+	 */
+	private void assertLoadedKnowledge(String path){
+			player.loadKnowledge(path);
 		
 		/*
 		 * most states and joint actions have value 1.0 in the file
 		 * but here we test the ones whose value is different
 		 */
-		
-		// retrieves a map of names to states so that we're able to query them
-		EnumerableSGDomain domain = (EnumerableSGDomain) microRTSStages.getDomain();
-		Map<String, State> nameToState = domain.namesToStates();
 		
 		// declares the state and the joint action which are used throughout this test
 		MicroRTSState state = new MicroRTSState();
@@ -105,15 +116,20 @@ public class PersistentMultiAgentQLearningTest {
 		ja = constructJointAction("WorkerRush", "WorkerRush");
 		assertEquals(0, player.getMyQSource().getQValueFor(state, ja).q, 0.00001);
 		
-		
-		
+		// TODO test whether other states have 1.0 in value 
 	}
 	
 	@Test
-	public void testSaveKnowledge() {
-		player.saveKnowledge("/tmp/maql.xml");
-		rival.saveKnowledge("/tmp/rival.xml");
-		fail("not tested yet");
+	/**
+	 * This test assumes that testLoadKnowledge is working
+	 */
+	public void testSaveKnowledge() throws FileNotFoundException {
+		String tmpKnowledgeFile = "/tmp/player-knowledge.xml";
+		// if loadKnowledge is working, save knowledge should yield the same file
+		player.loadKnowledge(PATH_TO_KNOWLEDGE);
+		player.saveKnowledge(tmpKnowledgeFile);
+		
+		this.assertLoadedKnowledge(tmpKnowledgeFile);
 	}
 
 	private JointAction constructJointAction(String component1, String component2) {
