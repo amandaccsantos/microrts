@@ -1,6 +1,7 @@
 package rl.adapters.learners;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,7 +9,17 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 import org.yaml.snakeyaml.Yaml;
 
 import ai.metabot.learning.model.MicroRTSGame;
@@ -21,6 +32,7 @@ import burlap.behavior.stochasticgames.madynamicprogramming.JAQValue;
 import burlap.behavior.stochasticgames.madynamicprogramming.QSourceForSingleAgent;
 import burlap.behavior.stochasticgames.madynamicprogramming.SGBackupOperator;
 import burlap.behavior.valuefunction.QFunction;
+import burlap.behavior.valuefunction.QValue;
 import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.stochasticgames.JointAction;
@@ -28,6 +40,8 @@ import burlap.mdp.stochasticgames.SGDomain;
 import burlap.mdp.stochasticgames.agent.SGAgent;
 import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.statehashing.HashableStateFactory;
+import rl.AbstractionModels;
+import rl.RLParamNames;
 import rl.adapters.domain.EnumerableSGDomain;
 
 /**
@@ -144,32 +158,77 @@ public class PersistentMultiAgentQLearning extends MultiAgentQLearning implement
 			System.err.println("ERROR: Unable to save knowledge to file " + path);
 			e.printStackTrace();
 		}
-		/*
-		Yaml yaml = new Yaml();
-		BufferedWriter file = null;
-		try {
-			file = new BufferedWriter(new FileWriter(path));
-			List<SGAgentType> agents = new ArrayList<>();
-			agents.add(this.agentType);	
-			for (MicroRTSState s : MicroRTSState.allStates()){
-				for (JointAction ja : JointAction.getAllJointActionsFromTypes((State) s, agents)) {
-					JAQValue value = this.myQSource.getQValueFor(s, ja);
-					yaml.dump(value, file);
-				}
-			}	
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
-		*/
 	}
 
 	@Override
-	public void loadKnowledge(String path) {		
-		Yaml yaml = new Yaml();
-		try( InputStream in = Files.newInputStream(Paths.get(path))) {
-			this.myQSource = (QSourceForSingleAgent) yaml.load(in);
-		} catch(IOException e) {
+	public void loadKnowledge(String path) {
+		if (! (domain instanceof EnumerableSGDomain)){
+			throw new RuntimeException("Cannot loadKnowledge if domain is not a EnumerableSGDomain");
+		}
+		
+		//opens xml file
+		DocumentBuilder dBuilder = null;
+		Document doc = null;
+		try {
+			dBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+			doc = dBuilder.parse(new File(path));
+		} catch (ParserConfigurationException|SAXException|IOException e) {
+			System.err.println("ERROR when parsing " + path +". knowledge NOT LOADED!");
 			e.printStackTrace();
+			return;
+		}
+		
+		//retrieves the game states, they'll be useful for filling the knowledge in
+		Map<String, State> nameToState = ((EnumerableSGDomain)domain).namesToStates();
+		
+		//traverses all 1st level nodes of xml file (children of root node) 
+		NodeList nList = doc.getDocumentElement().getChildNodes();
+		
+		for (int i = 0; i < nList.getLength(); i++){
+			Node n = nList.item(i);
+
+			//if node is 'learner', checks if ID is the same as mine
+			if (n.getNodeName() == "learner"){
+				Element e = (Element) n;
+				if(Integer.parseInt(e.getAttribute("id")) != agentNum){
+					System.err.println(
+						"WARNING! Loading knowledge with agent with different ID. "
+						+ "I'll be probably loading a transposed reward matrix >:("
+					);
+				}
+			}
+			//if node is 'state', loads the value of joint actions for that state
+			else if (n.getNodeName() == "state"){
+				Element e = (Element) n;
+				String stateID = e.getAttribute("id");
+				
+				
+				//jaNode stands for joint action node
+				for(Node jaNode = n.getFirstChild(); jaNode != null; jaNode = jaNode.getNextSibling()){
+					
+					if (jaNode.getNodeType() != Node.ELEMENT_NODE) continue;	//prevents ClassCastException
+					
+					// process the node, filling in the joint action value
+					Element jaElement = (Element) jaNode;
+					
+					// names of action components are separated by semicolon
+					String names[] = jaElement.getAttribute("name").split(";");
+					
+					// fills the list of joint action components
+					List<Action> components = new ArrayList<>();
+					for (String name : names){
+						components.add(
+							this.domain.getActionType(name).associatedAction(null)
+						);
+					}
+					
+					// retrieves the joint action and sets its value
+					State s = nameToState.get(stateID);
+					JointAction ja = new JointAction(components);
+					JAQValue jaq = myQSource.getQValueFor(s, ja); 
+					jaq.q = Float.parseFloat(jaElement.getAttribute("value"));
+				}
+			}
 		}
 	}
 }
