@@ -73,7 +73,7 @@ public class RLExperiment {
 		System.out.println("Starting training");
 
 		// don't have the world print out debug info (uncomment if you want to see it!)
-		// DPrint.toggleCode(theWorld.getDebugId(), false);
+		DPrint.toggleCode(gameWorld.getDebugId(), false);
 		int numEpisodes = (int) parameters.get(RLParamNames.EPISODES);
 		List<GameEpisode> episodes = new ArrayList<GameEpisode>(numEpisodes);
 
@@ -96,7 +96,7 @@ public class RLExperiment {
 				}
 				
 				EnumerableSGDomain enumDomain = (EnumerableSGDomain) gameWorld.getDomain();
-				for (MicroRTSState s : enumDomain.enumerate()) {
+				for (State s : enumDomain.enumerate()) {
                 	for (PersistentLearner agent : agents) {
                 		QLearning qLearner = (QLearning) ((SGQLearningAdapter) agent).getSingleAgentLearner();
 	                    output.println(String.format("%s: %.3f", s, qLearner.value(s)));
