@@ -1,8 +1,9 @@
-package rl.models.stages;
+package rl.models;
 
 import burlap.mdp.core.state.State;
 import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.model.JointRewardFunction;
+import rl.models.stages.GameStage;
 import rts.GameState;
 
 public class WinLossRewardFunction implements JointRewardFunction {
