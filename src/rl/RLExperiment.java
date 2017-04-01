@@ -1,7 +1,6 @@
 package rl;
 
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -11,27 +10,23 @@ import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.xml.sax.SAXException;
 
-import ai.metabot.learning.model.MicroRTSState;
-import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.behavior.singleagent.learning.tdmethods.QLearning;
 import burlap.behavior.stochasticgames.GameEpisode;
-import burlap.behavior.stochasticgames.agents.interfacing.singleagent.LearningAgentToSGAgentInterface;
-import burlap.behavior.stochasticgames.agents.maql.MultiAgentQLearning;
-import burlap.behavior.stochasticgames.madynamicprogramming.MultiAgentQSourceProvider;
 import burlap.behavior.valuefunction.QValue;
 import burlap.debugtools.DPrint;
 import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.JointAction;
-import burlap.mdp.stochasticgames.SGDomain;
 import burlap.mdp.stochasticgames.agent.SGAgent;
 import burlap.mdp.stochasticgames.world.World;
 import rl.adapters.domain.EnumerableSGDomain;
 import rl.adapters.learners.PersistentLearner;
 import rl.adapters.learners.SGQLearningAdapter;
-import rl.models.GameStagesDomain;
-import sun.security.jca.GetInstance;
 
 /**
  * Manages a Reinforcement Learning experiment in microRTS The RL experiment has
@@ -44,18 +39,31 @@ import sun.security.jca.GetInstance;
 public class RLExperiment {
 
 	public static void main(String[] args) {
+		
+		
+		//parses command line arguments
+		CommandLine cmdLine = processCommandLine(args);
+		if(! cmdLine.hasOption(RLParamNames.CONFIG_FILE)){
+			System.err.println(
+				"Please provide the configuration file with -c or " + RLParamNames.CONFIG_FILE
+			);
+			System.exit(0);
+		}
 		// loads parameters from file
 		Map<String, Object> parameters = null;
 
 		RLParameters rlParams = RLParameters.getInstance();
-
+		
 		try {
-			parameters = rlParams.loadFromFile(args[0]);
+			parameters = rlParams.loadFromFile(cmdLine.getOptionValue(RLParamNames.CONFIG_FILE));
 		} catch (SAXException | IOException | ParserConfigurationException e) {
 			System.err.println("An error has occurred...");
 			e.printStackTrace();
 			System.exit(0);
 		}
+		
+		// overrides parameters with ones supplied in command line (if needed)
+		parameters = rlParams.parametersFromCommandLine(cmdLine);
 
 		// adds players to the world
 		World gameWorld = (World) parameters.get(RLParamNames.ABSTRACTION_MODEL);
@@ -123,6 +131,32 @@ public class RLExperiment {
 			e.printStackTrace();
 		}
 		System.out.println("Plot finished.");*/
+	}
+
+	private static CommandLine processCommandLine(String[] args) {
+		// create Options object
+		Options options = new Options();
+
+		options.addOption("c", RLParamNames.CONFIG_FILE, true, "Path to configuration file.");
+		options.addOption("o", RLParamNames.OUTPUT_DIR, true, "Directory to generate output.");
+		
+		CommandLine line = null;
+		CommandLineParser parser = new DefaultParser();
+		
+		try {
+	        // parse the command line arguments
+	        line = parser.parse( options, args );
+	    }
+	    catch( ParseException exp ) {
+	        // oops, something went wrong
+	        System.err.println( "Command line parsing failed.");
+	        exp.printStackTrace();
+	        System.err.println( "Exiting");
+	        System.exit(0);
+	    }
+		
+		return line;
+		
 	}
 
 }

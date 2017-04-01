@@ -14,6 +14,7 @@ public class RLParamNames {
 		
 	public static final String PLAYERS = "players";	//does not appear in XML
 	
+	public static final String CONFIG_FILE = "config-file";
 	public static final String OUTPUT_DIR = "output-dir";
 	
 }

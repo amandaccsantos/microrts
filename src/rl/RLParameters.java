@@ -14,6 +14,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.cli.CommandLine;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -24,12 +25,10 @@ import ai.metabot.DummyPolicy;
 import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.learning.tdmethods.QLearning;
 import burlap.behavior.stochasticgames.agents.interfacing.singleagent.LearningAgentToSGAgentInterface;
-import burlap.behavior.stochasticgames.agents.maql.MultiAgentQLearning;
 import burlap.behavior.stochasticgames.madynamicprogramming.backupOperators.MinMaxQ;
 import burlap.mdp.stochasticgames.agent.SGAgent;
 import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.mdp.stochasticgames.world.World;
-import burlap.statehashing.HashableStateFactory;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
 import rl.adapters.learners.PersistentLearner;
 import rl.adapters.learners.PersistentMultiAgentQLearning;
@@ -163,8 +162,6 @@ public class RLParameters {
 	 * @throws ParserConfigurationException
 	 */
 	public Map<String, Object> loadFromFile(String path) throws SAXException, IOException, ParserConfigurationException{
-		//initializes default parameters
-		params = defaultParameters();
 		
 		//initializes a list to load specified players, if there are any in the xml
 		List<PersistentLearner> newPlayers = new ArrayList<>();
@@ -213,6 +210,25 @@ public class RLParameters {
 		//replace default players if new ones were specified in xml
 		if (! newPlayers.isEmpty()){
 			params.put(RLParamNames.PLAYERS, newPlayers);
+		}
+		
+		return params;
+	}
+	
+	/**
+	 * Processes some parameters from command line
+	 * @param line
+	 * @return
+	 */
+	public Map<String, Object> parametersFromCommandLine(CommandLine line) {
+		
+		//Map<String, Object> params = defaultParameters();
+		
+		if(line.hasOption(RLParamNames.OUTPUT_DIR)){
+			params.put(
+				RLParamNames.OUTPUT_DIR, 
+				line.getOptionValue(RLParamNames.OUTPUT_DIR)
+			);
 		}
 		
 		return params;
