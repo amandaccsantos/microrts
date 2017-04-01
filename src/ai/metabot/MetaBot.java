@@ -21,7 +21,7 @@ import burlap.behavior.valuefunction.QValue;
 import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
-import rl.models.stages.MicroRTSState;
+import rl.models.stages.GameStage;
 import rts.GameState;
 import rts.PlayerAction;
 import rts.units.UnitTypeTable;
@@ -129,7 +129,7 @@ public class MetaBot extends AIWithComputationBudget {
 			String oldBehavior = currentAIName;	//stores current AI to check for changes
 			
 			//retrieves the AI dictated by the policy
-			State state = new MicroRTSState(gs);
+			State state = new GameStage(gs);
 			Action action = policy.action(state);
 			
 			currentAIName = action.actionName();

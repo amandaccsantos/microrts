@@ -26,7 +26,7 @@ import rts.units.UnitTypeTable;
  * @author anderson
  * TODO migrate this to {@link GameStagesDomain} class
  */
-public class MicroRTSGame implements DomainGenerator {
+public class StagesDomainGenerator implements DomainGenerator {
 	//action names
 	public static final String WORKER_RUSH = WorkerRush.class.getSimpleName();
 	public static final String LIGHT_RUSH = LightRush.class.getSimpleName();
@@ -43,7 +43,7 @@ public class MicroRTSGame implements DomainGenerator {
 	GameState gs;
 
 	
-	public MicroRTSGame() throws JDOMException, IOException{
+	public StagesDomainGenerator() throws JDOMException, IOException{
 		
 		unitTypeTable = new UnitTypeTable();
 		physicalGameState = PhysicalGameState.load("maps/basesWorkers24x24.xml", unitTypeTable);
@@ -58,7 +58,7 @@ public class MicroRTSGame implements DomainGenerator {
 	 * @return
 	 */
 	public State getInitialState(){
-		return new MicroRTSState(gs);
+		return new GameStage(gs);
 	}
 	
 	@Override
@@ -84,7 +84,7 @@ public class MicroRTSGame implements DomainGenerator {
 		actions.put(BuildBarracks.class.getSimpleName(), new BuildBarracks(unitTypeTable));
 
 		//sets the joint action model containing the valid actions
-		domain.setJointActionModel(new MicroRTSJointActionModel(actions));
+		domain.setJointActionModel(new StagesJointActionModel(actions));
 		
 		return domain;
 	}

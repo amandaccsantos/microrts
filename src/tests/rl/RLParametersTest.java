@@ -24,7 +24,7 @@ import rl.RLParamNames;
 import rl.RLParameters;
 import rl.adapters.learners.PersistentMultiAgentQLearning;
 import rl.adapters.learners.SGQLearningAdapter;
-import rl.models.stages.MicroRTSGame;
+import rl.models.stages.StagesDomainGenerator;
 
 public class RLParametersTest {
 

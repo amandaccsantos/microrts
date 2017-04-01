@@ -18,7 +18,7 @@ import burlap.mdp.core.action.Action;
 import burlap.mdp.core.action.UniversalActionType;
 import burlap.mdp.core.state.State;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
-import rl.models.stages.MicroRTSState;
+import rl.models.stages.GameStage;
 import rts.units.UnitTypeTable;
 
 /**

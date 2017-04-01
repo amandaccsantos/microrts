@@ -5,14 +5,14 @@ import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.model.JointRewardFunction;
 import rts.GameState;
 
-public class MicroRTSJointRewardFunction implements JointRewardFunction {
+public class WinLossRewardFunction implements JointRewardFunction {
 
 	@Override
 	/**
 	 * Reward is zero for draws and non-terminals; otherwise +1 for victory, -1 for defeat
 	 */
 	public double[] reward(State s, JointAction ja, State sp) {
-		MicroRTSState resultingState = (MicroRTSState) sp;
+		GameStage resultingState = (GameStage) sp;
 		GameState underlyingState = resultingState.getUnderlyingState();
 		if (! underlyingState.gameover()) {
 			return new double[]{0, 0};

@@ -41,8 +41,8 @@ import burlap.statehashing.HashableStateFactory;
 import rl.AbstractionModels;
 import rl.RLParamNames;
 import rl.adapters.domain.EnumerableSGDomain;
-import rl.models.stages.MicroRTSGame;
-import rl.models.stages.MicroRTSState;
+import rl.models.stages.StagesDomainGenerator;
+import rl.models.stages.GameStage;
 
 /**
  * Extends {@link MultiAgentQLearning} class by implementing {@link PersistentLearner}

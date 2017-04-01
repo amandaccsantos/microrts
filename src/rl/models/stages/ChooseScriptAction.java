@@ -6,7 +6,7 @@ import ai.abstraction.LightRush;
 import ai.abstraction.RangedRush;
 import ai.abstraction.WorkerRush;
 
-public enum MetaBotAction {
+public enum ChooseScriptAction {
 	WORKER_RUSH(WorkerRush.class.getSimpleName()),
 	LIGHT_RUSH(LightRush.class.getSimpleName()),
 	RANGED_RUSH(RangedRush.class.getSimpleName()),
@@ -19,7 +19,7 @@ public enum MetaBotAction {
     /**
      * @param text
      */
-    private MetaBotAction(final String text) {
+    private ChooseScriptAction(final String text) {
         this.text = text;
     }
 

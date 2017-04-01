@@ -8,10 +8,10 @@ import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.stochasticgames.SGDomain;
 import burlap.mdp.stochasticgames.model.JointRewardFunction;
 import burlap.mdp.stochasticgames.world.World;
+import rl.models.MicroRTSTerminalFunction;
 import rl.models.stages.GameStagesDomain;
-import rl.models.stages.MicroRTSGame;
-import rl.models.stages.MicroRTSJointRewardFunction;
-import rl.models.stages.MicroRTSTerminalFunction;
+import rl.models.stages.StagesDomainGenerator;
+import rl.models.stages.WinLossRewardFunction;
 
 /**
  * Concentrates different World models
@@ -46,7 +46,7 @@ public class AbstractionModels {
 			e.printStackTrace();
 		}
 
-		JointRewardFunction rwdFunc = new MicroRTSJointRewardFunction();
+		JointRewardFunction rwdFunc = new WinLossRewardFunction();
 		TerminalFunction terminalFunc = new MicroRTSTerminalFunction();
 
 		World w = new World(stagesDomain, rwdFunc, terminalFunc, stagesDomain.getInitialState());

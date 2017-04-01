@@ -68,7 +68,7 @@ public class GameStagesDomain extends EnumerableSGDomain {
 		actions.put(BuildBarracks.class.getSimpleName(), new BuildBarracks(unitTypeTable));
 	
 		//sets the joint action model containing the valid actions
-		setJointActionModel(new MicroRTSJointActionModel(actions));
+		setJointActionModel(new StagesJointActionModel(actions));
 	}
 	
 	/**
@@ -76,12 +76,12 @@ public class GameStagesDomain extends EnumerableSGDomain {
 	 * @return
 	 */
 	public State getInitialState(){
-		return new MicroRTSState(gs);
+		return new GameStage(gs);
 	}
 
 	@Override
 	public List<? extends State> enumerate() {
-		return MicroRTSState.allStates();
+		return GameStage.allStates();
 	}
 
 }

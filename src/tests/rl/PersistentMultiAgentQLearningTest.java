@@ -23,8 +23,8 @@ import burlap.statehashing.simple.SimpleHashableStateFactory;
 import rl.AbstractionModels;
 import rl.adapters.domain.EnumerableSGDomain;
 import rl.adapters.learners.PersistentMultiAgentQLearning;
+import rl.models.stages.GameStages;
 import rl.models.stages.GameStage;
-import rl.models.stages.MicroRTSState;
 
 public class PersistentMultiAgentQLearningTest {
 
@@ -85,34 +85,34 @@ public class PersistentMultiAgentQLearningTest {
 		 */
 		
 		// declares the state and the joint action which are used throughout this test
-		MicroRTSState state = new MicroRTSState();
+		GameStage state = new GameStage();
 		JointAction ja;
 		
 		
 		// testing state 'OPENING' and joint action 'LightRush;LightRush'
-		state.setStage(GameStage.OPENING);
+		state.setStage(GameStages.OPENING);
 		ja = constructJointAction("LightRush", "LightRush");
 		assertEquals(.7, player.getMyQSource().getQValueFor(state, ja).q, 0.00001);
 		
 		
 		// testing state 'EARLY' and joint action 'RangedRush;Expand'
-		state.setStage(GameStage.EARLY);
+		state.setStage(GameStages.EARLY);
 		ja = constructJointAction("RangedRush", "Expand");
 		assertEquals(-.33, player.getMyQSource().getQValueFor(state, ja).q, 0.00001);
 		
 		
 		// testing state 'MID' and joint action 'WorkerRush;BuildBarracks' value='0.89'
-		state.setStage(GameStage.MID);
+		state.setStage(GameStages.MID);
 		ja = constructJointAction("WorkerRush", "BuildBarracks");
 		assertEquals(.89, player.getMyQSource().getQValueFor(state, ja).q, 0.00001);
 		
 		// testing state 'LATE' and joint action 'WorkerRush;RangedRush' value='-1'
-		state.setStage(GameStage.LATE);
+		state.setStage(GameStages.LATE);
 		ja = constructJointAction("WorkerRush", "RangedRush");
 		assertEquals(-1, player.getMyQSource().getQValueFor(state, ja).q, 0.00001);
 		
 		// testing state 'END' and joint action 'WorkerRush;WorkerRush' value='0' 
-		state.setStage(GameStage.END);
+		state.setStage(GameStages.END);
 		ja = constructJointAction("WorkerRush", "WorkerRush");
 		assertEquals(0, player.getMyQSource().getQValueFor(state, ja).q, 0.00001);
 		

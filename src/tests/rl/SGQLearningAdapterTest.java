@@ -17,8 +17,8 @@ import burlap.mdp.stochasticgames.world.World;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
 import rl.AbstractionModels;
 import rl.adapters.learners.SGQLearningAdapter;
+import rl.models.stages.GameStages;
 import rl.models.stages.GameStage;
-import rl.models.stages.MicroRTSState;
 
 public class SGQLearningAdapterTest {
 	
@@ -46,7 +46,7 @@ public class SGQLearningAdapterTest {
 	public void testLoadKnowledge(){
 		sgql.loadKnowledge(EXAMPLE_QTABLE_FILE);
 		
-		MicroRTSState state = new MicroRTSState();
+		GameStage state = new GameStage();
 		QLearning qLearner = (QLearning) sgql.getSingleAgentLearner();
 		
 		//retrieves objects regarding game actions
@@ -64,7 +64,7 @@ public class SGQLearningAdapterTest {
 		 * Expand: -0.5
 		 * WorkerRush: 0.75
 		 */
-		state.setStage(GameStage.OPENING);
+		state.setStage(GameStages.OPENING);
 		assertEquals(0.0, qLearner.qValue(state, lightRush), 0.00001);
 		assertEquals(0.5, qLearner.qValue(state, buildBarracks), 0.00001);
 		assertEquals(0.0, qLearner.qValue(state, rangedRush), 0.00001);
@@ -80,7 +80,7 @@ public class SGQLearningAdapterTest {
 		 * Expand: 0.3
 		 * WorkerRush: -0.1
 		 */
-		state.setStage(GameStage.EARLY);
+		state.setStage(GameStages.EARLY);
 		assertEquals(0.5, qLearner.qValue(state, lightRush), 0.00001);
 		assertEquals(0.0, qLearner.qValue(state, buildBarracks), 0.00001);
 		assertEquals(0.6, qLearner.qValue(state, rangedRush), 0.00001);
@@ -93,9 +93,9 @@ public class SGQLearningAdapterTest {
 		 * thus they should keep the default (1.0) 
 		 */
 		
-		for(MicroRTSState s : MicroRTSState.allStates()){
+		for(GameStage s : GameStage.allStates()){
 			//skips OPENING and EARLY (previously tested)
-			if (s.getStage().equals(GameStage.OPENING) || s.getStage().equals(GameStage.EARLY)){
+			if (s.getStage().equals(GameStages.OPENING) || s.getStage().equals(GameStages.EARLY)){
 				continue;
 			}
 			

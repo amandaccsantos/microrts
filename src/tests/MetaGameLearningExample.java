@@ -42,10 +42,10 @@ import burlap.visualizer.Visualizer;
 import rl.adapters.learners.PersistentMultiAgentQLearning;
 import rl.adapters.learners.SGQLearningAdapter;
 import rl.models.stages.GameStagesDomain;
-import rl.models.stages.MicroRTSGame;
-import rl.models.stages.MicroRTSJointRewardFunction;
-import rl.models.stages.MicroRTSState;
-import rl.models.stages.MicroRTSTerminalFunction;
+import rl.models.stages.StagesDomainGenerator;
+import rl.models.stages.WinLossRewardFunction;
+import rl.models.MicroRTSTerminalFunction;
+import rl.models.stages.GameStage;
 
 /**
  * An example of the Algorithm Selection Metagame in microRTS
@@ -55,9 +55,9 @@ import rl.models.stages.MicroRTSTerminalFunction;
  */
 public class MetaGameLearningExample {
 	public MetaGameLearningExample() {
-		MicroRTSGame microRTSGame = null;
+		StagesDomainGenerator microRTSGame = null;
 		try {
-			microRTSGame = new MicroRTSGame();
+			microRTSGame = new StagesDomainGenerator();
 		} catch (JDOMException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -75,7 +75,7 @@ public class MetaGameLearningExample {
 		}//(SGDomain) microRTSGame.generateDomain();
 		SGAgentType agentType = new SGAgentType("agent", microRTSDomain.getActionTypes());
 
-		JointRewardFunction rwdFunc = new MicroRTSJointRewardFunction();
+		JointRewardFunction rwdFunc = new WinLossRewardFunction();
 		TerminalFunction terminalFunc = new MicroRTSTerminalFunction();
 
 		// learning parameters
@@ -93,7 +93,7 @@ public class MetaGameLearningExample {
 		QLearning ql2 = new QLearning(null, discount, new SimpleHashableStateFactory(false), defaultQ, learningRate);
 		
 		// ql2 will be a dummy, always selecting the same behavior
-		ql2.setLearningPolicy(new DummyPolicy(MicroRTSGame.RANGED_RUSH, ql2));
+		ql2.setLearningPolicy(new DummyPolicy(StagesDomainGenerator.RANGED_RUSH, ql2));
 		
 		// creates a MultiAgentQLearning extended with save/load knowledge 
 		// queryOtherAgentsQSource must be false, otherwise the agent throws an exception
@@ -147,7 +147,7 @@ public class MetaGameLearningExample {
 				output.println("Game: " + i);
 				output.println("Value functions for agent 0");
 
-				for (MicroRTSState s : MicroRTSState.allStates()) {
+				for (GameStage s : GameStage.allStates()) {
 					output.println(String.format("%s: %.3f", s, ql1.value(s)));
 					for (QValue q : ql1.qValues(s)) {
 						output.println(String.format("%s: %.3f", q.a, q.q));
@@ -157,7 +157,7 @@ public class MetaGameLearningExample {
 				output.println("Value functions for agent 1");
 				
 				//prints values of all joint actions for each state
-				for (MicroRTSState s : MicroRTSState.allStates()) {
+				for (GameStage s : GameStage.allStates()) {
 					//output.println(String.format("%s: %.3f", s, ql2.value(s)));
 					
 					List<JointAction> jointActions = JointAction.getAllJointActions(s, w.getRegisteredAgents());

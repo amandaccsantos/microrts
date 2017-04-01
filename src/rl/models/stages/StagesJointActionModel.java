@@ -12,28 +12,28 @@ import gui.PhysicalGameStatePanel;
 import rts.GameState;
 import rts.PlayerAction;
 
-public class MicroRTSJointActionModel implements JointModel {
+public class StagesJointActionModel implements JointModel {
 	
 	Map<String, AI> actions;
 	
-	public MicroRTSJointActionModel(Map<String, AI> actions) {
+	public StagesJointActionModel(Map<String, AI> actions) {
 		this.actions = actions;
 	}
 	
 
 	@Override
 	public State sample(State s, JointAction ja) {
-		MicroRTSState state = (MicroRTSState)s;
+		GameStage state = (GameStage)s;
 		
 		GameState gameState = state.getUnderlyingState().clone();
-		GameStage currentStage = state.getStage();
+		GameStages currentStage = state.getStage();
 		
 		boolean gameOver = false;
 		boolean changedStage = false;	//stores whether game has advanced a stage
 		
 		//JFrame w = PhysicalGameStatePanel.newVisualizer(gameState, 640, 640, false, PhysicalGameStatePanel.COLORSCHEME_BLACK);
 		
-		long nextTimeToUpdate = System.currentTimeMillis() + MicroRTSGame.PERIOD;
+		long nextTimeToUpdate = System.currentTimeMillis() + StagesDomainGenerator.PERIOD;
 		
 		//instantiates the AIs that players selected (clones the objects)
 		AI ai1 = actions.get(ja.action(0).actionName()).clone();
@@ -65,10 +65,10 @@ public class MicroRTSJointActionModel implements JointModel {
 				//w.repaint();
 				
 				//checks whether game has advanced to a new stage
-				changedStage = currentStage != MicroRTSState.frameToStage(gameState.getTime()); 
+				changedStage = currentStage != GameStage.frameToStage(gameState.getTime()); 
 				
 				//w.repaint();
-				nextTimeToUpdate += MicroRTSGame.PERIOD;
+				nextTimeToUpdate += StagesDomainGenerator.PERIOD;
 			/*} else {
 				try {
 					Thread.sleep(1);
@@ -76,10 +76,10 @@ public class MicroRTSJointActionModel implements JointModel {
 					e.printStackTrace();
 				}
 			}*/
-		} while (!gameOver && !changedStage && gameState.getTime() < MicroRTSGame.MAXCYCLES);
+		} while (!gameOver && !changedStage && gameState.getTime() < StagesDomainGenerator.MAXCYCLES);
 		
 		//returns the new State associated with current underlying game state
-		return new MicroRTSState(gameState); 
+		return new GameStage(gameState); 
 		
 	}
 
