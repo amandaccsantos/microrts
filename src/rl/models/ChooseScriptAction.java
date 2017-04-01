@@ -1,4 +1,4 @@
-package rl.models.stages;
+package rl.models;
 
 import ai.abstraction.BuildBarracks;
 import ai.abstraction.Expand;
