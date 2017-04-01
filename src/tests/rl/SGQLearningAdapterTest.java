@@ -116,6 +116,11 @@ public class SGQLearningAdapterTest {
 	public void testSaveKnowledge() throws FileNotFoundException {
 		//if loadKnowledge is working properly, saveKnowledge should yield the same file
 		
+		/* 
+		 * TODO test whether knowledge loaded from the saved file is equivalent to the 
+		 * one before saving instead of exact file content
+		 */
+		
 		String tmpQTableFile = "/tmp/test-save-knowledge-sgql.yaml";
 		sgql.loadKnowledge(EXAMPLE_QTABLE_FILE);
 		sgql.saveKnowledge(tmpQTableFile);

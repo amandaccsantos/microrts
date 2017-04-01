@@ -19,82 +19,22 @@
     s: *id001
   s: *id002
 ? &id009 !!burlap.statehashing.simple.IDSimpleHashableState
-  s: &id004 !!rl.models.stages.GameStage {stage: MID}
-: !!burlap.behavior.singleagent.learning.tdmethods.QLearningStateNode
-  qEntry:
-  - a: *id003
-    q: 1.0
-    s: *id004
-  - a: *id005
-    q: 1.0
-    s: *id004
-  - a: *id006
-    q: 1.0
-    s: *id004
-  - a: *id007
-    q: 1.0
-    s: *id004
-  - a: *id008
-    q: 1.0
-    s: *id004
-  s: *id009
-? &id011 !!burlap.statehashing.simple.IDSimpleHashableState
-  s: &id010 !!rl.models.stages.GameStage {stage: END}
-: !!burlap.behavior.singleagent.learning.tdmethods.QLearningStateNode
-  qEntry:
-  - a: *id003
-    q: 1.0
-    s: *id010
-  - a: *id005
-    q: 1.0
-    s: *id010
-  - a: *id006
-    q: 1.0
-    s: *id010
-  - a: *id007
-    q: 1.0
-    s: *id010
-  - a: *id008
-    q: 1.0
-    s: *id010
-  s: *id011
-? &id013 !!burlap.statehashing.simple.IDSimpleHashableState
-  s: &id012 !!rl.models.stages.GameStage {stage: EARLY}
+  s: &id004 !!rl.models.stages.GameStage {stage: EARLY}
 : !!burlap.behavior.singleagent.learning.tdmethods.QLearningStateNode
   qEntry:
   - a: *id003
     q: 0.5
-    s: *id012
+    s: *id004
   - a: *id005
     q: 0.0
-    s: *id012
+    s: *id004
   - a: *id006
     q: 0.6
-    s: *id012
+    s: *id004
   - a: *id007
     q: 0.3
-    s: *id012
+    s: *id004
   - a: *id008
     q: -0.1
-    s: *id012
-  s: *id013
-? &id015 !!burlap.statehashing.simple.IDSimpleHashableState
-  s: &id014 !!rl.models.stages.GameStage {stage: LATE}
-: !!burlap.behavior.singleagent.learning.tdmethods.QLearningStateNode
-  qEntry:
-  - a: *id003
-    q: 1.0
-    s: *id014
-  - a: *id005
-    q: 1.0
-    s: *id014
-  - a: *id006
-    q: 1.0
-    s: *id014
-  - a: *id007
-    q: 1.0
-    s: *id014
-  - a: *id008
-    q: 1.0
-    s: *id014
-  s: *id015
+    s: *id004
+  s: *id009
