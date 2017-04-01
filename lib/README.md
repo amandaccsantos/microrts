@@ -1,6 +1,9 @@
-You must use SCPSolver and LBSOLVESolverPack from this directory to
-use PersistentMultiAgentQLearning without running into SIGSEGV on
-JVM.
+Please add all .lib files in this directory into your build path.
+Otherwise you may face some problems.
+
+Besides, you must use SCPSolver and LBSOLVESolverPack from this directory 
+(instead of BURLAP's defaults) in order to use PersistentMultiAgentQLearning 
+without running into SIGSEGV on the JVM.
 
 Please follow these steps:
 
