@@ -10,5 +10,6 @@
 	<classpathentry kind="lib" path="lib/burlap-3.0.1-jar-with-dependencies.jar" sourcepath="lib/burlap-3.0.1-sources.jar"/>
 	<classpathentry kind="lib" path="lib/SCPSolver.jar"/>
 	<classpathentry kind="lib" path="lib/LPSOLVESolverPack.jar"/>
+	<classpathentry kind="lib" path="lib/commons-cli-1.4.jar" sourcepath="lib/commons-cli-1.4-sources.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
