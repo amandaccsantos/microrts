@@ -1,4 +1,4 @@
-package ai.metabot.learning.model;
+package rl.models.stages;
 
 import burlap.mdp.core.state.State;
 import burlap.mdp.stochasticgames.JointAction;

@@ -13,10 +13,6 @@ import org.jdom.JDOMException;
 
 import ai.abstraction.LightRush;
 import ai.metabot.DummyPolicy;
-import ai.metabot.learning.model.MicroRTSGame;
-import ai.metabot.learning.model.MicroRTSJointRewardFunction;
-import ai.metabot.learning.model.MicroRTSState;
-import ai.metabot.learning.model.MicroRTSTerminalFunction;
 import burlap.behavior.singleagent.auxiliary.StateReachability;
 import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.behavior.singleagent.learning.tdmethods.QLearning;
@@ -45,7 +41,11 @@ import burlap.statehashing.simple.SimpleHashableStateFactory;
 import burlap.visualizer.Visualizer;
 import rl.adapters.learners.PersistentMultiAgentQLearning;
 import rl.adapters.learners.SGQLearningAdapter;
-import rl.models.GameStagesDomain;
+import rl.models.stages.GameStagesDomain;
+import rl.models.stages.MicroRTSGame;
+import rl.models.stages.MicroRTSJointRewardFunction;
+import rl.models.stages.MicroRTSState;
+import rl.models.stages.MicroRTSTerminalFunction;
 
 /**
  * An example of the Algorithm Selection Metagame in microRTS

@@ -4,14 +4,14 @@ import java.io.IOException;
 
 import org.jdom.JDOMException;
 
-import ai.metabot.learning.model.MicroRTSGame;
-import ai.metabot.learning.model.MicroRTSJointRewardFunction;
-import ai.metabot.learning.model.MicroRTSTerminalFunction;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.stochasticgames.SGDomain;
 import burlap.mdp.stochasticgames.model.JointRewardFunction;
 import burlap.mdp.stochasticgames.world.World;
-import rl.models.GameStagesDomain;
+import rl.models.stages.GameStagesDomain;
+import rl.models.stages.MicroRTSGame;
+import rl.models.stages.MicroRTSJointRewardFunction;
+import rl.models.stages.MicroRTSTerminalFunction;
 
 /**
  * Concentrates different World models

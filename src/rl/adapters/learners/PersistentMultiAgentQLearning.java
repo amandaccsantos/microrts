@@ -22,8 +22,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import org.yaml.snakeyaml.Yaml;
 
-import ai.metabot.learning.model.MicroRTSGame;
-import ai.metabot.learning.model.MicroRTSState;
 import burlap.behavior.learningrate.LearningRate;
 import burlap.behavior.singleagent.auxiliary.StateEnumerator;
 import burlap.behavior.singleagent.auxiliary.StateReachability;
@@ -43,6 +41,8 @@ import burlap.statehashing.HashableStateFactory;
 import rl.AbstractionModels;
 import rl.RLParamNames;
 import rl.adapters.domain.EnumerableSGDomain;
+import rl.models.stages.MicroRTSGame;
+import rl.models.stages.MicroRTSState;
 
 /**
  * Extends {@link MultiAgentQLearning} class by implementing {@link PersistentLearner}

@@ -9,8 +9,6 @@ import java.util.Scanner;
 import org.junit.Before;
 import org.junit.Test;
 
-import ai.metabot.learning.model.GameStage;
-import ai.metabot.learning.model.MicroRTSState;
 import burlap.behavior.singleagent.learning.tdmethods.QLearning;
 import burlap.behavior.valuefunction.QValue;
 import burlap.mdp.core.action.Action;
@@ -19,6 +17,8 @@ import burlap.mdp.stochasticgames.world.World;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
 import rl.AbstractionModels;
 import rl.adapters.learners.SGQLearningAdapter;
+import rl.models.stages.GameStage;
+import rl.models.stages.MicroRTSState;
 
 public class SGQLearningAdapterTest {
 	

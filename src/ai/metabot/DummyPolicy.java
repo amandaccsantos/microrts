@@ -11,7 +11,6 @@ import ai.abstraction.LightRush;
 import ai.abstraction.RangedRush;
 import ai.abstraction.WorkerRush;
 import ai.core.AI;
-import ai.metabot.learning.model.MicroRTSState;
 import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.learning.tdmethods.QLearning;
 import burlap.behavior.valuefunction.QValue;
@@ -19,6 +18,7 @@ import burlap.mdp.core.action.Action;
 import burlap.mdp.core.action.UniversalActionType;
 import burlap.mdp.core.state.State;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
+import rl.models.stages.MicroRTSState;
 import rts.units.UnitTypeTable;
 
 /**

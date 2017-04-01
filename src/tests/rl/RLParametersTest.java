@@ -13,7 +13,6 @@ import org.junit.Test;
 import org.xml.sax.SAXException;
 
 import ai.metabot.DummyPolicy;
-import ai.metabot.learning.model.MicroRTSGame;
 import burlap.behavior.learningrate.LearningRate;
 import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.MDPSolver;
@@ -25,6 +24,7 @@ import rl.RLParamNames;
 import rl.RLParameters;
 import rl.adapters.learners.PersistentMultiAgentQLearning;
 import rl.adapters.learners.SGQLearningAdapter;
+import rl.models.stages.MicroRTSGame;
 
 public class RLParametersTest {
 

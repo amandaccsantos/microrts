@@ -1,4 +1,4 @@
-package ai.metabot.learning.model;
+package rl.models.stages;
 
 import ai.abstraction.BuildBarracks;
 import ai.abstraction.Expand;

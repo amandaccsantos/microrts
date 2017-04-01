@@ -12,8 +12,6 @@ import java.util.Scanner;
 import org.junit.Before;
 import org.junit.Test;
 
-import ai.metabot.learning.model.GameStage;
-import ai.metabot.learning.model.MicroRTSState;
 import burlap.behavior.stochasticgames.madynamicprogramming.backupOperators.MinMaxQ;
 import burlap.debugtools.DPrint;
 import burlap.mdp.core.action.Action;
@@ -25,6 +23,8 @@ import burlap.statehashing.simple.SimpleHashableStateFactory;
 import rl.AbstractionModels;
 import rl.adapters.domain.EnumerableSGDomain;
 import rl.adapters.learners.PersistentMultiAgentQLearning;
+import rl.models.stages.GameStage;
+import rl.models.stages.MicroRTSState;
 
 public class PersistentMultiAgentQLearningTest {
 

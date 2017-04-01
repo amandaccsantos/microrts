@@ -1,4 +1,4 @@
-package rl.models;
+package rl.models.stages;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -13,8 +13,6 @@ import ai.abstraction.LightRush;
 import ai.abstraction.RangedRush;
 import ai.abstraction.WorkerRush;
 import ai.core.AI;
-import ai.metabot.learning.model.MicroRTSJointActionModel;
-import ai.metabot.learning.model.MicroRTSState;
 import burlap.mdp.core.action.UniversalActionType;
 import burlap.mdp.core.state.State;
 import rl.adapters.domain.EnumerableSGDomain;

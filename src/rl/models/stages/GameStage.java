@@ -1,4 +1,4 @@
-package ai.metabot.learning.model;
+package rl.models.stages;
 
 public enum GameStage{
 	OPENING, 	//0 - 599 frames
