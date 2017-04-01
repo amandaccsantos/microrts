@@ -100,7 +100,10 @@ public class SGQLearningAdapterTest {
 			}
 			
 			for (QValue q : qLearner.qValues(s)) {
-				assertEquals(1.0, q.q, 0.00001);
+				assertEquals(
+					String.format("state %s / action %s", s, q.a), 
+					1.0, q.q, 0.00001
+				);
 			}
 		}
 	}
