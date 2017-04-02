@@ -204,4 +204,9 @@ public class AggregateState extends GameStage{
 		return true;
 	}
 
+	public static List<AggregateState> enumerate(){
+		
+		
+		return null;
+	}
 }

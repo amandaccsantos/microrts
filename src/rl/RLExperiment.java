@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -94,7 +95,7 @@ public class RLExperiment {
 		PrintWriter output = null;
 		
 		try {
-			output = new PrintWriter(new BufferedWriter(new FileWriter("output.txt", false)));
+			output = new PrintWriter(new BufferedWriter(new FileWriter(outDir + "/output.txt", false)));
 			for (int episodeNumber = 0; episodeNumber < numEpisodes; episodeNumber++) {
 				GameEpisode episode = gameWorld.runGame();
 				episodes.add(episode);
@@ -126,7 +127,7 @@ public class RLExperiment {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		output.close();
+		
 
 		// finished training
 		System.out.println("\nTraining finished"); // has leading \n because previous print has no trailing \n
@@ -151,14 +152,9 @@ public class RLExperiment {
             }
 		}
 		
-		
-		/*try {
-			Runtime.getRuntime().exec("python python/plot_actions.py");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		System.out.println("Plot finished.");*/
+		//prints results for final episode
+		printEpisodeInfo(episodes.size() - 1, episodes.get(episodes.size() - 1), outDir + "/final_episode.txt");
+		//printEpisodesInfo(episodes, outDir + "/episodes.txt"); 
 	}
 
 	private static CommandLine processCommandLine(String[] args) {
@@ -187,6 +183,39 @@ public class RLExperiment {
 		
 		return line;
 		
+	}
+	
+	private static void printEpisodesInfo(List<GameEpisode> episodes, String path){
+		
+		for(int i = 0; i < episodes.size(); i++){
+			printEpisodeInfo(i, episodes.get(i), path);
+		}
+	}
+	
+	private static void printEpisodeInfo(int episodeNumber, GameEpisode episode, String path){
+		PrintWriter out;
+		try {
+			out = new PrintWriter(new BufferedWriter(new FileWriter(path, true)));
+		} catch (IOException e) {
+			e.printStackTrace();
+			return;
+		}
+		
+		out.println("Episode " + episodeNumber);
+		out.println("Duration: " + episode.numTimeSteps());
+		out.println("States visited: " + episode.states.size());
+		
+		/*for(State s : episode.states){
+			out.println("state: " + s);
+		}
+		*/
+		List<double[]> jointRewards = episode.jointRewards;
+		double[] finalRewards = jointRewards.get(jointRewards.size() -1);
+		
+		// Locale.ROOT ensures the use of '.' as decimal separator
+		out.println(String.format(Locale.ROOT, "Final rewards: %f,%f", finalRewards[0], finalRewards[1] ));
+		
+		out.close();
 	}
 
 }

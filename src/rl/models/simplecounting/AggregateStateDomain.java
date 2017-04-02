@@ -37,10 +37,4 @@ public class AggregateStateDomain extends GameStagesDomain {
 		return new AggregateState(gs);
 	}
 
-	@Override
-	public List<? extends State> enumerate() {
-		//TODO implement enumerate!
-		return null; //GameStage.allStates();
-	}
-
 }
