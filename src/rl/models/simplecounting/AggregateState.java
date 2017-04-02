@@ -180,7 +180,7 @@ public class AggregateState extends GameStage{
 	public String keysToString(){
 		String ret = "";
 		for(Object key : variableKeys()){
-			ret += key + ";";
+			ret += key + ",";
 		}
 		return ret;
 	}

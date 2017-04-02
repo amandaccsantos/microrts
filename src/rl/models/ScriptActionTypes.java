@@ -17,11 +17,11 @@ import rts.units.UnitTypeTable;
 public class ScriptActionTypes {
 	
 	//action names
-		public static final String WORKER_RUSH = WorkerRush.class.getSimpleName();
-		public static final String LIGHT_RUSH = LightRush.class.getSimpleName();
-		public static final String RANGED_RUSH = RangedRush.class.getSimpleName();
-		public static final String EXPAND = Expand.class.getSimpleName();
-		public static final String BUILD_BARRACKS = BuildBarracks.class.getSimpleName();
+	public static final String WORKER_RUSH = WorkerRush.class.getSimpleName();
+	public static final String LIGHT_RUSH = LightRush.class.getSimpleName();
+	public static final String RANGED_RUSH = RangedRush.class.getSimpleName();
+	public static final String EXPAND = Expand.class.getSimpleName();
+	public static final String BUILD_BARRACKS = BuildBarracks.class.getSimpleName();
 
 	
 	public static List<UniversalActionType> getActionTypes() {
@@ -36,6 +36,27 @@ public class ScriptActionTypes {
 		return actionTypes;
 	}
 	
+	/**
+	 * Returns a map from action names to {@link UniversalActionType}
+	 * @return
+	 */
+	public static Map<String, UniversalActionType> getMapToActionTypes() {
+		Map<String, UniversalActionType> actionTypeMap = new HashMap<>();
+		 
+		actionTypeMap.put(WORKER_RUSH, new UniversalActionType(WORKER_RUSH));
+		actionTypeMap.put(LIGHT_RUSH, new UniversalActionType(LIGHT_RUSH));
+		actionTypeMap.put(RANGED_RUSH, new UniversalActionType(RANGED_RUSH));
+		actionTypeMap.put(EXPAND, new UniversalActionType(EXPAND));
+		actionTypeMap.put(BUILD_BARRACKS, new UniversalActionType(BUILD_BARRACKS));
+		
+		return actionTypeMap;
+	}
+	
+	/**
+	 * Returns a map from action names to actual microRTS scripts, i.e., {@link AI}
+	 * @param unitTypeTable
+	 * @return
+	 */
 	public static Map<String, AI> getActionMapping(UnitTypeTable unitTypeTable){
 		Map<String, AI> actions = new HashMap<>();
 		
