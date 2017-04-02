@@ -1,4 +1,4 @@
-package tests.rl;
+package tests.rl.adapters.learners;
 
 import static org.junit.Assert.*;
 
