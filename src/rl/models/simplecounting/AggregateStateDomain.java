@@ -1,4 +1,4 @@
-package rl.models.stages;
+package rl.models.simplecounting;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -16,59 +16,39 @@ import ai.core.AI;
 import burlap.mdp.core.action.UniversalActionType;
 import burlap.mdp.core.state.State;
 import rl.adapters.domain.EnumerableSGDomain;
+import rl.models.stages.GameStagesDomain;
 import rts.GameState;
 import rts.PhysicalGameState;
 import rts.units.UnitTypeTable;
 
-public class GameStagesDomain extends EnumerableSGDomain {
+public class AggregateStateDomain extends GameStagesDomain {
 
-	//action names
-	public static final String WORKER_RUSH = WorkerRush.class.getSimpleName();
-	public static final String LIGHT_RUSH = LightRush.class.getSimpleName();
-	public static final String RANGED_RUSH = RangedRush.class.getSimpleName();
-	public static final String EXPAND = Expand.class.getSimpleName();
-	public static final String BUILD_BARRACKS = BuildBarracks.class.getSimpleName();
-	
-	//some game parameters
-	public static final int MAXCYCLES = 3000;
-	public static final int PERIOD = 20;
-	
-	protected UnitTypeTable unitTypeTable;
-	protected PhysicalGameState physicalGameState;
-	protected GameState gs;
 	
 	/**
 	 * Creates a default domain loading map maps/basesWorkers24x24.xml of microRTS
 	 * @throws JDOMException
 	 * @throws IOException
 	 */
-	public GameStagesDomain() throws JDOMException, IOException {
+	public AggregateStateDomain() throws JDOMException, IOException {
 		this("maps/basesWorkers24x24.xml");
 		
 	}
 	
-	public GameStagesDomain(String pathToMap) throws JDOMException, IOException{
-		unitTypeTable = new UnitTypeTable();
-		physicalGameState = PhysicalGameState.load(pathToMap, unitTypeTable);
-
-		gs = new GameState(physicalGameState, unitTypeTable);
-		
-		this.addActionType(new UniversalActionType(WORKER_RUSH))
-			.addActionType(new UniversalActionType(LIGHT_RUSH))
-			.addActionType(new UniversalActionType(RANGED_RUSH))
-			.addActionType(new UniversalActionType(EXPAND))
-			.addActionType(new UniversalActionType(BUILD_BARRACKS));
+	public AggregateStateDomain(String pathToMap) throws JDOMException, IOException{
+		super(pathToMap);
 	
 		//creates a map string -> AI for the joint action model
+		//TODO encapsulate this code in a different class to be reused several times
 		Map<String, AI> actions = new HashMap<>();	//actions correspond to selection of a behavior
 		actions.put(WorkerRush.class.getSimpleName(), new WorkerRush(unitTypeTable));
 		actions.put(LightRush.class.getSimpleName(), new LightRush(unitTypeTable));
 		actions.put(RangedRush.class.getSimpleName(), new RangedRush(unitTypeTable));
 		actions.put(Expand.class.getSimpleName(), new Expand(unitTypeTable));
 		actions.put(BuildBarracks.class.getSimpleName(), new BuildBarracks(unitTypeTable));
-	
+		// end todo encapsulate
+		
 		//sets the joint action model containing the valid actions
-		setJointActionModel(new StagesJointActionModel(actions));
+		setJointActionModel(new AggregateStateJAM(actions));
 	}
 	
 	/**
@@ -76,12 +56,13 @@ public class GameStagesDomain extends EnumerableSGDomain {
 	 * @return
 	 */
 	public State getInitialState(){
-		return new GameStage(gs);
+		return new AggregateState(gs);
 	}
 
 	@Override
 	public List<? extends State> enumerate() {
-		return GameStage.allStates();
+		//TODO implement enumerate!
+		return null; //GameStage.allStates();
 	}
 
 }

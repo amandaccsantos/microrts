@@ -24,7 +24,7 @@ public class GameStage implements State{
 	/**
 	 * The underlying game state related to this state
 	 */
-	GameState gameState;
+	protected GameState gameState;
 	
 	/**
 	 * An attempt to make the object serializable 
