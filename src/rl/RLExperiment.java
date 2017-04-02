@@ -49,6 +49,10 @@ public class RLExperiment {
 			);
 			System.exit(0);
 		}
+		
+		// checks for the quiet parameter
+		boolean quiet = cmdLine.hasOption("quiet");
+		
 		// loads parameters from file
 		Map<String, Object> parameters = null;
 
@@ -98,21 +102,24 @@ public class RLExperiment {
 				System.out.print(String.format("\rEpisode #%7d finished.", episodeNumber));
 			
 				// writes episode data and q-values
-				episode.write(String.format("%s/episode_%d", outDir, episodeNumber));
-				for (PersistentLearner agent : agents) {
-					agent.saveKnowledge(String.format("%s/q_%s_%d.txt", outDir, agent.agentName(), episodeNumber));
-				}
+				if (!quiet){
+					episode.write(String.format("%s/episode_%d", outDir, episodeNumber));
+					for (PersistentLearner agent : agents) {
+						agent.saveKnowledge(String.format("%s/q_%s_%d.txt", outDir, agent.agentName(), episodeNumber));
+					}
 				
-				EnumerableSGDomain enumDomain = (EnumerableSGDomain) gameWorld.getDomain();
-				for (State s : enumDomain.enumerate()) {
-                	for (PersistentLearner agent : agents) {
-                		QLearning qLearner = (QLearning) ((SGQLearningAdapter) agent).getSingleAgentLearner();
-	                    output.println(String.format("%s: %.3f", s, qLearner.value(s)));
-	                    for (QValue q : qLearner.qValues(s)) {
-	                        output.println(String.format("%s: %.3f", q.a, q.q));
-	                    }
-                	}
-                }
+				
+					EnumerableSGDomain enumDomain = (EnumerableSGDomain) gameWorld.getDomain();
+					for (State s : enumDomain.enumerate()) {
+	                	for (PersistentLearner agent : agents) {
+	                		QLearning qLearner = (QLearning) ((SGQLearningAdapter) agent).getSingleAgentLearner();
+		                    output.println(String.format("%s: %.3f", s, qLearner.value(s)));
+		                    for (QValue q : qLearner.qValues(s)) {
+		                        output.println(String.format("%s: %.3f", q.a, q.q));
+		                    }
+	                	}
+	                }
+				}
 				
 			}
 		} catch (IOException e1) {
@@ -124,6 +131,27 @@ public class RLExperiment {
 		// finished training
 		System.out.println("\nTraining finished"); // has leading \n because previous print has no trailing \n
 
+		// if I did not print during training, print now:
+		if(quiet){
+			//episode.write(String.format("%s/episode_%d", outDir, episodeNumber));
+			for (PersistentLearner agent : agents) {
+				agent.saveKnowledge(String.format("%s/q_%s_final.txt", outDir, agent.agentName()));
+			}
+		
+		
+			EnumerableSGDomain enumDomain = (EnumerableSGDomain) gameWorld.getDomain();
+			for (State s : enumDomain.enumerate()) {
+            	for (PersistentLearner agent : agents) {
+            		QLearning qLearner = (QLearning) ((SGQLearningAdapter) agent).getSingleAgentLearner();
+                    output.println(String.format("%s: %.3f", s, qLearner.value(s)));
+                    for (QValue q : qLearner.qValues(s)) {
+                        output.println(String.format("%s: %.3f", q.a, q.q));
+                    }
+            	}
+            }
+		}
+		
+		
 		/*try {
 			Runtime.getRuntime().exec("python python/plot_actions.py");
 		} catch (IOException e) {
@@ -139,6 +167,8 @@ public class RLExperiment {
 
 		options.addOption("c", RLParamNames.CONFIG_FILE, true, "Path to configuration file.");
 		options.addOption("o", RLParamNames.OUTPUT_DIR, true, "Directory to generate output.");
+		options.addOption("q", "quiet", false, "Don't generate enormous ammount of files");
+		
 		
 		CommandLine line = null;
 		CommandLineParser parser = new DefaultParser();
