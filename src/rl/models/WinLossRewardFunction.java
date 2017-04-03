@@ -3,7 +3,6 @@ package rl.models;
 import burlap.mdp.core.state.State;
 import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.model.JointRewardFunction;
-import rl.models.stages.GameStage;
 import rts.GameState;
 
 public class WinLossRewardFunction implements JointRewardFunction {
@@ -13,7 +12,7 @@ public class WinLossRewardFunction implements JointRewardFunction {
 	 * Reward is zero for draws and non-terminals; otherwise +1 for victory, -1 for defeat
 	 */
 	public double[] reward(State s, JointAction ja, State sp) {
-		GameStage resultingState = (GameStage) sp;
+		MicroRTSState resultingState = (MicroRTSState) sp;
 		GameState underlyingState = resultingState.getUnderlyingState();
 		if (! underlyingState.gameover()) {
 			return new double[]{0, 0};
