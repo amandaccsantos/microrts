@@ -33,6 +33,7 @@ import burlap.statehashing.simple.SimpleHashableStateFactory;
 import rl.adapters.learners.PersistentLearner;
 import rl.adapters.learners.PersistentMultiAgentQLearning;
 import rl.adapters.learners.SGQLearningAdapter;
+import rl.models.common.MicroRTSRewardFactory;
 
 
 /**
@@ -125,8 +126,10 @@ public class RLParameters {
 		
 		params.put(RLParamNames.OUTPUT_DIR, "/tmp/rl-experiment/");
 		
+		params.put(RLParamNames.REWARD_FUNCTION, MicroRTSRewardFactory.WIN_LOSS);
+		
 		//instantiates the default world:
-		World defaultWorld = AbstractionModels.stages();
+		World defaultWorld = WorldFactory.stages();
 		params.put(RLParamNames.ABSTRACTION_MODEL, defaultWorld);
 		
 		//adds the default players - their params: discount, StateFactory, defaultQ, learning rate
@@ -192,7 +195,7 @@ public class RLParameters {
 					}
 					//if node is 'abstraction-model', retrieves the appropriate model
 					else if(param.getNodeName().equals(RLParamNames.ABSTRACTION_MODEL)){
-						params.put(param.getNodeName(), AbstractionModels.fromString(e.getAttribute("value")));
+						params.put(param.getNodeName(), WorldFactory.fromString(e.getAttribute("value")));
 					}
 					else {	//parameter is an ordinary string (probably)
 						params.put(param.getNodeName(), e.getAttribute("value"));

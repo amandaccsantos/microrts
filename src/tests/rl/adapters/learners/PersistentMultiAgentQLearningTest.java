@@ -20,7 +20,7 @@ import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.mdp.stochasticgames.world.World;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
-import rl.AbstractionModels;
+import rl.WorldFactory;
 import rl.adapters.domain.EnumerableSGDomain;
 import rl.adapters.learners.PersistentMultiAgentQLearning;
 import rl.models.stages.GameStages;
@@ -38,7 +38,7 @@ public class PersistentMultiAgentQLearningTest {
 	@Before
 	public void setUp() throws Exception {
 		
-		microRTSStages = AbstractionModels.stages();
+		microRTSStages = WorldFactory.stages();
 		
 		//agent to be tested
 		player = new PersistentMultiAgentQLearning(

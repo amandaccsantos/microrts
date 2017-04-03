@@ -38,7 +38,7 @@ import burlap.mdp.stochasticgames.SGDomain;
 import burlap.mdp.stochasticgames.agent.SGAgent;
 import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.statehashing.HashableStateFactory;
-import rl.AbstractionModels;
+import rl.WorldFactory;
 import rl.RLParamNames;
 import rl.adapters.domain.EnumerableSGDomain;
 import rl.models.stages.StagesDomainGenerator;

@@ -15,7 +15,7 @@ import burlap.mdp.core.action.Action;
 import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.mdp.stochasticgames.world.World;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
-import rl.AbstractionModels;
+import rl.WorldFactory;
 import rl.adapters.learners.SGQLearningAdapter;
 import rl.models.stages.GameStages;
 import rl.models.stages.GameStage;
@@ -28,7 +28,7 @@ public class SGQLearningAdapterTest {
 	
 	@Before
 	public void setUp(){
-		world = AbstractionModels.stages();
+		world = WorldFactory.stages();
 		
 		QLearning ql = new QLearning(
 			null, 0.9, new SimpleHashableStateFactory(false), 

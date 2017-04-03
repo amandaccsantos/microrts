@@ -5,6 +5,7 @@ public class RLParamNames {
 	public static final String EPISODES = "episodes";
 	public static final String GAME_DURATION = "game-duration";
 	public static final String ABSTRACTION_MODEL = "abstraction-model";
+	public static final String REWARD_FUNCTION = "reward-function";
 	
 	public static final String DISCOUNT = "discount";
 	public static final String LEARNING_RATE = "learning-rate";

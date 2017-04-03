@@ -13,22 +13,25 @@ import rl.models.simplecounting.AggregateStateDomain;
 import rl.models.stages.GameStagesDomain;
 
 /**
- * Concentrates different World models
+ * Utility class to load world models from their names
  * @author anderson
  *
  */
-public class AbstractionModels {
+public class WorldFactory {
 
 	
+	public final static String STAGES = "stages";
+	public final static String AGGREGATE = "aggregate";
+	
 	public static World fromString(String model){
-		if(model.equalsIgnoreCase("stages")){
+		if(model.equalsIgnoreCase(STAGES)){
 			return stages();
 		}
-		else if(model.equalsIgnoreCase("aggregate")){
+		else if(model.equalsIgnoreCase(AGGREGATE)){
 			return aggregateStateFeatures();
 		}
 		
-		throw new RuntimeException("Unknown abstraction model: " + model);
+		throw new RuntimeException("Unrecognized world name: " + model);
 	}
 	
 	/**
