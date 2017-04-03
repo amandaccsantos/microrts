@@ -1,4 +1,4 @@
-package rl.models;
+package rl.models.common;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -1,4 +1,4 @@
-package rl.models;
+package rl.models.common;
 
 import ai.abstraction.BuildBarracks;
 import ai.abstraction.Expand;

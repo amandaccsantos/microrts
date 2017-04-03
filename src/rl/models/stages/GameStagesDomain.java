@@ -8,7 +8,7 @@ import org.jdom.JDOMException;
 import burlap.mdp.core.action.UniversalActionType;
 import burlap.mdp.core.state.State;
 import rl.adapters.domain.EnumerableSGDomain;
-import rl.models.ScriptActionTypes;
+import rl.models.common.ScriptActionTypes;
 import rts.GameState;
 import rts.PhysicalGameState;
 import rts.units.UnitTypeTable;

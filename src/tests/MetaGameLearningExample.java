@@ -43,8 +43,8 @@ import rl.adapters.learners.PersistentMultiAgentQLearning;
 import rl.adapters.learners.SGQLearningAdapter;
 import rl.models.stages.GameStagesDomain;
 import rl.models.stages.StagesDomainGenerator;
-import rl.models.MicroRTSTerminalFunction;
-import rl.models.WinLossRewardFunction;
+import rl.models.common.MicroRTSTerminalFunction;
+import rl.models.common.WinLossRewardFunction;
 import rl.models.stages.GameStage;
 
 /**

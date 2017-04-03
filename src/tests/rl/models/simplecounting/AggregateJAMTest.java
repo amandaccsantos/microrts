@@ -16,7 +16,7 @@ import burlap.mdp.core.action.Action;
 import burlap.mdp.core.action.UniversalActionType;
 import burlap.mdp.core.state.State;
 import burlap.mdp.stochasticgames.JointAction;
-import rl.models.ScriptActionTypes;
+import rl.models.common.ScriptActionTypes;
 import rl.models.simplecounting.AggregateState;
 import rl.models.simplecounting.AggregateStateJAM;
 import rl.models.stages.GameStage;

@@ -1,4 +1,4 @@
-package rl.models;
+package rl.models.common;
 
 import burlap.mdp.core.state.State;
 import burlap.mdp.stochasticgames.JointAction;

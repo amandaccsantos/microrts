@@ -1,4 +1,4 @@
-package rl.models;
+package rl.models.common;
 
 import ai.evaluation.SimpleSqrtEvaluationFunction;
 import burlap.mdp.core.state.State;

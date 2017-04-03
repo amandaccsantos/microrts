@@ -29,7 +29,7 @@ import burlap.mdp.stochasticgames.world.World;
 import rl.adapters.domain.EnumerableSGDomain;
 import rl.adapters.learners.PersistentLearner;
 import rl.adapters.learners.SGQLearningAdapter;
-import rl.models.MicroRTSState;
+import rl.models.common.MicroRTSState;
 
 /**
  * Manages a Reinforcement Learning experiment in microRTS The RL experiment has

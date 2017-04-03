@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import burlap.mdp.core.state.State;
-import rl.models.MicroRTSState;
+import rl.models.common.MicroRTSState;
 import rts.GameState;
 
 public class GameStage extends MicroRTSState{

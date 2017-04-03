@@ -6,7 +6,7 @@ import java.util.List;
 import org.jdom.JDOMException;
 
 import burlap.mdp.core.state.State;
-import rl.models.ScriptActionTypes;
+import rl.models.common.ScriptActionTypes;
 import rl.models.stages.GameStagesDomain;
 
 /**

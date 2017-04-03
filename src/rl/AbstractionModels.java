@@ -7,8 +7,8 @@ import org.jdom.JDOMException;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.stochasticgames.model.JointRewardFunction;
 import burlap.mdp.stochasticgames.world.World;
-import rl.models.MicroRTSTerminalFunction;
-import rl.models.WinLossRewardFunction;
+import rl.models.common.MicroRTSTerminalFunction;
+import rl.models.common.WinLossRewardFunction;
 import rl.models.simplecounting.AggregateStateDomain;
 import rl.models.stages.GameStagesDomain;
 
