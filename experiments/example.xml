@@ -1,6 +1,5 @@
 <!-- 
- This file is associated with tests.rl.RLParametersTest, only change it 
- if you're going to update the test. Otherwise, the test will crash.
+ This is an example file of experiment specification
 -->
  
 <experiment>
@@ -8,7 +7,7 @@
 		<episodes value="100" />
 		<game-duration value="3000" /> <!-- has no effect yet -->
 		<abstraction-model value="stages" />
-
+		<reward-function value="winloss" />
 	</parameters>
 
 	<player name="learner" type="QLearning">
