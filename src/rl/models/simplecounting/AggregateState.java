@@ -103,7 +103,7 @@ public class AggregateState extends GameStage{
 	 */
 	public int countUnits(String unitTypeName, int playerID){
 		int count = 0;
-		for(Unit u : gameState.getUnits()){
+		for(Unit u : underlyingState.getUnits()){
 			if(u.getType().name.equals(unitTypeName)) {
 				count++;
 			}
@@ -119,14 +119,14 @@ public class AggregateState extends GameStage{
 			keys = super.variableKeys();
 			
 			// adds keys for each player feature, key is playerID;feature
-			for(Player player : gameState.getPhysicalGameState().getPlayers()){
-				keys.add(String.format("%d;%s", player.getID(), KEY_WORKERS));
-				keys.add(String.format("%d;%s", player.getID(), KEY_LIGHT));
-				keys.add(String.format("%d;%s", player.getID(), KEY_RANGED));
-				keys.add(String.format("%d;%s", player.getID(), KEY_HEAVY));
-				keys.add(String.format("%d;%s", player.getID(), KEY_BASES));
-				keys.add(String.format("%d;%s", player.getID(), KEY_BARRACKS));
-				keys.add(String.format("%d;%s", player.getID(), KEY_RESOURCES));
+			for(Player player : underlyingState.getPhysicalGameState().getPlayers()){
+				keys.add(String.format("%d-%s", player.getID(), KEY_WORKERS));
+				keys.add(String.format("%d-%s", player.getID(), KEY_LIGHT));
+				keys.add(String.format("%d-%s", player.getID(), KEY_RANGED));
+				keys.add(String.format("%d-%s", player.getID(), KEY_HEAVY));
+				keys.add(String.format("%d-%s", player.getID(), KEY_BASES));
+				keys.add(String.format("%d-%s", player.getID(), KEY_BARRACKS));
+				keys.add(String.format("%d-%s", player.getID(), KEY_RESOURCES));
 			}
 		}
 		return keys;
@@ -142,7 +142,7 @@ public class AggregateState extends GameStage{
 		
 		// then breaks player;key to retrieve a player feature
 		String key = (String) variableKey;
-		String[] parts = key.split(";");
+		String[] parts = key.split("-");
 		
 		try{
 			return getPlayerFeature(Integer.parseInt(parts[0]), parts[1]);
@@ -157,7 +157,7 @@ public class AggregateState extends GameStage{
 	@Override
 	public State copy() {
 		// if underlying game state has not changed, new object is identical
-		return new AggregateState(gameState);
+		return new AggregateState(underlyingState.clone());
 	}
 	
 	/**
@@ -166,7 +166,7 @@ public class AggregateState extends GameStage{
 	 */
 	@Override
 	public String toString(){
-		String ret = "";
+		String ret = keysToString() + "\n";
 		for(Object key : variableKeys()){
 			ret += get(key) + ";";
 		}

@@ -9,6 +9,14 @@ import burlap.mdp.core.state.State;
 import rl.models.ScriptActionTypes;
 import rl.models.stages.GameStagesDomain;
 
+/**
+ * A domain with abstract representation of a microRTS state
+ * quantities are 'discretized' according to empirical amounts
+ * 
+ * TODO record map file and reload initial state from it
+ * @author anderson
+ *
+ */
 public class AggregateStateDomain extends GameStagesDomain {
 
 	

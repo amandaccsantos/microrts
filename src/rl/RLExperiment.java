@@ -23,11 +23,13 @@ import burlap.behavior.stochasticgames.GameEpisode;
 import burlap.behavior.valuefunction.QValue;
 import burlap.debugtools.DPrint;
 import burlap.mdp.core.state.State;
+import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.agent.SGAgent;
 import burlap.mdp.stochasticgames.world.World;
 import rl.adapters.domain.EnumerableSGDomain;
 import rl.adapters.learners.PersistentLearner;
 import rl.adapters.learners.SGQLearningAdapter;
+import rl.models.MicroRTSState;
 
 /**
  * Manages a Reinforcement Learning experiment in microRTS The RL experiment has
@@ -40,7 +42,6 @@ import rl.adapters.learners.SGQLearningAdapter;
 public class RLExperiment {
 
 	public static void main(String[] args) {
-		
 		
 		//parses command line arguments
 		CommandLine cmdLine = processCommandLine(args);
@@ -88,17 +89,20 @@ public class RLExperiment {
 		// don't have the world print out debug info (uncomment if you want to see it!)
 		DPrint.toggleCode(gameWorld.getDebugId(), false);
 		int numEpisodes = (int) parameters.get(RLParamNames.EPISODES);
-		List<GameEpisode> episodes = new ArrayList<GameEpisode>(numEpisodes);
+		//List<GameEpisode> episodes = new ArrayList<GameEpisode>(numEpisodes);
 
 		// retrieves output dir
 		String outDir = (String) parameters.get(RLParamNames.OUTPUT_DIR);
 		PrintWriter output = null;
 		
+		// declares episode variable (will store final episode info after loop finishes)
+		GameEpisode episode = null;
+		
 		try {
 			output = new PrintWriter(new BufferedWriter(new FileWriter(outDir + "/output.txt", false)));
 			for (int episodeNumber = 0; episodeNumber < numEpisodes; episodeNumber++) {
-				GameEpisode episode = gameWorld.runGame();
-				episodes.add(episode);
+				episode = gameWorld.runGame();
+				//episodes.add(episode);
 	
 				System.out.print(String.format("\rEpisode #%7d finished.", episodeNumber));
 			
@@ -133,27 +137,27 @@ public class RLExperiment {
 		System.out.println("\nTraining finished"); // has leading \n because previous print has no trailing \n
 
 		// if I did not print during training, print now:
-		if(quiet){
+		//if(quiet){
 			//episode.write(String.format("%s/episode_%d", outDir, episodeNumber));
-			for (PersistentLearner agent : agents) {
-				agent.saveKnowledge(String.format("%s/q_%s_final.txt", outDir, agent.agentName()));
-			}
-		
-		
-			EnumerableSGDomain enumDomain = (EnumerableSGDomain) gameWorld.getDomain();
-			for (State s : enumDomain.enumerate()) {
-            	for (PersistentLearner agent : agents) {
-            		QLearning qLearner = (QLearning) ((SGQLearningAdapter) agent).getSingleAgentLearner();
-                    output.println(String.format("%s: %.3f", s, qLearner.value(s)));
-                    for (QValue q : qLearner.qValues(s)) {
-                        output.println(String.format("%s: %.3f", q.a, q.q));
-                    }
-            	}
-            }
+		for (PersistentLearner agent : agents) {
+			agent.saveKnowledge(String.format("%s/q_%s_final.txt", outDir, agent.agentName()));
 		}
+	
+		EnumerableSGDomain enumDomain = (EnumerableSGDomain) gameWorld.getDomain();
+		for (State s : enumDomain.enumerate()) {
+        	for (PersistentLearner agent : agents) {
+        		QLearning qLearner = (QLearning) ((SGQLearningAdapter) agent).getSingleAgentLearner();
+                output.println(String.format("%s: %.3f", s, qLearner.value(s)));
+                for (QValue q : qLearner.qValues(s)) {
+                    output.println(String.format("%s: %.3f", q.a, q.q));
+                }
+        	}
+        }
+		//}
 		
 		//prints results for final episode
-		printEpisodeInfo(episodes.size() - 1, episodes.get(episodes.size() - 1), outDir + "/final_episode.txt");
+		printEpisodeInfo(numEpisodes - 1, episode, outDir + "/final_episode.txt");
+		//printEpisodeInfo(episodes.size() - 1, episodes.get(episodes.size() - 1), outDir + "/final_episode.txt");
 		//printEpisodesInfo(episodes, outDir + "/episodes.txt"); 
 	}
 
@@ -201,9 +205,22 @@ public class RLExperiment {
 			return;
 		}
 		
+		episode.write(String.format("%s.ep", path));
+		
 		out.println("Episode " + episodeNumber);
 		out.println("Duration: " + episode.numTimeSteps());
 		out.println("States visited: " + episode.states.size());
+		out.println("\nJoint actions: ");
+		
+		for(JointAction ja : episode.jointActions){
+			out.println(ja);
+		}
+		
+		out.println("\nFinal state:");
+		MicroRTSState finalState = (MicroRTSState) episode.states.get(episode.states.size() - 1);
+		out.println(finalState);
+		out.println("\nFinal state dump: ");
+		out.println(finalState.dump());
 		
 		/*for(State s : episode.states){
 			out.println("state: " + s);
@@ -213,7 +230,7 @@ public class RLExperiment {
 		double[] finalRewards = jointRewards.get(jointRewards.size() -1);
 		
 		// Locale.ROOT ensures the use of '.' as decimal separator
-		out.println(String.format(Locale.ROOT, "Final rewards: %f,%f", finalRewards[0], finalRewards[1] ));
+		out.println(String.format(Locale.ROOT, "\nFinal rewards: %f,%f", finalRewards[0], finalRewards[1] ));
 		
 		out.close();
 	}

@@ -7,14 +7,14 @@ public abstract class MicroRTSState implements State {
 	
 	protected GameState underlyingState;
 	
+	public MicroRTSState() {
+		// empty constructor (java beans stuff?)
+	}
+	
 	public MicroRTSState(GameState s){
 		underlyingState = s;
 	}
 	
-	public MicroRTSState() {
-		// empty constructor (java beans stuff?)
-	}
-
 	/**
 	 * Returns the underlying microRTS game state
 	 * @return

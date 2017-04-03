@@ -22,10 +22,6 @@ public class GameStage extends MicroRTSState{
 	 */
 	public static final String KEY_STAGE = "stage";
 	
-	/**
-	 * The underlying game state related to this state
-	 */
-	protected GameState gameState;
 	
 	/**
 	 * An attempt to make the object serializable 
@@ -40,7 +36,7 @@ public class GameStage extends MicroRTSState{
 	 * @param gameState the microRTS game state 
 	 */
 	public GameStage(GameState gameState) {
-		this.gameState = gameState;
+		super(gameState);
 		
 		//if game is over, stage is FINISHED
 		if(gameState.gameover()) {
@@ -65,18 +61,6 @@ public class GameStage extends MicroRTSState{
 	public void setStage(GameStages theStage){
 		stage = theStage;
 	}
-	
-	/**
-	 * Alias of {@link getUnderlyingGameState} for the sake of serializability
-	 * @return
-	 *
-	public GameState getGameState(){
-		return getUnderlyingState();
-	}
-	
-	public void setGameState(GameState theState){
-		gameState = theState;
-	}*/
 	
 	/**
 	 * Returns all possible states
@@ -116,13 +100,6 @@ public class GameStage extends MicroRTSState{
 			return GameStages.END;
 		}
 	}
-	/**
-	 * Returns the microRTS game state related to high-level state
-	 * @return
-	 */
-	public GameState getUnderlyingState(){
-		return gameState;
-	}
 	
 	public boolean equals(Object other){
 		if(! (other instanceof GameStage) ){
@@ -149,7 +126,7 @@ public class GameStage extends MicroRTSState{
 
 	@Override
 	public State copy() {
-		return new GameStage(gameState.clone());
+		return new GameStage(getUnderlyingState().clone());
 	}
 	
 	public String toString(){
