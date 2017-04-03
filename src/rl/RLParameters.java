@@ -28,6 +28,7 @@ import burlap.behavior.stochasticgames.agents.interfacing.singleagent.LearningAg
 import burlap.behavior.stochasticgames.madynamicprogramming.backupOperators.MinMaxQ;
 import burlap.mdp.stochasticgames.agent.SGAgent;
 import burlap.mdp.stochasticgames.agent.SGAgentType;
+import burlap.mdp.stochasticgames.model.JointRewardFunction;
 import burlap.mdp.stochasticgames.world.World;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
 import rl.adapters.learners.PersistentLearner;
@@ -129,7 +130,7 @@ public class RLParameters {
 		params.put(RLParamNames.REWARD_FUNCTION, MicroRTSRewardFactory.WIN_LOSS);
 		
 		//instantiates the default world:
-		World defaultWorld = WorldFactory.stages();
+		World defaultWorld = WorldFactory.fromString(WorldFactory.STAGES);
 		params.put(RLParamNames.ABSTRACTION_MODEL, defaultWorld);
 		
 		//adds the default players - their params: discount, StateFactory, defaultQ, learning rate
@@ -167,7 +168,10 @@ public class RLParameters {
 	public Map<String, Object> loadFromFile(String path) throws SAXException, IOException, ParserConfigurationException{
 		
 		//initializes a list to load specified players, if there are any in the xml
-		List<PersistentLearner> newPlayers = new ArrayList<>();
+		List<Node> playerNodes = new ArrayList<>();
+		
+		// store values that user might specify for world model and reward function
+		String worldModelName = null;
 		
 		//opens xml file
 		DocumentBuilder dBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -193,27 +197,57 @@ public class RLParameters {
 					else if (floatParameters().contains(param.getNodeName())){
 						params.put(param.getNodeName(), Float.parseFloat(e.getAttribute("value")));
 					}
-					//if node is 'abstraction-model', retrieves the appropriate model
+					/*// if node is 'abstraction-model', stores the specified model
 					else if(param.getNodeName().equals(RLParamNames.ABSTRACTION_MODEL)){
-						params.put(param.getNodeName(), WorldFactory.fromString(e.getAttribute("value")));
+						params.put(RLParamNames.ABSTRACTION_MODEL, e.getAttribute("value"));
 					}
+					
+					// if node is 'reward function', stores the specified function
+					else if(param.getNodeName().equals(RLParamNames.REWARD_FUNCTION)){
+						params.put(RLParamNames.REWARD_FUNCTION, e.getAttribute("value"));
+					}*/
+					
 					else {	//parameter is an ordinary string (probably)
 						params.put(param.getNodeName(), e.getAttribute("value"));
 					}
 				}
 			}
 			
-			//if node is 'player', creates the specified player 
+			//if node is 'player', stores its node for processing afterwards
 			else if (n.getNodeName().equals("player")){
-				newPlayers.add(processPlayerNode(n));
+				playerNodes.add(n.cloneNode(true));
+				//newPlayers.add(processPlayerNode(n));
 			}
 			
 		}
 		
-		//replace default players if new ones were specified in xml
-		if (! newPlayers.isEmpty()){
+		// process the reward function
+		JointRewardFunction jointRwd = MicroRTSRewardFactory.getRewardFunction(
+			(String) params.get(RLParamNames.REWARD_FUNCTION)
+		);
+		
+		/*
+		 * Process the world model. We had stored a String with the name, 
+		 * it will be replaced by the appropriate World object 
+		 */
+		worldModelName = (String) params.get(RLParamNames.ABSTRACTION_MODEL);
+		params.put(
+			RLParamNames.ABSTRACTION_MODEL, 
+			WorldFactory.fromString(worldModelName, jointRwd)
+		);
+		
+		// process player nodes and creates players accordingly
+		if(! playerNodes.isEmpty()){
+			List<PersistentLearner> newPlayers = new ArrayList<>();
+			for(Node n : playerNodes){
+				newPlayers.add(processPlayerNode(n));
+			}
+			
+			// replace default players if new ones were specified in xml
 			params.put(RLParamNames.PLAYERS, newPlayers);
 		}
+		
+		
 		
 		return params;
 	}
@@ -242,7 +276,7 @@ public class RLParameters {
 	 * @param playerNode
 	 */
 	private PersistentLearner processPlayerNode(Node playerNode){
-
+		//FIXME storing the world as a string broke this method
 		
 		//retrieves the world model (needed for agent creation)
 		World world = (World) params.get(RLParamNames.ABSTRACTION_MODEL);

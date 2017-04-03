@@ -20,10 +20,14 @@ import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.behavior.singleagent.learning.tdmethods.QLearning;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.mdp.stochasticgames.agent.SGAgent;
+import burlap.mdp.stochasticgames.world.World;
 import rl.RLParamNames;
 import rl.RLParameters;
 import rl.adapters.learners.PersistentMultiAgentQLearning;
 import rl.adapters.learners.SGQLearningAdapter;
+import rl.models.common.MicroRTSRewardFactory;
+import rl.models.simplecounting.Aggregate;
+import rl.models.simplecounting.AggregateStateDomain;
 import rl.models.stages.StagesDomainGenerator;
 
 public class RLParametersTest {
@@ -35,12 +39,16 @@ public class RLParametersTest {
 	public void testExampleXML() throws SAXException, IOException, ParserConfigurationException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 		RLParameters rlParams = RLParameters.getInstance();
 		
-		Map<String, Object> parameters =  rlParams.loadFromFile("experiments/example.xml"); //may throw exceptions
+		Map<String, Object> parameters =  rlParams.loadFromFile("src/tests/rl/example.xml"); //may throw exceptions
 		
 		//tests parameter values
 		assertEquals(100, (int)parameters.get(RLParamNames.EPISODES));
 		
-		//TODO test the parameters.get(RLParamNames.ABSTRACTION_MODEL) 
+		World w = (World)parameters.get(RLParamNames.ABSTRACTION_MODEL);
+		assertTrue(w.getDomain() instanceof AggregateStateDomain);
+		
+		assertEquals(MicroRTSRewardFactory.SIMPLE_WEIGHTED, parameters.get(RLParamNames.REWARD_FUNCTION));
+		
 		
 		List<SGAgent> players = (List<SGAgent>) parameters.get(RLParamNames.PLAYERS);
 		assertEquals(2, players.size());

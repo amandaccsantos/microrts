@@ -23,12 +23,38 @@ public class WorldFactory {
 	public final static String STAGES = "stages";
 	public final static String AGGREGATE = "aggregate";
 	
-	public static World fromString(String model){
+	/**
+	 * Returns a World given its name. Uses default JointRewardFunction and TerminalFunction
+	 * @param modelName
+	 * @return
+	 */
+	public static World fromString(String modelName){
+		return fromString(modelName, new WinLossRewardFunction(), new MicroRTSTerminalFunction());
+	}
+	
+	/**
+	 * Returns a World given its name. Uses default TerminalFunction 
+	 * @param model
+	 * @param rwdFunc
+	 * @return
+	 */
+	public static World fromString(String model,  JointRewardFunction rwdFunc){
+		return fromString(model, rwdFunc, new MicroRTSTerminalFunction());
+	}
+	
+	/**
+	 * Returns a World given its name. Uses the provided reward and terminal functions
+	 * @param model
+	 * @param rwdFunc
+	 * @param terminalFunc
+	 * @return
+	 */
+	public static World fromString(String model, JointRewardFunction rwdFunc, TerminalFunction terminalFunc){
 		if(model.equalsIgnoreCase(STAGES)){
-			return stages();
+			return stages(rwdFunc, terminalFunc);
 		}
 		else if(model.equalsIgnoreCase(AGGREGATE)){
-			return aggregateStateFeatures();
+			return aggregateStateFeatures(rwdFunc, terminalFunc);
 		}
 		
 		throw new RuntimeException("Unrecognized world name: " + model);
@@ -39,6 +65,7 @@ public class WorldFactory {
 	 * only by the game stage they represent (e.g. early, mid, late)
 	 * Reward and terminal functions are default: {@link WinLossRewardFunction} and
 	 * {@link MicroRTSTerminalFunction}
+	 * TODO remove this method
 	 * @return {@link World}
 	 */
 	public static World stages() {
@@ -62,6 +89,7 @@ public class WorldFactory {
 	 * quantities of entities (few, fair or many)
 	 * Reward and terminal functions are default: {@link WinLossRewardFunction} and
 	 * {@link MicroRTSTerminalFunction}
+	 * TODO remove this method
 	 * @return
 	 */
 	public static World aggregateStateFeatures(){
