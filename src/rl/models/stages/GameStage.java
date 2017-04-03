@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import burlap.mdp.core.state.State;
+import rl.models.MicroRTSState;
 import rts.GameState;
 
-public class GameStage implements State{
+public class GameStage extends MicroRTSState{
 	
 	GameStages stage;
 	
@@ -31,7 +32,7 @@ public class GameStage implements State{
 	 * (must have default constructor and get/set methods 
 	 */
 	public GameStage(){
-		
+		super();
 	}
 	
 	/**
