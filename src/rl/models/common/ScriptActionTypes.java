@@ -11,6 +11,7 @@ import ai.abstraction.LightRush;
 import ai.abstraction.RangedRush;
 import ai.abstraction.WorkerRush;
 import ai.core.AI;
+import burlap.mdp.core.action.Action;
 import burlap.mdp.core.action.UniversalActionType;
 import rts.units.UnitTypeTable;
 
@@ -50,6 +51,22 @@ public class ScriptActionTypes {
 		actionTypeMap.put(BUILD_BARRACKS, new UniversalActionType(BUILD_BARRACKS));
 		
 		return actionTypeMap;
+	}
+	
+	/**
+	 * Returns a map from action names to {@link Action}s
+	 * @return
+	 */
+	public static Map<String, Action> getMapToActions() {
+		Map<String, Action> actionMap = new HashMap<>();
+		 
+		actionMap.put(WORKER_RUSH, new UniversalActionType(WORKER_RUSH).associatedAction(null));
+		actionMap.put(LIGHT_RUSH, new UniversalActionType(LIGHT_RUSH).associatedAction(null));
+		actionMap.put(RANGED_RUSH, new UniversalActionType(RANGED_RUSH).associatedAction(null));
+		actionMap.put(EXPAND, new UniversalActionType(EXPAND).associatedAction(null));
+		actionMap.put(BUILD_BARRACKS, new UniversalActionType(BUILD_BARRACKS).associatedAction(null));
+		
+		return actionMap;
 	}
 	
 	/**

@@ -1,11 +1,13 @@
 package rl.models.aggregate;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import burlap.mdp.core.state.State;
 import rl.models.stages.GameStage;
+import rl.models.stages.GameStages;
 import rts.GameState;
 import rts.Player;
 import rts.units.Unit;
@@ -28,8 +30,8 @@ public class AggregateState extends GameStage{
 	public static final String KEY_BARRACKS = "BARRACKS";
 	public static final String KEY_RESOURCES = "RESOURCES";
 	
-	public static final String PLAYER = "PLAYER";
-	public static final String OPPONENT = "OPPONENT";
+	// special 'key' used internally
+	public static final String PLAYER_FEATURES = "PLAYERS";
 	
 	/**
 	 * One map of variable-key to value per player 
@@ -87,10 +89,27 @@ public class AggregateState extends GameStage{
 			playerFeatures.put(player.getID(), currentPlayerFeatures);
 		}
 		
-		stateVariables.put("playerFeatures", playerFeatures);
+		stateVariables.put(PLAYER_FEATURES, playerFeatures);
 		
 	}
 	
+	/**
+	 * Empty constructor + getters/setters make object serializable, right?
+	 */
+	public AggregateState() {
+		super();
+		
+		// initializes default structures to prevent NullPointerException
+		stateVariables = new HashMap<>();
+		stateVariables.put(KEY_STAGE, GameStages.OPENING);
+		
+		playerFeatures = new HashMap<>();
+		playerFeatures.put(0, new HashMap<>()); // <- need to init all properties?
+		playerFeatures.put(1, new HashMap<>());
+		
+		stateVariables.put(PLAYER_FEATURES, playerFeatures);
+	}
+
 	public Object getPlayerFeature(int playerID, String featureName){
 		return playerFeatures.get(playerID).get(featureName);
 	}
@@ -119,14 +138,27 @@ public class AggregateState extends GameStage{
 			keys = super.variableKeys();
 			
 			// adds keys for each player feature, key is playerID;feature
-			for(Player player : underlyingState.getPhysicalGameState().getPlayers()){
-				keys.add(String.format("%d-%s", player.getID(), KEY_WORKERS));
-				keys.add(String.format("%d-%s", player.getID(), KEY_LIGHT));
-				keys.add(String.format("%d-%s", player.getID(), KEY_RANGED));
-				keys.add(String.format("%d-%s", player.getID(), KEY_HEAVY));
-				keys.add(String.format("%d-%s", player.getID(), KEY_BASES));
-				keys.add(String.format("%d-%s", player.getID(), KEY_BARRACKS));
-				keys.add(String.format("%d-%s", player.getID(), KEY_RESOURCES));
+			List<Integer> playerIDs = new ArrayList<>(2);
+			if(underlyingState == null){
+				//initializes a default list with two player IDs if I don't have underlying state
+				playerIDs.add(0);
+				playerIDs.add(1);
+			}
+			else { //if I have underlying state, get actual player IDs
+				for(Player player : underlyingState.getPhysicalGameState().getPlayers()){
+					playerIDs.add(player.getID());
+				}
+			}
+			
+			//now, traverses playerIDs and sets up the correct keys
+			for(int id : playerIDs){
+				keys.add(String.format("%d-%s", id, KEY_WORKERS));
+				keys.add(String.format("%d-%s", id, KEY_LIGHT));
+				keys.add(String.format("%d-%s", id, KEY_RANGED));
+				keys.add(String.format("%d-%s", id, KEY_HEAVY));
+				keys.add(String.format("%d-%s", id, KEY_BASES));
+				keys.add(String.format("%d-%s", id, KEY_BARRACKS));
+				keys.add(String.format("%d-%s", id, KEY_RESOURCES));
 			}
 		}
 		return keys;
