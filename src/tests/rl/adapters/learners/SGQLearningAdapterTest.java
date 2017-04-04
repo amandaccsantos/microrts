@@ -43,7 +43,7 @@ public class SGQLearningAdapterTest {
 	}
 
 	@Test
-	public void testLoadKnowledge(){
+	public void testLoadKnowledgeWithStagesModel(){
 		sgql.loadKnowledge(EXAMPLE_QTABLE_FILE);
 		
 		GameStage state = new GameStage();
@@ -113,7 +113,7 @@ public class SGQLearningAdapterTest {
 	 * This test assumes {@link testLoadKnowledge} is working properly
 	 * @throws FileNotFoundException
 	 */
-	public void testSaveKnowledge() throws FileNotFoundException {
+	public void testSaveKnowledgeWithStagesModel() throws FileNotFoundException {
 		//if loadKnowledge is working properly, saveKnowledge should yield the same file
 		
 		/* 

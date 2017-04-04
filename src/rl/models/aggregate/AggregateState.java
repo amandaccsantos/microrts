@@ -9,8 +9,6 @@ import rl.models.stages.GameStage;
 import rts.GameState;
 import rts.Player;
 import rts.units.Unit;
-import rts.units.UnitType;
-import rts.units.UnitTypeTable;
 
 /**
  * This class groups quantities of state features as 'aggregates'
@@ -36,12 +34,12 @@ public class AggregateState extends GameStage{
 	/**
 	 * One map of variable-key to value per player 
 	 */
-	protected Map<Integer, Map<String, Object>> playerFeatures;
+	private Map<Integer, Map<String, Object>> playerFeatures;
 	
 	/**
 	 * One map of string->object per common state features
 	 */
-	protected Map<String, Object> stateVariables;
+	private Map<String, Object> stateVariables;
 	
 	
 	protected static List<Object> keys;
@@ -88,6 +86,8 @@ public class AggregateState extends GameStage{
 			
 			playerFeatures.put(player.getID(), currentPlayerFeatures);
 		}
+		
+		stateVariables.put("playerFeatures", playerFeatures);
 		
 	}
 	
@@ -161,12 +161,23 @@ public class AggregateState extends GameStage{
 	}
 	
 	/**
-	 * Returns a String representation of state variable values
-	 * To know the variable names, see {@link AggregateState#keysToString()}
+	 * Returns a String representation of state variables
+	 * Keys on first line, values on second
+	 * To get just the variable names, see {@link #keysToString()}
+	 * To get just variable values, see {@link #valuesToString()}
 	 */
 	@Override
 	public String toString(){
-		String ret = keysToString() + "\n";
+		return keysToString() + "\n" + valuesToString();
+	}
+	
+	/**
+	 * Returns a String representation of state variable values
+	 * It is a semicolon-separated string
+	 * @return
+	 */
+	public String valuesToString(){
+		String ret = "";
 		for(Object key : variableKeys()){
 			ret += get(key) + ";";
 		}
@@ -174,7 +185,8 @@ public class AggregateState extends GameStage{
 	}
 	
 	/**
-	 * Returns a String representation of state variable names
+	 * Returns a String representation of state variable keys
+	 * It is a semicolon-separated string
 	 * @return
 	 */
 	public String keysToString(){
@@ -206,7 +218,38 @@ public class AggregateState extends GameStage{
 
 	public static List<AggregateState> enumerate(){
 		
-		
 		return null;
+	}
+
+	/**
+	 * Getter to make object serializable
+	 * @return
+	 */
+	public Map<String, Object> getStateVariables() {
+		return stateVariables;
+	}
+
+	/**
+	 * Setter to make object serializable
+	 * @param stateVariables
+	 */
+	public void setStateVariables(Map<String, Object> stateVariables) {
+		this.stateVariables = stateVariables;
+	}
+
+	/**
+	 * Getter for serializability
+	 * @return
+	 */
+	protected Map<Integer, Map<String, Object>> getPlayerFeatures() {
+		return playerFeatures;
+	}
+
+	/**
+	 * Setter for serializability
+	 * @param playerFeatures
+	 */
+	protected void setPlayerFeatures(Map<Integer, Map<String, Object>> playerFeatures) {
+		this.playerFeatures = playerFeatures;
 	}
 }
