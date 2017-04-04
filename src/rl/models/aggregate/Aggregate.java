@@ -1,4 +1,4 @@
-package rl.models.simplecounting;
+package rl.models.aggregate;
 
 public enum Aggregate {
 	FEW,

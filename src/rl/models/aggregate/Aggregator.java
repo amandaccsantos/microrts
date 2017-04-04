@@ -1,4 +1,4 @@
-package rl.models.simplecounting;
+package rl.models.aggregate;
 
 /**
  * Defines useful methods to return  {@link Aggregate}s that 

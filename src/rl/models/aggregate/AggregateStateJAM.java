@@ -1,4 +1,4 @@
-package rl.models.simplecounting;
+package rl.models.aggregate;
 
 import java.util.Map;
 

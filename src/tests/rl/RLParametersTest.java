@@ -25,9 +25,9 @@ import rl.RLParamNames;
 import rl.RLParameters;
 import rl.adapters.learners.PersistentMultiAgentQLearning;
 import rl.adapters.learners.SGQLearningAdapter;
+import rl.models.aggregate.Aggregate;
+import rl.models.aggregate.AggregateStateDomain;
 import rl.models.common.MicroRTSRewardFactory;
-import rl.models.simplecounting.Aggregate;
-import rl.models.simplecounting.AggregateStateDomain;
 import rl.models.stages.StagesDomainGenerator;
 
 public class RLParametersTest {
