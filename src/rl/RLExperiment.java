@@ -1,6 +1,7 @@
 package rl;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -93,6 +94,10 @@ public class RLExperiment {
 
 		// retrieves output dir
 		String outDir = (String) parameters.get(RLParamNames.OUTPUT_DIR);
+		File dir = new File(outDir);
+		if (!dir.exists()) {
+			dir.mkdir();
+		}
 		PrintWriter output = null;
 		
 		// declares episode variable (will store final episode info after loop finishes)
