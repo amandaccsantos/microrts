@@ -185,6 +185,45 @@ public class AggregateState extends GameStage{
 		
 		return null;
 	}
+	
+	/**
+	 * Sets value to a variable identified by a name (a valid key).
+	 * This method is the 'counterpart' of {@link #get}
+	 * @param key
+	 */
+	public void setVariable(String name, Object value){
+		// check if variable to be set is 'stage'
+		if(name.equals(KEY_STAGE)) {
+			setStage((GameStages) value);
+		}
+		
+		else {	// otherwise, it is a player variable
+			setPlayerVariable(name, value);
+		}
+		
+	}
+
+	/**
+	 * Set a player variable
+	 * @param name
+	 * @param value
+	 */
+	private void setPlayerVariable(String name, Object value) {
+		// name is playerNumber-keyName
+		String[] parts = name.split("-");
+		
+		int playerNumber = Integer.parseInt(parts[0]);
+		
+		// safety: check whether features for that player were initialized
+		if(playerFeatures.get(playerNumber) == null){
+			playerFeatures.put(playerNumber, new HashMap<>());
+		}
+		
+		// now sets the feature there (parts[1] is the key name)
+		playerFeatures.get(playerNumber).put(parts[1], value);
+		
+		
+	}
 
 	@Override
 	public State copy() {
@@ -213,7 +252,7 @@ public class AggregateState extends GameStage{
 		for(Object key : variableKeys()){
 			ret += get(key) + ";";
 		}
-		return ret;
+		return ret.replaceAll(";+$", "");	//trims trailing semicolon
 	}
 	
 	/**
@@ -224,9 +263,9 @@ public class AggregateState extends GameStage{
 	public String keysToString(){
 		String ret = "";
 		for(Object key : variableKeys()){
-			ret += key + ",";
+			ret += key + ";";
 		}
-		return ret;
+		return ret.replaceAll(";+$", "");	//trims trailing semicolon
 	}
 	
 	@Override
@@ -247,7 +286,7 @@ public class AggregateState extends GameStage{
 		
 		return true;
 	}
-
+	
 	public static List<AggregateState> enumerate(){
 		
 		return null;
