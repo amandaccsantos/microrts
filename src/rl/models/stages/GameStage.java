@@ -101,6 +101,7 @@ public class GameStage extends MicroRTSState{
 		}
 	}
 	
+	@Override
 	public boolean equals(Object other){
 		if(! (other instanceof GameStage) ){
 			return false;

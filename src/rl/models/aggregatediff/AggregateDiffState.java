@@ -109,33 +109,36 @@ public class AggregateDiffState extends GameStage {
 	 */
 	public void set(Object variableKey, Object value){
 		
+		String strKey = (String) variableKey;
 		String strValue = (String) value;
 		
-		if(variableKey.equals(GameStage.KEY_STAGE)){
+		if(strKey.equals(GameStage.KEY_STAGE)){
 			setStage(GameStages.valueOf(strValue));
 		}
-		if(variableKey.equals(AggregateState.KEY_WORKERS)){
+		else if(strKey.equals(AggregateState.KEY_WORKERS)){
 			workerDiff = AggregateDiff.valueOf(strValue);
 		}
-		else if(variableKey.equals(AggregateState.KEY_LIGHT)){
+		else if(strKey.equals(AggregateState.KEY_LIGHT)){
 			lightDiff = AggregateDiff.valueOf(strValue);
 		}
-		else if(variableKey.equals(AggregateState.KEY_RANGED)){
+		else if(strKey.equals(AggregateState.KEY_RANGED)){
 			rangedDiff = AggregateDiff.valueOf(strValue);
 		}
-		else if(variableKey.equals(AggregateState.KEY_HEAVY)){
+		else if(strKey.equals(AggregateState.KEY_HEAVY)){
 			heavyDiff = AggregateDiff.valueOf(strValue);
 		}
-		else if(variableKey.equals(AggregateState.KEY_BASES)){
+		else if(strKey.equals(AggregateState.KEY_BASES)){
 			basesDiff = AggregateDiff.valueOf(strValue);
 		}
-		else if(variableKey.equals(AggregateState.KEY_BARRACKS)){
+		else if(strKey.equals(AggregateState.KEY_BARRACKS)){
 			barracksDiff = AggregateDiff.valueOf(strValue);
 		}
-		else if(variableKey.equals(AggregateState.KEY_RESOURCES)){
+		else if(strKey.equals(AggregateState.KEY_RESOURCES)){
 			resourcesDiff = AggregateDiff.valueOf(strValue);
 		}
-		throw new IllegalArgumentException("Unrecognized variable key: " + variableKey);
+		else {
+			throw new IllegalArgumentException("Unrecognized variable key: " + strKey);
+		}
 	}
 	
 	/**
@@ -159,13 +162,37 @@ public class AggregateDiffState extends GameStage {
 		
 		return newState;
 	}
-	
-	
 
 	@Override
 	public State copy() {
 		// if underlying state has not changed, copy will return a equivalent object
 		return new AggregateDiffState(underlyingState.clone());
+	}
+	
+	@Override
+	public String toString(){
+		String repr = "";
+		
+		for(Object key : variableKeys()){
+			repr += get(key) + ";";
+		}
+		
+		return repr.replaceAll(";+$", "");	// trims trailing semicolon
+	}
+	
+	@Override
+	public boolean equals(Object other){
+		if(! (other instanceof AggregateDiffState)){
+			return false;
+		}
+		AggregateDiffState otherState = (AggregateDiffState)other; 
+		
+		for(Object key : variableKeys()){
+			if(get(key) != otherState.get(key)){
+				return false;
+			}
+		}
+		return true;
 	}
 
 }

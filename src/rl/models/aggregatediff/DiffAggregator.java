@@ -38,6 +38,8 @@ public class DiffAggregator {
 	 * BEHIND if difference < -1
 	 * EVEN if -1 <= difference <= 1
 	 * AHEAD if difference > 1
+	 * 
+	 * TODO might need to differentiate between workers and military (1 heavy can be great difference)
 	 * @param ammount
 	 * @return
 	 */
