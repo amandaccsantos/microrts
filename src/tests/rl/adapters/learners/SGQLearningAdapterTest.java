@@ -161,6 +161,9 @@ public class SGQLearningAdapterTest {
 		learner.loadKnowledge(QTABLE_AGGREGATEDIFF);
 		QLearning qLearner = (QLearning) sgql.getSingleAgentLearner();
 		
+		qLearner.writeQTable("/tmp/test.yaml"); // generates file with only {}
+		//FIXME loadKnowledge does not work... it is not de-serializing what saveKnowledge has serialized!
+		
 		// retrieves the actions for querying later
 		Map<String, Action> theActions = ScriptActionTypes.getMapToActions();
 		
