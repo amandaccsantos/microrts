@@ -61,7 +61,7 @@ public class AggregateDifferencesDomain extends GameStagesDomain {
 			
 			// lists all possible stages and quantities (aggregates) to use in enumeration
 			GameStages[] allStages = GameStages.values();
-			AggregateDiff[] allAggregates = AggregateDiff.values();
+			AggregateDiff[] allAggregateDiffs = AggregateDiff.values();
 			
 			/*
 			 * A list of lists of quantities, for example:
@@ -81,7 +81,7 @@ public class AggregateDifferencesDomain extends GameStagesDomain {
 				if(strKey.equals(AggregateState.KEY_STAGE)) {
 					continue;
 				}
-				quantities.add(new ArrayList<Object>(Arrays.asList(allAggregates)));
+				quantities.add(new ArrayList<Object>(Arrays.asList(allAggregateDiffs)));
 			}
 			
 			// calculates the cartesian product of lists in quantities
@@ -89,8 +89,12 @@ public class AggregateDifferencesDomain extends GameStagesDomain {
 			
 			// creates an AggregateDiffState for each item in the cartesian product
 			for(List<Object> combination : cartesianProduct){
-				// combination is actually a list of strings
-				List<String> combStrings = (List<String>)(Object) combination;
+				
+				// combination is a list of GameStage and AggregateDiff items, let's transform them in Strings
+				List<String> combStrings = new ArrayList<>();
+				for(Object item : combination) {
+					combStrings.add(item.toString());
+				}
 				
 				// creates a semicolon-separated string representing state quantities
 				String representation = String.join(";", combStrings);
@@ -111,7 +115,7 @@ public class AggregateDifferencesDomain extends GameStagesDomain {
 	
 	/**
 	 * Calculates the cartesian product of a list of lists.
-	 * For example, if input with a list like [[A,B], [C,D]] it returns
+	 * For example, if input is like [[A,B], [C,D]] it returns
 	 * [[A,C], [A,D], [B,C], [B,D]]
 	 * 
 	 * Code by Philipp Meister in StackOverflow (http://stackoverflow.com/a/9496234)
@@ -136,7 +140,6 @@ public class AggregateDifferencesDomain extends GameStagesDomain {
 	            }
 	        }
 	    }
-	    System.out.print(String.format("\r%d", resultLists.size()));
 	    return resultLists;
 	}
 
