@@ -1,6 +1,8 @@
 package tests.rl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -16,19 +18,15 @@ import ai.metabot.DummyPolicy;
 import burlap.behavior.learningrate.LearningRate;
 import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.MDPSolver;
-import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.behavior.singleagent.learning.tdmethods.QLearning;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.mdp.stochasticgames.agent.SGAgent;
 import burlap.mdp.stochasticgames.world.World;
 import rl.RLParamNames;
 import rl.RLParameters;
-import rl.adapters.learners.PersistentMultiAgentQLearning;
 import rl.adapters.learners.SGQLearningAdapter;
-import rl.models.aggregate.Aggregate;
 import rl.models.aggregate.AggregateStateDomain;
 import rl.models.common.MicroRTSRewardFactory;
-import rl.models.stages.StagesDomainGenerator;
 
 public class RLParametersTest {
 
@@ -50,6 +48,7 @@ public class RLParametersTest {
 		assertEquals(MicroRTSRewardFactory.SIMPLE_WEIGHTED, parameters.get(RLParamNames.REWARD_FUNCTION));
 		
 		
+		@SuppressWarnings("unchecked")
 		List<SGAgent> players = (List<SGAgent>) parameters.get(RLParamNames.PLAYERS);
 		assertEquals(2, players.size());
 		
