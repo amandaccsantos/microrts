@@ -44,7 +44,10 @@ public class AggregateState extends GameStage{
 	private Map<String, Object> stateVariables;
 	
 	
-	protected static List<Object> keys;
+	/**
+	 * List of state variable keys
+	 */
+	private static List<Object> keys;
 	
 
 	public AggregateState(GameState gameState) {
