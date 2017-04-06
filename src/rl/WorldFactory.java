@@ -8,6 +8,7 @@ import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.stochasticgames.model.JointRewardFunction;
 import burlap.mdp.stochasticgames.world.World;
 import rl.models.aggregate.AggregateStateDomain;
+import rl.models.aggregatediff.AggregateDifferencesDomain;
 import rl.models.common.MicroRTSTerminalFunction;
 import rl.models.common.WinLossRewardFunction;
 import rl.models.stages.GameStagesDomain;
@@ -22,6 +23,7 @@ public class WorldFactory {
 	
 	public final static String STAGES = "stages";
 	public final static String AGGREGATE = "aggregate";
+	public final static String AGGREGATE_DIFF = "aggregatediff";
 	
 	/**
 	 * Returns a World given its name. Uses default JointRewardFunction and TerminalFunction
@@ -56,10 +58,27 @@ public class WorldFactory {
 		else if(model.equalsIgnoreCase(AGGREGATE)){
 			return aggregateStateFeatures(rwdFunc, terminalFunc);
 		}
+		else if(model.equalsIgnoreCase(AGGREGATE_DIFF)){
+			return aggregateDiffStateFeatures(rwdFunc, terminalFunc);
+		}
 		
 		throw new RuntimeException("Unrecognized world name: " + model);
 	}
 	
+	private static World aggregateDiffStateFeatures(JointRewardFunction rwdFunc, TerminalFunction terminalFunc) {
+		AggregateDifferencesDomain aggrDiffDomain = null;
+		try {
+			aggrDiffDomain = new AggregateDifferencesDomain();
+		} catch (JDOMException | IOException e) {
+			System.err.println("An error happened! Will exit...");
+			e.printStackTrace();
+			System.exit(0);
+		}
+		
+		World w = new World(aggrDiffDomain, rwdFunc, terminalFunc, aggrDiffDomain.getInitialState());
+		return w;
+	}
+
 	/**
 	 * In this abstraction, microRTS game states are differentiated
 	 * only by the game stage they represent (e.g. early, mid, late)
