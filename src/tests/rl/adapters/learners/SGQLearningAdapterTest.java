@@ -1,6 +1,6 @@
 package tests.rl.adapters.learners;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -14,17 +14,17 @@ import org.junit.Test;
 import burlap.behavior.singleagent.learning.tdmethods.QLearning;
 import burlap.behavior.valuefunction.QValue;
 import burlap.mdp.core.action.Action;
-import burlap.mdp.core.action.UniversalActionType;
 import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.mdp.stochasticgames.world.World;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
 import rl.WorldFactory;
 import rl.adapters.learners.SGQLearningAdapter;
-import rl.models.stages.GameStages;
 import rl.models.aggregate.Aggregate;
 import rl.models.aggregate.AggregateState;
+import rl.models.aggregatediff.AggregateDiffState;
 import rl.models.common.ScriptActionTypes;
 import rl.models.stages.GameStage;
+import rl.models.stages.GameStages;
 
 public class SGQLearningAdapterTest {
 	
@@ -33,6 +33,7 @@ public class SGQLearningAdapterTest {
 	
 	final static String QTABLE_STAGES = "src/tests/rl/adapters/learners/qtable-example.yaml";
 	final static String QTABLE_AGGREGATE = "src/tests/rl/adapters/learners/sgql_aggregate.yaml";
+	final static String QTABLE_AGGREGATEDIFF = "src/tests/rl/adapters/learners/sgql_aggrdiff.yaml";
 	
 	@Before
 	public void setUp(){
@@ -130,6 +131,7 @@ public class SGQLearningAdapterTest {
 		}
 	}
 	
+	@SuppressWarnings("resource")
 	@Test
 	/**
 	 * This test assumes {@link testLoadKnowledge} is working properly
@@ -152,10 +154,71 @@ public class SGQLearningAdapterTest {
 		
 		assertEquals(expected, actual);
 	}
+	
+	@Test
+	public void testLoadKnowledgeWithAggregateDiffModel(){
+		SGQLearningAdapter learner = prepareLearner(WorldFactory.fromString(WorldFactory.AGGREGATE_DIFF));
+		learner.loadKnowledge(QTABLE_AGGREGATEDIFF);
+		QLearning qLearner = (QLearning) sgql.getSingleAgentLearner();
+		
+		// retrieves the actions for querying later
+		Map<String, Action> theActions = ScriptActionTypes.getMapToActions();
+		
+		/*
+		 * Only some states had their joint action values changed, which are
+		 * barracksDiff: AHEAD, basesDiff: EVEN,
+    	 * heavyDiff: AHEAD, lightDiff: BEHIND, rangedDiff: BEHIND, resourcesDiff: AHEAD,
+    	 * stage: OPENING, workerDiff: AHEAD
+    
+    	 * and
+    
+    	 * barracksDiff: EVEN, basesDiff: EVEN,
+    	 * heavyDiff: EVEN, lightDiff: AHEAD, rangedDiff: BEHIND, resourcesDiff: EVEN, stage: END,
+    	 * workerDiff: EVEN
+		 */
+		
+		// string representation of first state on file
+		String repr = "OPENING;AHEAD;BEHIND;BEHIND;AHEAD;EVEN;AHEAD;AHEAD";
+		
+		/**
+		 * For the state given in repr, expected values are:
+		 * LightRush: 0.7
+		 * BuildBarracks: 0.6
+		 * RangedRush: -0.9
+		 * other actions: 1
+		 */
+		AggregateDiffState state = AggregateDiffState.fromString(repr);
+		
+		assertEquals(0.7, qLearner.qValue(state, theActions.get(ScriptActionTypes.LIGHT_RUSH)), 0.00001);
+		assertEquals(0.6, qLearner.qValue(state, theActions.get(ScriptActionTypes.BUILD_BARRACKS)), 0.00001);
+		assertEquals(-0.9, qLearner.qValue(state, theActions.get(ScriptActionTypes.RANGED_RUSH)), 0.00001);
+		assertEquals(1.0, qLearner.qValue(state, theActions.get(ScriptActionTypes.EXPAND)), 0.00001);
+		assertEquals(1.0, qLearner.qValue(state, theActions.get(ScriptActionTypes.WORKER_RUSH)), 0.00001);
+		
+		// string representation of second state on file
+		repr = "END;EVEN;AHEAD;BEHIND;EVEN;EVEN;EVEN;EVEN";
+		
+		/**
+		 * For the state given in repr, expected values are:
+		 * Expand: -0.5
+		 * WorkerRush: 0.33
+		 * other actions: 1
+		 */
+		state = AggregateDiffState.fromString(repr);
+		assertEquals(1.0, qLearner.qValue(state, theActions.get(ScriptActionTypes.LIGHT_RUSH)), 0.00001);
+		assertEquals(1.0, qLearner.qValue(state, theActions.get(ScriptActionTypes.BUILD_BARRACKS)), 0.00001);
+		assertEquals(1.0, qLearner.qValue(state, theActions.get(ScriptActionTypes.RANGED_RUSH)), 0.00001);
+		assertEquals(-0.5, qLearner.qValue(state, theActions.get(ScriptActionTypes.EXPAND)), 0.00001);
+		assertEquals(0.33, qLearner.qValue(state, theActions.get(ScriptActionTypes.WORKER_RUSH)), 0.00001);
+		
+		// for all other states, all actions have value = 1
+		// TODO enumerate other states and test their values
+		
+	}
 
 	//@Test -- suspended until aggregate model becomes serializable or save/load knowledge stops depending on that
 	public void testLoadKnowledgeWithAggregateModel() {
-		SGQLearningAdapter learner = prepareLearner(WorldFactory.aggregateStateFeatures());
+		SGQLearningAdapter learner = prepareLearner(WorldFactory.fromString(WorldFactory.AGGREGATE));
 		learner.loadKnowledge(QTABLE_AGGREGATE);
 		
 		// stores the available actions
@@ -164,7 +227,7 @@ public class SGQLearningAdapterTest {
 		// creates a map with state/player features to manipulate and retrieve specific info
 		Map<Integer, Map<String, Object>> playerFeatures = constructPlayerFeatures();
 
-		AggregateState state = new AggregateState();
+		AggregateDiffState state = new AggregateDiffState();
 		QLearning qLearner = (QLearning) sgql.getSingleAgentLearner();
 		
 		/**

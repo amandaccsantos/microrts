@@ -77,7 +77,7 @@ public class PersistentMultiAgentQLearningTest {
 	 * @param path
 	 */
 	private void assertLoadedKnowledge(String path){
-			player.loadKnowledge(path);
+		player.loadKnowledge(path);
 		
 		/*
 		 * most states and joint actions have value 1.0 in the file
