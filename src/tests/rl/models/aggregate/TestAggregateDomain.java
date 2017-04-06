@@ -19,8 +19,8 @@ public class TestAggregateDomain {
 
 	@Test
 	public void testEnumerate() {
-		// the domain should have X states
-		assertEquals(3599, testedDomain.enumerate().size());
+		// the domain should have 28697814 states -- OutOfMemoryError on the way :(
+		assertEquals(28697814, testedDomain.enumerate().size());
 	}
 
 }

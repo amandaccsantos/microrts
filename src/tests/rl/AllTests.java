@@ -6,11 +6,11 @@ import org.junit.runners.Suite.SuiteClasses;
 
 import tests.rl.adapters.learners.PersistentMultiAgentQLearningTest;
 import tests.rl.adapters.learners.SGQLearningAdapterTest;
+import tests.rl.models.aggregate.AggregateJAMTest;
 import tests.rl.models.aggregatediff.AggregateDiffStateJAMTest;
 import tests.rl.models.aggregatediff.TestAggregateDiffState;
 import tests.rl.models.common.TestSimpleWeightedFeatures;
 import tests.rl.models.common.TestSimpleWeightedFeaturesTerminal;
-import tests.rl.models.simplecounting.AggregateJAMTest;
 
 @RunWith(Suite.class)
 @SuiteClasses({ 
