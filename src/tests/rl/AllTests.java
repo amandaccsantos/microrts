@@ -6,6 +6,8 @@ import org.junit.runners.Suite.SuiteClasses;
 
 import tests.rl.adapters.learners.PersistentMultiAgentQLearningTest;
 import tests.rl.adapters.learners.SGQLearningAdapterTest;
+import tests.rl.models.aggregatediff.AggregateDiffStateJAMTest;
+import tests.rl.models.aggregatediff.TestAggregateDiffState;
 import tests.rl.models.common.TestSimpleWeightedFeatures;
 import tests.rl.models.common.TestSimpleWeightedFeaturesTerminal;
 import tests.rl.models.simplecounting.AggregateJAMTest;
@@ -15,9 +17,13 @@ import tests.rl.models.simplecounting.AggregateJAMTest;
 	RLParametersTest.class, 
 	SGQLearningAdapterTest.class,
 	PersistentMultiAgentQLearningTest.class,
+	
 	AggregateJAMTest.class,
 	TestSimpleWeightedFeatures.class,
 	TestSimpleWeightedFeaturesTerminal.class,
+	
+	TestAggregateDiffState.class,
+	AggregateDiffStateJAMTest.class,
 })
 
 public class AllTests {

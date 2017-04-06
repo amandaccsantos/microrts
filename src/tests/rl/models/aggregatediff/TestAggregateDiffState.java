@@ -69,6 +69,18 @@ public class TestAggregateDiffState {
 	}
 	
 	@Test
+	public void testToString(){
+		// assumes testFromString passed
+		this.testFromString();
+		
+		String repr = "MID;AHEAD;BEHIND;EVEN;EVEN;BEHIND;AHEAD;AHEAD";
+		AggregateDiffState newState = AggregateDiffState.fromString(repr);
+		
+		// string representation should be equivalent to the one used in creation
+		assertEquals(repr, newState.toString());
+	}
+	
+	@Test
 	/**
 	 * Assumes that testFromString is working
 	 */

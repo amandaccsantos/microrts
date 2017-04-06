@@ -33,7 +33,7 @@ public class AggregateDiffStateJAM implements JointModel {
 		AI ai1 = actions.get(ja.action(0).actionName()).clone();
 		AI ai2 = actions.get(ja.action(1).actionName()).clone();
 
-		// advance game until next stage is reached or game finishes
+		// advance game until next state is reached or game finishes
 		do {
 			PlayerAction pa1 = null, pa2 = null;
 			try {
