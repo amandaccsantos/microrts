@@ -1,8 +1,5 @@
 package rl.models.aggregatediff;
 
-import java.util.List;
-
-import rl.models.aggregate.Aggregate;
 import rts.GameState;
 import rts.Player;
 import rts.units.Unit;
