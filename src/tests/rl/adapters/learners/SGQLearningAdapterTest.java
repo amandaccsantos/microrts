@@ -159,7 +159,8 @@ public class SGQLearningAdapterTest {
 	public void testLoadKnowledgeWithAggregateDiffModel(){
 		SGQLearningAdapter learner = prepareLearner(WorldFactory.fromString(WorldFactory.AGGREGATE_DIFF));
 		learner.loadKnowledge(QTABLE_AGGREGATEDIFF);
-		QLearning qLearner = (QLearning) sgql.getSingleAgentLearner();
+		QLearning qLearner = (QLearning) learner.getSingleAgentLearner();
+		
 		
 		// retrieves the actions for querying later
 		Map<String, Action> theActions = ScriptActionTypes.getMapToActions();
@@ -175,7 +176,6 @@ public class SGQLearningAdapterTest {
 		 * other actions: 1
 		 */
 		AggregateDiffState state = AggregateDiffState.fromString(repr);
-		
 		assertEquals(0.7, qLearner.qValue(state, theActions.get(ScriptActionTypes.LIGHT_RUSH)), 0.00001);
 		assertEquals(0.6, qLearner.qValue(state, theActions.get(ScriptActionTypes.BUILD_BARRACKS)), 0.00001);
 		assertEquals(-0.9, qLearner.qValue(state, theActions.get(ScriptActionTypes.RANGED_RUSH)), 0.00001);
