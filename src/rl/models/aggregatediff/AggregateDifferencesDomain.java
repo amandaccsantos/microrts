@@ -52,9 +52,6 @@ public class AggregateDifferencesDomain extends GameStagesDomain {
 	
 	@Override
 	public List<? extends State> enumerate(){
-		//System.err.println("This domain has 28697814 states, which is too much.");
-		//System.err.println("I'll try enumerating, but it will take a looong time, and don't be surprised with an OutOfMemoryError");
-		
 		// initializes list with all states if needed
 		if(allStates == null) {
 			allStates = new ArrayList<>();
