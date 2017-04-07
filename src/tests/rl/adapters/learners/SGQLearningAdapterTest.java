@@ -57,15 +57,47 @@ public class SGQLearningAdapterTest {
 		SGQLearningAdapter sgql = prepareLearner(world);
 		sgql.loadKnowledge(QTABLE_STAGES);
 		
+		assertLoadedKnowledgeInStagesWorld(sgql);
+		
+	}
+	
+	@Test
+	/**
+	 * This test assumes {@link testLoadKnowledge} is working properly
+	 * @throws FileNotFoundException
+	 */
+	public void testSaveKnowledgeWithStagesModel() throws FileNotFoundException {
+		// make sure loadKnowledge is working:
+		testLoadKnowledgeWithStagesModel();
+		
+		// an agent loads knowledge and saves it in another file ...
+		SGQLearningAdapter sgql = prepareLearner(WorldFactory.fromString(WorldFactory.STAGES));
+		String tmpQTableFile = "/tmp/test-save-sgql_stages.xml";
+		sgql.loadKnowledge(QTABLE_STAGES);
+		sgql.saveKnowledge(tmpQTableFile);
+		
+		// ...then another agent loads it and its knowledge must be the same ;)
+		SGQLearningAdapter newAgent = prepareLearner(WorldFactory.fromString(WorldFactory.STAGES));
+		newAgent.loadKnowledge(tmpQTableFile);
+		assertLoadedKnowledgeInStagesWorld(newAgent);
+	}
+	
+	/**
+	 * Verifies whether knowledge in agent corresponds to that specified 
+	 * in {@link #QTABLE_STAGES} file
+	 * @param agent
+	 */
+	private void assertLoadedKnowledgeInStagesWorld(SGQLearningAdapter agent){
 		GameStage state = new GameStage();
-		QLearning qLearner = (QLearning) sgql.getSingleAgentLearner();
+		QLearning qLearner = (QLearning) agent.getSingleAgentLearner();
 		
 		//retrieves objects regarding game actions
-		Action lightRush = world.getDomain().getActionType("LightRush").associatedAction(null);
-		Action buildBarracks = world.getDomain().getActionType("BuildBarracks").associatedAction(null);
-		Action rangedRush = world.getDomain().getActionType("RangedRush").associatedAction(null);
-		Action expand = world.getDomain().getActionType("Expand").associatedAction(null);
-		Action workerRush = world.getDomain().getActionType("WorkerRush").associatedAction(null);
+		Map<String, Action> theActions = ScriptActionTypes.getMapToActions();
+		Action lightRush = theActions.get(ScriptActionTypes.LIGHT_RUSH);
+		Action buildBarracks = theActions.get(ScriptActionTypes.BUILD_BARRACKS);
+		Action rangedRush = theActions.get(ScriptActionTypes.RANGED_RUSH);
+		Action expand = theActions.get(ScriptActionTypes.EXPAND);
+		Action workerRush = theActions.get(ScriptActionTypes.WORKER_RUSH);
 		
 		/*
 		 * Expected values of actions for stage 'OPENING' are:
@@ -119,37 +151,38 @@ public class SGQLearningAdapterTest {
 		}
 	}
 	
-	@SuppressWarnings("resource")
-	@Test
-	/**
-	 * This test assumes {@link testLoadKnowledge} is working properly
-	 * @throws FileNotFoundException
-	 */
-	public void testSaveKnowledgeWithStagesModel() throws FileNotFoundException {
-		//if loadKnowledge is working properly, saveKnowledge should yield the same file
-		SGQLearningAdapter sgql = prepareLearner(WorldFactory.fromString(WorldFactory.STAGES));
-		/* 
-		 * FIXME test whether knowledge loaded from the saved file is equivalent to the 
-		 * one before saving instead of exact file content
-		 */
-		
-		String tmpQTableFile = "/tmp/test-save-sgql_stages.xml";
-		sgql.loadKnowledge(QTABLE_STAGES);
-		sgql.saveKnowledge(tmpQTableFile);
-		
-		String expected = new Scanner(new File(QTABLE_STAGES)).useDelimiter("\\Z").next();
-		String actual = new Scanner(new File(tmpQTableFile)).useDelimiter("\\Z").next();
-		
-		assertEquals(expected, actual);
-	}
-	
 	@Test
 	public void testLoadKnowledgeWithAggregateDiffModel(){
 		SGQLearningAdapter learner = prepareLearner(WorldFactory.fromString(WorldFactory.AGGREGATE_DIFF));
 		learner.loadKnowledge(QTABLE_AGGREGATEDIFF);
-		QLearning qLearner = (QLearning) learner.getSingleAgentLearner();
+		assertLoadedKnowledgeInAggrDiffModel(learner);
+	}
+
+	@Test 
+	public void testSaveKnowledgeWithAggregateDiffModel() throws FileNotFoundException{
+		// makes sure that loadKnowledge is working
+		testLoadKnowledgeWithAggregateDiffModel();
 		
+		// an agent loads expected knowledge and SAVES it to a different file ...
+		SGQLearningAdapter sgql = prepareLearner(WorldFactory.fromString(WorldFactory.AGGREGATE_DIFF));
+		String tmpQTableFile = "/tmp/test-save-sgql-aggrdiff.xml";
+		sgql.loadKnowledge(QTABLE_AGGREGATEDIFF);
+		sgql.saveKnowledge(tmpQTableFile);
+
+		// ... then another agent loads this knowledge and it must match the expected knowledge ;)
+		SGQLearningAdapter newAgent =  prepareLearner(WorldFactory.fromString(WorldFactory.AGGREGATE_DIFF));
+		newAgent.loadKnowledge(tmpQTableFile);
 		
+		assertLoadedKnowledgeInAggrDiffModel(newAgent);
+	}
+	
+	/**
+	 * Verifies whether knowledge present in agent matches the one specified
+	 * in {@link #QTABLE_AGGREGATEDIFF} file
+	 * @param agent
+	 */
+	private void assertLoadedKnowledgeInAggrDiffModel(SGQLearningAdapter agent){
+		QLearning qLearner = (QLearning) agent.getSingleAgentLearner();
 		// retrieves the actions for querying later
 		Map<String, Action> theActions = ScriptActionTypes.getMapToActions();
 
@@ -188,29 +221,6 @@ public class SGQLearningAdapterTest {
 		
 		// for all other states, all actions have value = 1
 		// TODO enumerate other states and test their values
-		
-	}
-
-	@Test //TODO write this test
-	@SuppressWarnings("resource")
-	public void testSaveKnowledgeWithAggregateDiffModel() throws FileNotFoundException{
-		//if loadKnowledge is working properly, saveKnowledge should yield the same file
-		
-		/* 
-		 * TODO test whether knowledge loaded from the saved file is equivalent to the 
-		 * one before saving instead of exact file content, use assertLoadKnowledge of PMAQlearning test
-		 */
-		
-		SGQLearningAdapter sgql = prepareLearner(WorldFactory.fromString(WorldFactory.AGGREGATE_DIFF));
-		
-		String tmpQTableFile = "/tmp/test-save-sgql-aggrdiff.xml";
-		sgql.loadKnowledge(QTABLE_AGGREGATEDIFF);
-		sgql.saveKnowledge(tmpQTableFile);
-		
-		String expected = new Scanner(new File(QTABLE_STAGES)).useDelimiter("\\Z").next();
-		String actual = new Scanner(new File(tmpQTableFile)).useDelimiter("\\Z").next();
-		
-		assertEquals(expected, actual);
 	}
 	
 	//@Test -- suspended until aggregate model becomes serializable or save/load knowledge stops depending on that
