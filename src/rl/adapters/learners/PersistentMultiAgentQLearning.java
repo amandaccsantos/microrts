@@ -4,9 +4,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -20,29 +17,19 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import org.yaml.snakeyaml.Yaml;
 
 import burlap.behavior.learningrate.LearningRate;
-import burlap.behavior.singleagent.auxiliary.StateEnumerator;
-import burlap.behavior.singleagent.auxiliary.StateReachability;
 import burlap.behavior.stochasticgames.agents.maql.MultiAgentQLearning;
 import burlap.behavior.stochasticgames.madynamicprogramming.JAQValue;
-import burlap.behavior.stochasticgames.madynamicprogramming.QSourceForSingleAgent;
 import burlap.behavior.stochasticgames.madynamicprogramming.SGBackupOperator;
 import burlap.behavior.valuefunction.QFunction;
-import burlap.behavior.valuefunction.QValue;
 import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.SGDomain;
-import burlap.mdp.stochasticgames.agent.SGAgent;
 import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.statehashing.HashableStateFactory;
-import rl.WorldFactory;
-import rl.RLParamNames;
 import rl.adapters.domain.EnumerableSGDomain;
-import rl.models.stages.StagesDomainGenerator;
-import rl.models.stages.GameStage;
 
 /**
  * Extends {@link MultiAgentQLearning} class by implementing {@link PersistentLearner}
@@ -97,7 +84,8 @@ public class PersistentMultiAgentQLearning extends MultiAgentQLearning implement
 				// information about who is saving knowledge, i.e., myself
 				// this might be useful when retrieving the joint action later
 				fileWriter.write(String.format(
-					"<learner name='%s' id='%d' />\n\n", worldAgentName, agentNum
+					"<learner name='%s' type='%s' id='%d' />\n\n", 
+					worldAgentName, this.getClass().getName(), agentNum
 				));
 				
 				// a friendly remark
@@ -126,20 +114,6 @@ public class PersistentMultiAgentQLearning extends MultiAgentQLearning implement
 							jointAction.actionName(),
 							getMyQSource().getQValueFor(s, jointAction).q
 						));
-						/*
-						for(SGAgent agent : world.getRegisteredAgents()){
-							int id = world.getPlayerNumberForAgent(agent.agentName());
-							// writes the action tag
-							fileWriter.write(String.format(
-								"\t\t<action name='%s' agentID='%s' />\n", 
-								jointAction.action(id).actionName(),
-								id
-							));
-						}
-						fileWriter.write("\t</jointAction>\n");
-						*/
-						
-						//yaml.dump(getMyQSource().getQValueFor(s, jointAction), fileWriter);
 					}
 					
 					// closes state tag
@@ -151,7 +125,7 @@ public class PersistentMultiAgentQLearning extends MultiAgentQLearning implement
 				fileWriter.close();
 			}
 			else {
-				System.err.println("Cannot save knowledge to this type of domain: " + domain.getClass().getName());
+				System.err.println("Can only save knowledge for EnumerableSGDomains, this one is: " + domain.getClass().getName());
 			}
 		
 		} catch (IOException e) {

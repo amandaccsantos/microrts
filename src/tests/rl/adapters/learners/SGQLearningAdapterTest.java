@@ -33,7 +33,7 @@ public class SGQLearningAdapterTest {
 	
 	final static String QTABLE_STAGES = "src/tests/rl/adapters/learners/qtable-example.yaml";
 	final static String QTABLE_AGGREGATE = "src/tests/rl/adapters/learners/sgql_aggregate.yaml";
-	final static String QTABLE_AGGREGATEDIFF = "src/tests/rl/adapters/learners/sgql_aggrdiff.yaml";
+	final static String QTABLE_AGGREGATEDIFF = "src/tests/rl/adapters/learners/sgql_aggrdiff.xml";
 	
 	@Before
 	public void setUp(){
@@ -161,27 +161,11 @@ public class SGQLearningAdapterTest {
 		learner.loadKnowledge(QTABLE_AGGREGATEDIFF);
 		QLearning qLearner = (QLearning) sgql.getSingleAgentLearner();
 		
-		qLearner.writeQTable("/tmp/test.yaml"); // generates file with only {}
-		//FIXME loadKnowledge does not work... it is not de-serializing what saveKnowledge has serialized!
-		
 		// retrieves the actions for querying later
 		Map<String, Action> theActions = ScriptActionTypes.getMapToActions();
-		
-		/*
-		 * Only some states had their joint action values changed, which are
-		 * barracksDiff: AHEAD, basesDiff: EVEN,
-    	 * heavyDiff: AHEAD, lightDiff: BEHIND, rangedDiff: BEHIND, resourcesDiff: AHEAD,
-    	 * stage: OPENING, workerDiff: AHEAD
-    
-    	 * and
-    
-    	 * barracksDiff: EVEN, basesDiff: EVEN,
-    	 * heavyDiff: EVEN, lightDiff: AHEAD, rangedDiff: BEHIND, resourcesDiff: EVEN, stage: END,
-    	 * workerDiff: EVEN
-		 */
-		
+
 		// string representation of first state on file
-		String repr = "OPENING;AHEAD;BEHIND;BEHIND;AHEAD;EVEN;AHEAD;AHEAD";
+		String repr = "OPENING;BEHIND;BEHIND;BEHIND;BEHIND;BEHIND;BEHIND;BEHIND";
 		
 		/**
 		 * For the state given in repr, expected values are:
@@ -199,7 +183,7 @@ public class SGQLearningAdapterTest {
 		assertEquals(1.0, qLearner.qValue(state, theActions.get(ScriptActionTypes.WORKER_RUSH)), 0.00001);
 		
 		// string representation of second state on file
-		repr = "END;EVEN;AHEAD;BEHIND;EVEN;EVEN;EVEN;EVEN";
+		repr = "LATE;EVEN;AHEAD;AHEAD;AHEAD;EVEN;BEHIND;AHEAD";
 		
 		/**
 		 * For the state given in repr, expected values are:
