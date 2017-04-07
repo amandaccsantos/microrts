@@ -28,26 +28,12 @@ import rl.models.stages.GameStages;
 
 public class SGQLearningAdapterTest {
 	
-	SGQLearningAdapter sgql;
-	World world;
-	
-	final static String QTABLE_STAGES = "src/tests/rl/adapters/learners/qtable-example.yaml";
+	final static String QTABLE_STAGES = "src/tests/rl/adapters/learners/sgql_stages.xml";
 	final static String QTABLE_AGGREGATE = "src/tests/rl/adapters/learners/sgql_aggregate.yaml";
 	final static String QTABLE_AGGREGATEDIFF = "src/tests/rl/adapters/learners/sgql_aggrdiff.xml";
 	
 	@Before
 	public void setUp(){
-		world = WorldFactory.stages();
-		
-		QLearning ql = new QLearning(
-			null, 0.9, new SimpleHashableStateFactory(false), 
-			1.0, 0.1
-		);
-		
-		sgql = new SGQLearningAdapter(
-			world.getDomain(), ql, "QLearning", 
-			new SGAgentType("Dummy", world.getDomain().getActionTypes())
-		);
 		
 	}
 	
@@ -59,7 +45,7 @@ public class SGQLearningAdapterTest {
 		
 		SGQLearningAdapter agent = new SGQLearningAdapter(
 			w.getDomain(), ql, "Learner", 
-			new SGAgentType("QLearnin", world.getDomain().getActionTypes())
+			new SGAgentType("QLearning", w.getDomain().getActionTypes())
 		);
 		
 		return agent;
@@ -67,6 +53,8 @@ public class SGQLearningAdapterTest {
 
 	@Test
 	public void testLoadKnowledgeWithStagesModel(){
+		World world = WorldFactory.fromString(WorldFactory.STAGES);
+		SGQLearningAdapter sgql = prepareLearner(world);
 		sgql.loadKnowledge(QTABLE_STAGES);
 		
 		GameStage state = new GameStage();
@@ -139,13 +127,13 @@ public class SGQLearningAdapterTest {
 	 */
 	public void testSaveKnowledgeWithStagesModel() throws FileNotFoundException {
 		//if loadKnowledge is working properly, saveKnowledge should yield the same file
-		
+		SGQLearningAdapter sgql = prepareLearner(WorldFactory.fromString(WorldFactory.STAGES));
 		/* 
-		 * TODO test whether knowledge loaded from the saved file is equivalent to the 
+		 * FIXME test whether knowledge loaded from the saved file is equivalent to the 
 		 * one before saving instead of exact file content
 		 */
 		
-		String tmpQTableFile = "/tmp/test-save-knowledge-sgql.yaml";
+		String tmpQTableFile = "/tmp/test-save-sgql_stages.xml";
 		sgql.loadKnowledge(QTABLE_STAGES);
 		sgql.saveKnowledge(tmpQTableFile);
 		
@@ -203,10 +191,32 @@ public class SGQLearningAdapterTest {
 		
 	}
 
+	@Test //TODO write this test
+	@SuppressWarnings("resource")
+	public void testSaveKnowledgeWithAggregateDiffModel() throws FileNotFoundException{
+		//if loadKnowledge is working properly, saveKnowledge should yield the same file
+		
+		/* 
+		 * TODO test whether knowledge loaded from the saved file is equivalent to the 
+		 * one before saving instead of exact file content, use assertLoadKnowledge of PMAQlearning test
+		 */
+		
+		SGQLearningAdapter sgql = prepareLearner(WorldFactory.fromString(WorldFactory.AGGREGATE_DIFF));
+		
+		String tmpQTableFile = "/tmp/test-save-sgql-aggrdiff.xml";
+		sgql.loadKnowledge(QTABLE_AGGREGATEDIFF);
+		sgql.saveKnowledge(tmpQTableFile);
+		
+		String expected = new Scanner(new File(QTABLE_STAGES)).useDelimiter("\\Z").next();
+		String actual = new Scanner(new File(tmpQTableFile)).useDelimiter("\\Z").next();
+		
+		assertEquals(expected, actual);
+	}
+	
 	//@Test -- suspended until aggregate model becomes serializable or save/load knowledge stops depending on that
 	public void testLoadKnowledgeWithAggregateModel() {
-		SGQLearningAdapter learner = prepareLearner(WorldFactory.fromString(WorldFactory.AGGREGATE));
-		learner.loadKnowledge(QTABLE_AGGREGATE);
+		SGQLearningAdapter sgql = prepareLearner(WorldFactory.fromString(WorldFactory.AGGREGATE));
+		sgql.loadKnowledge(QTABLE_AGGREGATE);
 		
 		// stores the available actions
 		Map<String, Action> theActions = ScriptActionTypes.getMapToActions();
