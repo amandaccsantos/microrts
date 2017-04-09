@@ -28,7 +28,7 @@ import ai.core.InterruptibleAI;
  */
 public class PortfolioAI extends AIWithComputationBudget implements InterruptibleAI {
     
-    public static int DEBUG = 0;
+    public static int DEBUG = 1;
 
     int LOOKAHEAD = 500;
     AI strategies[] = null;

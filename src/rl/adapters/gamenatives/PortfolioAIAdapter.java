@@ -110,7 +110,7 @@ public class PortfolioAIAdapter implements SGAgent, PersistentLearner {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-        
+        System.out.println("Returning " + currentStrategy.getClass().getSimpleName());
         return nameToAction.get(currentStrategy.getClass().getSimpleName());
 	}
 
@@ -140,7 +140,7 @@ public class PortfolioAIAdapter implements SGAgent, PersistentLearner {
 		
 		EvaluationFunction evalFunc = null;
 		try {
-			evalFunc = (EvaluationFunction) Class.forName(evalFuncName).newInstance();
+			evalFunc = EvaluationFunctionFactory.fromString(evalFuncName);
 		}
 		catch (Exception e){
 			System.err.println("An error has occurred while attempting to load an Evaluation Function.");
