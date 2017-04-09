@@ -1,15 +1,12 @@
 package rl.adapters.gamenatives;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 import ai.core.AI;
-import ai.evaluation.EvaluationFunction;
 import ai.evaluation.SimpleSqrtEvaluationFunction3;
 import ai.portfolio.PortfolioAI;
 import burlap.mdp.core.action.Action;
-import burlap.mdp.core.action.ActionType;
 import burlap.mdp.core.state.State;
 import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.agent.SGAgent;
@@ -25,6 +22,8 @@ public class PortfolioAIAdapter implements SGAgent {
 	SGAgentType type;
 	PortfolioAI portfolioAI;
 	Collection<AI> portfolio;
+	AI currentStrategy;
+	Map<String, Action> nameToAction;
 	
 	int agentNum;
 	
@@ -59,8 +58,15 @@ public class PortfolioAIAdapter implements SGAgent {
 			initializePortfolioAI(state.getUnderlyingState().getUnitTypeTable());
 		}
 		
-		//TODO resume implementation here
-		return null;
+        portfolioAI.startNewComputation(agentNum, state.getUnderlyingState().clone());
+        try {
+			portfolioAI.computeDuringOneGameFrame();
+			currentStrategy = portfolioAI.getBestScriptSoFar();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+        
+        return nameToAction.get(currentStrategy.getClass().getSimpleName());
 	}
 
 	/**
@@ -68,10 +74,17 @@ public class PortfolioAIAdapter implements SGAgent {
 	 * @param unitTypeTable
 	 */
 	protected void initializePortfolioAI(UnitTypeTable unitTypeTable) {
+		
+		// initializes string -> action map
+		nameToAction = ScriptActionTypes.getMapToActions();
+		
 		// retrieves the list of AIs and transforms it in an array
 		Map<String, AI> actionMapping = ScriptActionTypes.getActionMapping(unitTypeTable);
 		portfolio = actionMapping.values();
 		AI[] portfolioArray = portfolio.toArray(new AI[portfolio.size()]);
+		
+		// selects the first AI as currentStrategy just to prevent NullPointerException
+		currentStrategy = portfolioArray[0];
 		
 		// creates an array stating that all AIs in the portfolio are not deterministic
 		// (we're being conservative by not making assumptions on deterministic-ness of AIs)
@@ -80,7 +93,7 @@ public class PortfolioAIAdapter implements SGAgent {
 			deterministic[i] = false;
 		}
 		
-		// finally creates the PortfolioAI object with default timeout, #playouts, lookahead and evaluation functions
+		// finally creates the PortfolioAI w/ default timeout, #playouts, lookahead and evaluation functions
 		portfolioAI = new PortfolioAI(
 			portfolioArray, deterministic, 100, -1, 100, 
 			new SimpleSqrtEvaluationFunction3()
@@ -90,14 +103,12 @@ public class PortfolioAIAdapter implements SGAgent {
 	@Override
 	public void observeOutcome(State s, JointAction jointAction, double[] jointReward, State sprime,
 			boolean isTerminal) {
-		// TODO Auto-generated method stub
-
+		// does nothing
 	}
 
 	@Override
 	public void gameTerminated() {
-		// TODO Auto-generated method stub
-
+		// does nothing
 	}
 
 }

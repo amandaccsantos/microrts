@@ -140,7 +140,17 @@ public class PortfolioAI extends AIWithComputationBudget implements Interruptibl
      
     
     public PlayerAction getBestActionSoFar() throws Exception {
-        int n = strategies.length;
+        AI ai = getBestScriptSoFar();
+        return ai.getAction(playerForThisComputation, gs_to_start_from);
+    }
+
+
+	/**
+	 * Determines which AI has the best performance so far and returns it
+	 * @return
+	 */
+	public AI getBestScriptSoFar() {
+		int n = strategies.length;
         if (DEBUG>=1) {
             System.out.println("PortfolioAI, game cycle: " + gs_to_start_from.getTime());
             System.out.println("  counts:");
@@ -187,8 +197,8 @@ public class PortfolioAI extends AIWithComputationBudget implements Interruptibl
         // use the AI that obtained best results:
         AI ai = strategies[bestMax].clone();
         ai.reset();
-        return ai.getAction(playerForThisComputation, gs_to_start_from);
-    }
+		return ai;
+	}
 
     
     @Override
