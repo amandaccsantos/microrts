@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import ai.core.AI;
+import ai.evaluation.EvaluationFunction;
 import ai.evaluation.SimpleSqrtEvaluationFunction3;
 import ai.portfolio.PortfolioAI;
 import burlap.mdp.core.action.Action;
@@ -12,24 +13,68 @@ import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.agent.SGAgent;
 import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.mdp.stochasticgames.world.World;
+import rl.adapters.learners.PersistentLearner;
 import rl.models.common.MicroRTSState;
 import rl.models.common.ScriptActionTypes;
 import rts.units.UnitTypeTable;
 
-public class PortfolioAIAdapter implements SGAgent {
+public class PortfolioAIAdapter implements SGAgent, PersistentLearner {
 	
 	String name;
 	SGAgentType type;
+	
+	/**
+	 * The underlying search procedure
+	 */
 	PortfolioAI portfolioAI;
+	
+	// PortfolioAI parameters
+	int timeout, playouts, lookahead;
+	
+	/**
+	 * Name of evaluation function to use
+	 */
+	String evalFuncName;
+	
 	Collection<AI> portfolio;
+	
 	AI currentStrategy;
+	
+	/**
+	 * Maps AI names to stochastic game Actions
+	 */
 	Map<String, Action> nameToAction;
 	
+	/**
+	 * Number of agent in the game (0 or 1)
+	 */
 	int agentNum;
 	
+	/**
+	 * Creates a PortfolioAIAdapter with default timeout, playouts and lookahead
+	 * @param agentName
+	 * @param agentType
+	 */
 	public PortfolioAIAdapter(String agentName, SGAgentType agentType){
+		this(agentName, agentType, 100, -1, 100, SimpleSqrtEvaluationFunction3.class.getSimpleName());
+	}
+	
+	/**
+	 * Creates a PortfolioAIAdapter specifying all parameters
+	 * @param agentName
+	 * @param agentType
+	 * @param timeout computation budget, in milliseconds
+	 * @param playouts number of playouts per computation
+	 * @param lookahead max search tree depth (?)
+	 */
+	public PortfolioAIAdapter(String agentName, SGAgentType agentType, 
+			int timeout, int playouts, int lookahead, String evalFuncName){
 		this.name = agentName;
 		this.type = agentType;
+		this.timeout = timeout;
+		this.playouts = playouts;
+		this.lookahead = lookahead;
+		this.evalFuncName = evalFuncName;
 	}
 
 	@Override
@@ -93,11 +138,38 @@ public class PortfolioAIAdapter implements SGAgent {
 			deterministic[i] = false;
 		}
 		
-		// finally creates the PortfolioAI w/ default timeout, #playouts, lookahead and evaluation functions
+		EvaluationFunction evalFunc = null;
+		try {
+			evalFunc = (EvaluationFunction) Class.forName(evalFuncName).newInstance();
+		}
+		catch (Exception e){
+			System.err.println("An error has occurred while attempting to load an Evaluation Function.");
+			System.err.println("Defaulting to SimpleSqrtEvaluationFunction3");
+			evalFunc = new SimpleSqrtEvaluationFunction3();
+			e.printStackTrace();
+		}
+		
+		// finally creates the PortfolioAI w/ specified parameters
 		portfolioAI = new PortfolioAI(
-			portfolioArray, deterministic, 100, -1, 100, 
-			new SimpleSqrtEvaluationFunction3()
+			portfolioArray, deterministic, timeout, 
+			playouts, lookahead, evalFunc
 		);
+	}
+	
+	public int getTimeout(){
+		return timeout;
+	}
+	
+	public int getPlayouts(){
+		return playouts;
+	}
+	
+	public int getLookahead() {
+		return lookahead;
+	}
+	
+	public String getEvaluationFunctionName() {
+		return evalFuncName;
 	}
 
 	@Override
@@ -109,6 +181,18 @@ public class PortfolioAIAdapter implements SGAgent {
 	@Override
 	public void gameTerminated() {
 		// does nothing
+	}
+
+	@Override
+	public void saveKnowledge(String path) {
+		// does nothing
+		
+	}
+
+	@Override
+	public void loadKnowledge(String path) {
+		// also does nothing
+		
 	}
 
 }
