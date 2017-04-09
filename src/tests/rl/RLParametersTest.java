@@ -28,7 +28,6 @@ import rl.RLParameters;
 import rl.adapters.gamenatives.PortfolioAIAdapter;
 import rl.adapters.learners.SGQLearningAdapter;
 import rl.models.aggregate.AggregateStateDomain;
-import rl.models.aggregatediff.AggregateDiffState;
 import rl.models.aggregatediff.AggregateDifferencesDomain;
 import rl.models.common.MicroRTSRewardFactory;
 
@@ -116,28 +115,13 @@ public class RLParametersTest {
 		
 		assertEquals(MicroRTSRewardFactory.SIMPLE_WEIGHTED, parameters.get(RLParamNames.REWARD_FUNCTION));
 		
-		// tests 'learner' parameters
-		assertEquals(0.9, (float) parameters.get(RLParamNames.DISCOUNT), 0.00001);
-		assertEquals(0.1, (float) parameters.get(RLParamNames.LEARNING_RATE), 0.00001);
-		assertEquals(1., (float) parameters.get(RLParamNames.INITIAL_Q), 0.00001);
-		
-		// tests 'searcher' parameters
-		assertEquals(50, (int) parameters.get(RLParamNames.TIMEOUT));
-		assertEquals(150, (int) parameters.get(RLParamNames.PLAYOUTS));
-		assertEquals(1000, (int) parameters.get(RLParamNames.LOOKAHEAD));
-		assertEquals(
-			SimpleSqrtEvaluationFunction3.class.getSimpleName(), 
-			parameters.get(RLParamNames.EVALUATION_FUNCTION)
-		);
-		
 		@SuppressWarnings("unchecked")
 		List<SGAgent> players = (List<SGAgent>) parameters.get(RLParamNames.PLAYERS);
 		assertEquals(2, players.size());
 		
 		for(SGAgent player : players){
 			
-			//casts the player and tests its attributes 
-			
+			// tests 'learner' parameters
 			if (player.agentName().equals("learner")){ 
 				SGQLearningAdapter sgql = (SGQLearningAdapter) player;
 				
@@ -159,7 +143,9 @@ public class RLParametersTest {
 				assertEquals(0.9, discount, 0.0000001);
 				
 			}
-			else if (player.agentName().equals("searcher")){ // instanceof SGQLearningAdapter){	//both agents in example are SGQLearningAdapter
+			
+			// tests searcher parameters
+			else if (player.agentName().equals("searcher")){ 
 				PortfolioAIAdapter portfAI = (PortfolioAIAdapter) player;
 				
 				//tests the value of parameters
