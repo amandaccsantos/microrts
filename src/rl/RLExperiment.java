@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -74,6 +73,7 @@ public class RLExperiment {
 
 		// adds players to the world
 		World gameWorld = (World) parameters.get(RLParamNames.ABSTRACTION_MODEL);
+		@SuppressWarnings("unchecked")
 		List<PersistentLearner> agents = (List<PersistentLearner>) parameters.get(RLParamNames.PLAYERS);
 
 		if (agents.size() < 2) {
@@ -132,9 +132,8 @@ public class RLExperiment {
 				}
 				
 			}
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		
 

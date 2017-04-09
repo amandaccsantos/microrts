@@ -2,7 +2,6 @@ package rl;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -21,16 +20,16 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import ai.evaluation.SimpleSqrtEvaluationFunction3;
 import ai.metabot.DummyPolicy;
-import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.learning.tdmethods.QLearning;
-import burlap.behavior.stochasticgames.agents.interfacing.singleagent.LearningAgentToSGAgentInterface;
 import burlap.behavior.stochasticgames.madynamicprogramming.backupOperators.MinMaxQ;
 import burlap.mdp.stochasticgames.agent.SGAgent;
 import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.mdp.stochasticgames.model.JointRewardFunction;
 import burlap.mdp.stochasticgames.world.World;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
+import rl.adapters.gamenatives.PortfolioAIAdapter;
 import rl.adapters.learners.PersistentLearner;
 import rl.adapters.learners.PersistentMultiAgentQLearning;
 import rl.adapters.learners.SGQLearningAdapter;
@@ -92,6 +91,9 @@ public class RLParameters {
 			integerParams = new HashSet<>();
 			integerParams.add(RLParamNames.EPISODES);
 			integerParams.add(RLParamNames.GAME_DURATION);
+			integerParams.add(RLParamNames.TIMEOUT);
+			integerParams.add(RLParamNames.PLAYOUTS);
+			integerParams.add(RLParamNames.LOOKAHEAD);
 		}
 		return integerParams;
 	}
@@ -118,16 +120,23 @@ public class RLParameters {
 	public Map<String, Object> defaultParameters(){
 		Map<String, Object> params = new HashMap<>();
 		
+		// experiment parameters
 		params.put(RLParamNames.EPISODES, 1000);
 		params.put(RLParamNames.GAME_DURATION, 3000);
+		params.put(RLParamNames.OUTPUT_DIR, "/tmp/rl-experiment/");
 		
+		params.put(RLParamNames.REWARD_FUNCTION, MicroRTSRewardFactory.WIN_LOSS);
+		
+		// parameters of RL methods
 		params.put(RLParamNames.DISCOUNT, 0.9f);
 		params.put(RLParamNames.LEARNING_RATE, 0.1f);
 		params.put(RLParamNames.INITIAL_Q, 1.0f);
 		
-		params.put(RLParamNames.OUTPUT_DIR, "/tmp/rl-experiment/");
-		
-		params.put(RLParamNames.REWARD_FUNCTION, MicroRTSRewardFactory.WIN_LOSS);
+		// parameters of search methods
+		params.put(RLParamNames.TIMEOUT, 100);
+		params.put(RLParamNames.PLAYOUTS, -1);
+		params.put(RLParamNames.LOOKAHEAD, 100);
+		params.put(RLParamNames.EVALUATION_FUNCTION, SimpleSqrtEvaluationFunction3.class.getSimpleName());
 		
 		//instantiates the default world:
 		World defaultWorld = WorldFactory.fromString(WorldFactory.STAGES);
@@ -139,11 +148,11 @@ public class RLParameters {
 		QLearning ql2 = new QLearning(null, 0.9f, new SimpleHashableStateFactory(false), 1, 0.1);
 
 		// create a single-agent interface for each of our learning algorithm
-		LearningAgentToSGAgentInterface a1 = new LearningAgentToSGAgentInterface(
+		SGQLearningAdapter a1 = new SGQLearningAdapter(
 			defaultWorld.getDomain(), ql1, "agent0", 
 			new SGAgentType("qlearning", defaultWorld.getDomain().getActionTypes())
 		);
-		LearningAgentToSGAgentInterface a2 = new LearningAgentToSGAgentInterface(
+		SGQLearningAdapter a2 = new SGQLearningAdapter(
 			defaultWorld.getDomain(), ql2, "agent1", 
 			new SGAgentType("qlearning", defaultWorld.getDomain().getActionTypes())
 		);
@@ -156,6 +165,12 @@ public class RLParameters {
 		return params;
 	}
 
+	/*public Map<String, Object> defaultRLParameters(){
+		Map<String, Object> params = new HashMap<>();
+		params.put(RLParamNames.DISCOUNT, 0.9f);
+		params.put(RLParamNames.LEARNING_RATE, 0.1f);
+		params.put(RLParamNames.INITIAL_Q, 1.0f);
+	}*/
 	
 	/**
 	 * Reads the parameters of a xml file
@@ -167,17 +182,17 @@ public class RLParameters {
 	 */
 	public Map<String, Object> loadFromFile(String path) throws SAXException, IOException, ParserConfigurationException{
 		
-		//initializes a list to load specified players, if there are any in the xml
+		// initializes a list to load specified players, if there are any in the xml
 		List<Node> playerNodes = new ArrayList<>();
 		
 		// store values that user might specify for world model and reward function
 		String worldModelName = null;
 		
-		//opens xml file
+		// opens xml file
 		DocumentBuilder dBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 		Document doc = dBuilder.parse(new File(path));
 		
-		//traverses all 1st level nodes of xml file (children of root node) 
+		// traverses all 1st level nodes of xml file (children of root node) 
 		NodeList nList = doc.getDocumentElement().getChildNodes();
 		
 		for (int i = 0; i < nList.getLength(); i++){
@@ -189,7 +204,7 @@ public class RLParameters {
 					
 					if (param.getNodeType() != Node.ELEMENT_NODE) continue;	//prevents ClassCastException
 					
-					//inserts the parameter on the map according to its type
+					// inserts the parameter on the map according to its type
 					Element e = (Element) param;
 					if (integerParameters().contains(param.getNodeName())){
 						params.put(param.getNodeName(), Integer.parseInt(e.getAttribute("value")));
@@ -197,15 +212,6 @@ public class RLParameters {
 					else if (floatParameters().contains(param.getNodeName())){
 						params.put(param.getNodeName(), Float.parseFloat(e.getAttribute("value")));
 					}
-					/*// if node is 'abstraction-model', stores the specified model
-					else if(param.getNodeName().equals(RLParamNames.ABSTRACTION_MODEL)){
-						params.put(RLParamNames.ABSTRACTION_MODEL, e.getAttribute("value"));
-					}
-					
-					// if node is 'reward function', stores the specified function
-					else if(param.getNodeName().equals(RLParamNames.REWARD_FUNCTION)){
-						params.put(RLParamNames.REWARD_FUNCTION, e.getAttribute("value"));
-					}*/
 					
 					else {	//parameter is an ordinary string (probably)
 						params.put(param.getNodeName(), e.getAttribute("value"));
@@ -216,7 +222,6 @@ public class RLParameters {
 			//if node is 'player', stores its node for processing afterwards
 			else if (n.getNodeName().equals("player")){
 				playerNodes.add(n.cloneNode(true));
-				//newPlayers.add(processPlayerNode(n));
 			}
 			
 		}
@@ -276,26 +281,26 @@ public class RLParameters {
 	 * @param playerNode
 	 */
 	private PersistentLearner processPlayerNode(Node playerNode){
-		//FIXME storing the world as a string broke this method
 		
-		//retrieves the world model (needed for agent creation)
+		// retrieves the world model (needed for agent creation)
 		World world = (World) params.get(RLParamNames.ABSTRACTION_MODEL);
 		
 		// tests which type of player is specified and properly loads an agent
 		Element e = (Element) playerNode;
 		
+		// loads parameters in a map
+		Map<String, Object> playerParams = fillParameters(playerNode, defaultParameters());
+		
+		// QLearning or SGQLearningAdapter
 		if ((e.getAttribute("type").equalsIgnoreCase("QLearning")) || 
 				(e.getAttribute("type").equalsIgnoreCase("SGQLearningAdapter"))){
-			//loads parameters in a map
-			Map<String, Object> qlParams = fillParameters(playerNode);
-			
 			
 			QLearning ql = new QLearning(
 				null, 
-				(float) qlParams.get(RLParamNames.DISCOUNT), 
+				(float) playerParams.get(RLParamNames.DISCOUNT), 
 				new SimpleHashableStateFactory(false), 
-				(float) qlParams.get(RLParamNames.INITIAL_Q), 
-				(float) qlParams.get(RLParamNames.LEARNING_RATE)
+				(float) playerParams.get(RLParamNames.INITIAL_Q), 
+				(float) playerParams.get(RLParamNames.LEARNING_RATE)
 			);
 
 			// create a single-agent interface for the learning algorithm
@@ -307,9 +312,9 @@ public class RLParameters {
 			return agent;
 		}
 		
+		// Dummy
 		else if (e.getAttribute("type").equalsIgnoreCase("Dummy")) {
 			//dummy is QLearning with 'dummy' learning policy
-			Map<String, Object> qlParams = fillParameters(playerNode);
 			
 			QLearning ql = new QLearning(
 				null, 
@@ -320,31 +325,18 @@ public class RLParameters {
 			);
 			
 			ql.setLearningPolicy(
-				new DummyPolicy((String) qlParams.get(RLParamNames.DUMMY_POLICY), ql)
+				new DummyPolicy((String) playerParams.get(RLParamNames.DUMMY_POLICY), ql)
 			);
 			
-			Field policyField = null;
+			/*Field policyField = null;
 			try {
 				policyField = ql.getClass().getDeclaredField("learningPolicy");
-			} catch (NoSuchFieldException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (SecurityException e1) {
-				// TODO Auto-generated catch block
+			} catch (NoSuchFieldException | SecurityException e1) {
 				e1.printStackTrace();
 			}
 			policyField.setAccessible(true);
-			Policy thePolicy = null;
-			try {
-				thePolicy = (Policy) policyField.get(ql);
-			} catch (IllegalArgumentException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (IllegalAccessException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-
+		 	*/
+			
 			// create a single-agent interface the learning algorithm
 			SGQLearningAdapter agent = new SGQLearningAdapter(
 					world.getDomain(), ql, e.getAttribute("name"), 
@@ -353,19 +345,41 @@ public class RLParameters {
 			return agent;
 		}
 		
+		// minimax-Q
 		else if(e.getAttribute("type").equalsIgnoreCase("minimaxQ")) {
 		
 			//MinimaxQ example: https://groups.google.com/forum/#!topic/burlap-discussion/QYP6FKDGDnM
 			PersistentMultiAgentQLearning mmq = new PersistentMultiAgentQLearning(
-				world.getDomain(), .9, .1, new SimpleHashableStateFactory(),
-				1, new MinMaxQ(), true, e.getAttribute("name"), 
+				world.getDomain(), 
+				(float) playerParams.get(RLParamNames.DISCOUNT), 
+				(float) playerParams.get(RLParamNames.LEARNING_RATE), 
+				new SimpleHashableStateFactory(),
+				(float) playerParams.get(RLParamNames.INITIAL_Q), 
+				new MinMaxQ(), false, 
+				e.getAttribute("name"), 
 				new SGAgentType("MiniMaxQ", world.getDomain().getActionTypes())
 			);
 			
 			return mmq;
 		}
 		
-		throw new RuntimeException("Could not load player from file.");
+		// PortfolioAI or PortfolioAIAdapter
+		else if(e.getAttribute("type").equalsIgnoreCase("PortfolioAI") || 
+				e.getAttribute("type").equalsIgnoreCase("PortfolioAIAdapter")) {
+			
+			PortfolioAIAdapter agent = new PortfolioAIAdapter(
+				e.getAttribute("name"), 
+				new SGAgentType("PortfolioAI", world.getDomain().getActionTypes()),
+				(int) playerParams.get(RLParamNames.TIMEOUT),
+				(int) playerParams.get(RLParamNames.PLAYOUTS),
+				(int) playerParams.get(RLParamNames.LOOKAHEAD),
+				(String) playerParams.get(RLParamNames.EVALUATION_FUNCTION)
+			);
+			
+			return agent;
+		}
+		
+		throw new RuntimeException("Unrecognized player type: " + e.getAttribute("type"));
 	}
 
 	/**
@@ -374,22 +388,32 @@ public class RLParameters {
 	 * @return
 	 */
 	private Map<String, Object> fillParameters(Node node) {
-		Map<String, Object> parameters = new HashMap<>();
+		return fillParameters(node, new HashMap<String, Object>());
+	}
+	
+	/**
+	 * Processes the children of a {@link Node}, and return their values in a Map (paramName -> value)
+	 * @param node a node containing parameters as in <node> <param1 value="1"/> <param2 value="2"/> </node>
+	 * @param defaulParameters a map containing default parameters, so that new values are overwritten
+	 * @return
+	 */
+	private Map<String, Object> fillParameters(Node node, Map<String, Object> defaulParameters) {
+		
 		for(Node parameter = node.getFirstChild(); parameter != null; parameter = parameter.getNextSibling()){
 			
 			if (parameter.getNodeType() != Node.ELEMENT_NODE) continue;	//prevents ClassCastException
 			
 			Element paramElement = (Element) parameter;
 			if (integerParameters().contains(parameter.getNodeName())){
-				parameters.put(parameter.getNodeName(), Integer.parseInt(paramElement.getAttribute("value")));
+				defaulParameters.put(parameter.getNodeName(), Integer.parseInt(paramElement.getAttribute("value")));
 			}
 			else if (floatParameters().contains(parameter.getNodeName())){
-				parameters.put(parameter.getNodeName(), Float.parseFloat(paramElement.getAttribute("value")));
+				defaulParameters.put(parameter.getNodeName(), Float.parseFloat(paramElement.getAttribute("value")));
 			}
 			else {	//parameter is a string (probably)
-				parameters.put(parameter.getNodeName(), paramElement.getAttribute("value"));
+				defaulParameters.put(parameter.getNodeName(), paramElement.getAttribute("value"));
 			}
 		}
-		return parameters;
+		return defaulParameters;
 	}
 }
