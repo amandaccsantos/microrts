@@ -121,7 +121,7 @@ public class RLParameters {
 		Map<String, Object> params = new HashMap<>();
 		
 		// experiment parameters
-		params.put(RLParamNames.EPISODES, 1000);
+		params.put(RLParamNames.EPISODES, 100);
 		params.put(RLParamNames.GAME_DURATION, 3000);
 		params.put(RLParamNames.OUTPUT_DIR, "/tmp/rl-experiment/");
 		
@@ -200,23 +200,7 @@ public class RLParameters {
 
 			//if node is 'parameters', traverses all its child nodes, setting experiment parameters accordingly
 			if (n.getNodeName() == "parameters"){
-				for(Node param = n.getFirstChild(); param != null; param = param.getNextSibling()){
-					
-					if (param.getNodeType() != Node.ELEMENT_NODE) continue;	//prevents ClassCastException
-					
-					// inserts the parameter on the map according to its type
-					Element e = (Element) param;
-					if (integerParameters().contains(param.getNodeName())){
-						params.put(param.getNodeName(), Integer.parseInt(e.getAttribute("value")));
-					}
-					else if (floatParameters().contains(param.getNodeName())){
-						params.put(param.getNodeName(), Float.parseFloat(e.getAttribute("value")));
-					}
-					
-					else {	//parameter is an ordinary string (probably)
-						params.put(param.getNodeName(), e.getAttribute("value"));
-					}
-				}
+				fillParameters(n, params);
 			}
 			
 			//if node is 'player', stores its node for processing afterwards
