@@ -9,10 +9,12 @@ import rts.GameState;
 
 public class GameStage extends MicroRTSState{
 	
+	//TODO make stage an integer: currentTimestep / STAGE_DURATION (this has more flexibility)
 	GameStages stage;
 	
 	
 	/**
+	 * TODO: make it flexible (parameterize the stage duration)
 	 * Duration of a stage, in microRTS frames
 	 */
 	public static final int STAGE_DURATION = 600;
