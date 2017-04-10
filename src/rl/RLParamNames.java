@@ -7,6 +7,7 @@ public class RLParamNames {
 	public static final String ABSTRACTION_MODEL = "abstraction-model";
 	public static final String REWARD_FUNCTION = "reward-function";
 	
+	
 	// parameters of RL methods
 	public static final String DISCOUNT = "discount";
 	public static final String LEARNING_RATE = "learning-rate";
@@ -19,8 +20,11 @@ public class RLParamNames {
 	public static final String LOOKAHEAD = "lookahead";
 	public static final String EVALUATION_FUNCTION = "evaluation-function"; 
 	
+	
 		
 	public static final String PLAYERS = "players";	//does not appear in XML
+	
+	public static final String DEBUG_LEVEL = "debug-level";	// how verbose should we be?
 	
 	public static final String CONFIG_FILE = "config-file";
 	public static final String OUTPUT_DIR = "output-dir";

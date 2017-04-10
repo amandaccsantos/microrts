@@ -6,10 +6,11 @@
 <experiment>
 	<parameters>
 		<episodes value="1" />
-		<game-duration value="3000" /> <!-- has no effect yet -->
+		<game-duration value="3000" /> 
 		<abstraction-model value="aggregatediff" />
 		<reward-function value="simpleweighted" />
 		<output-dir value="/tmp/example-portfolioAI" />
+		<debug-level value="1" />
 	</parameters>
 
 	<player name="dummy" type="Dummy">
@@ -20,7 +21,7 @@
 	</player>
 
 	<player name="searcher" type="PortfolioAI">
-		<timeout value="2000" />
+		<timeout value="100" />
 		<playouts value="-1" />
 		<lookahead value="100" />
 		<evaluation-function value="SimpleSqrtEvaluationFunction" />

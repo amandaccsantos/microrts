@@ -116,6 +116,7 @@ public class RLParametersTest {
 		
 		//tests parameter values
 		assertEquals(200, (int) rlParams.getParameter(RLParamNames.EPISODES));
+		assertEquals(2, (int) rlParams.getParameter(RLParamNames.DEBUG_LEVEL));
 		
 		World w = (World) rlParams.getParameter(RLParamNames.ABSTRACTION_MODEL);
 		assertTrue(w.getDomain() instanceof AggregateDifferencesDomain);

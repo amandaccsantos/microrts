@@ -113,6 +113,7 @@ public class RLParameters {
 			integerParams.add(RLParamNames.TIMEOUT);
 			integerParams.add(RLParamNames.PLAYOUTS);
 			integerParams.add(RLParamNames.LOOKAHEAD);
+			integerParams.add(RLParamNames.DEBUG_LEVEL);
 		}
 		return integerParams;
 	}
@@ -146,6 +147,7 @@ public class RLParameters {
 		
 		params.put(RLParamNames.REWARD_FUNCTION, MicroRTSRewardFactory.WIN_LOSS);
 		params.put(RLParamNames.ABSTRACTION_MODEL, WorldFactory.STAGES);
+		params.put(RLParamNames.DEBUG_LEVEL, 0); // currently only affects PortfolioAI
 		
 		// parameters of RL methods
 		params.put(RLParamNames.DISCOUNT, 0.9f);
@@ -157,6 +159,7 @@ public class RLParameters {
 		params.put(RLParamNames.PLAYOUTS, -1);
 		params.put(RLParamNames.LOOKAHEAD, 100);
 		params.put(RLParamNames.EVALUATION_FUNCTION, SimpleSqrtEvaluationFunction3.class.getSimpleName());
+		
 		
 		//adds the default players - their params: discount, StateFactory, defaultQ, learning rate
 		/*defaultPlayers = new ArrayList<>();
