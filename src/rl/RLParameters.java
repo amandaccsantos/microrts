@@ -64,6 +64,26 @@ public class RLParameters {
 	private Map<String, Object> params;
 	
 	/**
+	 * Stores the world specified in parameters
+	 */
+	private World world;
+	
+	/**
+	 * Stores the joint reward function
+	 */
+	private JointRewardFunction jointRwd;
+	
+	/**
+	 * Stores players' information contained in config. file
+	 */
+	List<Node> playerNodes; 
+	
+	/**
+	 * Stores the actual player objects
+	 */
+	List<PersistentLearner> players;
+	
+	/**
 	 * Initializes with default parameters
 	 */
 	private RLParameters(){
@@ -115,6 +135,8 @@ public class RLParameters {
 	
 	/**
 	 * Returns the default parameters
+	 * Has the collateral effect of resetting internal variables
+	 * (reward function, list of players, etc) 
 	 * @return {@link Map}
 	 */
 	public Map<String, Object> defaultParameters(){
@@ -122,10 +144,11 @@ public class RLParameters {
 		
 		// experiment parameters
 		params.put(RLParamNames.EPISODES, 100);
-		params.put(RLParamNames.GAME_DURATION, 3000);
+		params.put(RLParamNames.GAME_DURATION, 5000);
 		params.put(RLParamNames.OUTPUT_DIR, "/tmp/rl-experiment/");
 		
 		params.put(RLParamNames.REWARD_FUNCTION, MicroRTSRewardFactory.WIN_LOSS);
+		params.put(RLParamNames.ABSTRACTION_MODEL, WorldFactory.STAGES);
 		
 		// parameters of RL methods
 		params.put(RLParamNames.DISCOUNT, 0.9f);
@@ -138,12 +161,14 @@ public class RLParameters {
 		params.put(RLParamNames.LOOKAHEAD, 100);
 		params.put(RLParamNames.EVALUATION_FUNCTION, SimpleSqrtEvaluationFunction3.class.getSimpleName());
 		
-		//instantiates the default world:
-		World defaultWorld = WorldFactory.fromString(WorldFactory.STAGES);
-		params.put(RLParamNames.ABSTRACTION_MODEL, defaultWorld);
+		// resets stuff
+		players = null;
+		world = null;
+		jointRwd = null;
+		playerNodes = null;
 		
 		//adds the default players - their params: discount, StateFactory, defaultQ, learning rate
-		List<SGAgent> players = new ArrayList<>();
+		/*defaultPlayers = new ArrayList<>();
 		QLearning ql1 = new QLearning(null, 0.9f, new SimpleHashableStateFactory(false), 1, 0.1);
 		QLearning ql2 = new QLearning(null, 0.9f, new SimpleHashableStateFactory(false), 1, 0.1);
 
@@ -157,11 +182,11 @@ public class RLParameters {
 			new SGAgentType("qlearning", defaultWorld.getDomain().getActionTypes())
 		);
 		
-		players.add(a1);
-		players.add(a2);
+		defaultPlayers.add(a1);
+		defaultPlayers.add(a2);
 		
 		params.put(RLParamNames.PLAYERS, params);
-		
+		*/
 		return params;
 	}
 
@@ -181,12 +206,8 @@ public class RLParameters {
 	 * @throws ParserConfigurationException
 	 */
 	public Map<String, Object> loadFromFile(String path) throws SAXException, IOException, ParserConfigurationException{
-		
-		// initializes a list to load specified players, if there are any in the xml
-		List<Node> playerNodes = new ArrayList<>();
-		
-		// store values that user might specify for world model and reward function
-		String worldModelName = null;
+		// initializes player nodes that will be parsed from file
+		playerNodes = new ArrayList<>();
 		
 		// opens xml file
 		DocumentBuilder dBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -210,35 +231,77 @@ public class RLParameters {
 			
 		}
 		
-		// process the reward function
-		JointRewardFunction jointRwd = MicroRTSRewardFactory.getRewardFunction(
-			(String) params.get(RLParamNames.REWARD_FUNCTION)
-		);
-		
-		/*
-		 * Process the world model. We had stored a String with the name, 
-		 * it will be replaced by the appropriate World object 
-		 */
-		worldModelName = (String) params.get(RLParamNames.ABSTRACTION_MODEL);
-		params.put(
-			RLParamNames.ABSTRACTION_MODEL, 
-			WorldFactory.fromString(worldModelName, jointRwd)
-		);
-		
-		// process player nodes and creates players accordingly
-		if(! playerNodes.isEmpty()){
-			List<PersistentLearner> newPlayers = new ArrayList<>();
-			for(Node n : playerNodes){
-				newPlayers.add(processPlayerNode(n));
-			}
-			
-			// replace default players if new ones were specified in xml
-			params.put(RLParamNames.PLAYERS, newPlayers);
+		return params;
+	}
+	
+	/**
+	 * Returns the value of a parameter identified by its name
+	 * @param name
+	 * @return
+	 */
+	public Object getParameter(String name){
+		// some parameters require initialization before returning
+		if(name.equalsIgnoreCase(RLParamNames.ABSTRACTION_MODEL)){
+			return getWorld();
+		}
+		else if (name.equalsIgnoreCase(RLParamNames.REWARD_FUNCTION)){
+			return getJointReward();
+		}
+		else if (name.equalsIgnoreCase(RLParamNames.PLAYERS)){
+			return getPlayers();
 		}
 		
+		// ordinary parameters are retrieved directly from params
+		return params.get(name);
+	}
+	
+	/**
+	 * Returns the actual {@link World} object instead of its name  
+	 * stored in {@link #params} map.
+	 * @return
+	 */
+	public World getWorld(){
+		// initializes world if necessary
+		if(world == null){ 
+			String worldModelName = (String) params.get(RLParamNames.ABSTRACTION_MODEL);
+			world = WorldFactory.fromString(worldModelName, getJointReward());
+		}
+		return world;
+	}
+	
+	/**
+	 * Returns the actual {@link JointRewardFunction} object instead of its name  
+	 * stored in {@link #params} map.
+	 * @return
+	 */
+	public JointRewardFunction getJointReward(){
+		// initializes joint reward if necessary
+		if(jointRwd == null){
+			jointRwd = MicroRTSRewardFactory.getRewardFunction(
+				(String) params.get(RLParamNames.REWARD_FUNCTION)
+			);
+		}
+		return jointRwd;
+	}
+	
+	public List<PersistentLearner> getPlayers(){
 		
-		
-		return params;
+		// initializes list of players if needed 
+		if(players == null){
+			
+			if(playerNodes.size() < 2){
+				throw new RuntimeException("You must specify at least two players.");
+			}
+			
+			// process previously stored player nodes and creates players accordingly
+			players = new ArrayList<>();
+			for(Node n : playerNodes){
+				System.out.println(n);
+				System.out.println(players);
+				players.add(processPlayerNode(n));
+			}
+		}
+		return players;
 	}
 	
 	/**
@@ -267,7 +330,7 @@ public class RLParameters {
 	private PersistentLearner processPlayerNode(Node playerNode){
 		
 		// retrieves the world model (needed for agent creation)
-		World world = (World) params.get(RLParamNames.ABSTRACTION_MODEL);
+		World world = getWorld();
 		
 		// tests which type of player is specified and properly loads an agent
 		Element e = (Element) playerNode;
@@ -323,8 +386,8 @@ public class RLParameters {
 			
 			// create a single-agent interface the learning algorithm
 			SGQLearningAdapter agent = new SGQLearningAdapter(
-					world.getDomain(), ql, e.getAttribute("name"), 
-					new SGAgentType("Dummy", world.getDomain().getActionTypes())
+				world.getDomain(), ql, e.getAttribute("name"), 
+				new SGAgentType("Dummy", world.getDomain().getActionTypes())
 			);
 			return agent;
 		}

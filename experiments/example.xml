@@ -6,7 +6,7 @@
 	<parameters>
 		<episodes value="10" />
 		<game-duration value="3000" /> <!-- has no effect yet -->
-		<abstraction-model value="aggregate" />
+		<abstraction-model value="stages" />
 		<reward-function value="winloss" />
 	</parameters>
 

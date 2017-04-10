@@ -11,6 +11,7 @@ import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
@@ -32,6 +33,12 @@ import rl.models.aggregatediff.AggregateDifferencesDomain;
 import rl.models.common.MicroRTSRewardFactory;
 
 public class RLParametersTest {
+	
+	@Before
+	public void setUp(){
+		// resets RLParameters
+		RLParameters.getInstance().defaultParameters();
+	}
 
 	@Test
 	/**
@@ -45,14 +52,14 @@ public class RLParametersTest {
 		//tests parameter values
 		assertEquals(100, (int)parameters.get(RLParamNames.EPISODES));
 		
-		World w = (World)parameters.get(RLParamNames.ABSTRACTION_MODEL);
+		World w = (World) rlParams.getParameter(RLParamNames.ABSTRACTION_MODEL);
 		assertTrue(w.getDomain() instanceof AggregateStateDomain);
 		
 		assertEquals(MicroRTSRewardFactory.SIMPLE_WEIGHTED, parameters.get(RLParamNames.REWARD_FUNCTION));
 		
 		
 		@SuppressWarnings("unchecked")
-		List<SGAgent> players = (List<SGAgent>) parameters.get(RLParamNames.PLAYERS);
+		List<SGAgent> players = (List<SGAgent>) rlParams.getParameter(RLParamNames.PLAYERS);
 		assertEquals(2, players.size());
 		
 		for(SGAgent player : players){
@@ -108,15 +115,15 @@ public class RLParametersTest {
 		Map<String, Object> parameters = rlParams.loadFromFile("src/tests/rl/example_portfolioAI.xml"); //may throw exceptions
 		
 		//tests parameter values
-		assertEquals(200, (int)parameters.get(RLParamNames.EPISODES));
+		assertEquals(200, (int) rlParams.getParameter(RLParamNames.EPISODES));
 		
-		World w = (World)parameters.get(RLParamNames.ABSTRACTION_MODEL);
+		World w = (World) rlParams.getParameter(RLParamNames.ABSTRACTION_MODEL);
 		assertTrue(w.getDomain() instanceof AggregateDifferencesDomain);
 		
 		assertEquals(MicroRTSRewardFactory.SIMPLE_WEIGHTED, parameters.get(RLParamNames.REWARD_FUNCTION));
 		
 		@SuppressWarnings("unchecked")
-		List<SGAgent> players = (List<SGAgent>) parameters.get(RLParamNames.PLAYERS);
+		List<SGAgent> players = (List<SGAgent>) rlParams.getParameter(RLParamNames.PLAYERS);
 		assertEquals(2, players.size());
 		
 		for(SGAgent player : players){

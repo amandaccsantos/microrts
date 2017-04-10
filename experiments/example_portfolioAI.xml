@@ -12,10 +12,11 @@
 		<output-dir value="/tmp/example-portfolioAI" />
 	</parameters>
 
-	<player name="learner" type="QLearning">
-		<discount value="0.9" />
+	<player name="dummy" type="Dummy">
+	<!--	<discount value="0.9" />
 		<learning-rate value="0.1" />
-		<initial-q value="1" />
+		<initial-q value="1" /> -->
+		<dummy-policy value="WorkerRush" />
 	</player>
 
 	<player name="searcher" type="PortfolioAI">

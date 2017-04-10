@@ -63,7 +63,7 @@ public class RLExperiment {
 		try {
 			parameters = rlParams.loadFromFile(cmdLine.getOptionValue(RLParamNames.CONFIG_FILE));
 		} catch (SAXException | IOException | ParserConfigurationException e) {
-			System.err.println("An error has occurred...");
+			System.err.println("Error while parsing configuration file...");
 			e.printStackTrace();
 			System.exit(0);
 		}
