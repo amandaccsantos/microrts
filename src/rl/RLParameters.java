@@ -159,28 +159,7 @@ public class RLParameters {
 		params.put(RLParamNames.PLAYOUTS, -1);
 		params.put(RLParamNames.LOOKAHEAD, 100);
 		params.put(RLParamNames.EVALUATION_FUNCTION, SimpleSqrtEvaluationFunction3.class.getSimpleName());
-		
-		
-		//adds the default players - their params: discount, StateFactory, defaultQ, learning rate
-		/*defaultPlayers = new ArrayList<>();
-		QLearning ql1 = new QLearning(null, 0.9f, new SimpleHashableStateFactory(false), 1, 0.1);
-		QLearning ql2 = new QLearning(null, 0.9f, new SimpleHashableStateFactory(false), 1, 0.1);
 
-		// create a single-agent interface for each of our learning algorithm
-		SGQLearningAdapter a1 = new SGQLearningAdapter(
-			defaultWorld.getDomain(), ql1, "agent0", 
-			new SGAgentType("qlearning", defaultWorld.getDomain().getActionTypes())
-		);
-		SGQLearningAdapter a2 = new SGQLearningAdapter(
-			defaultWorld.getDomain(), ql2, "agent1", 
-			new SGAgentType("qlearning", defaultWorld.getDomain().getActionTypes())
-		);
-		
-		defaultPlayers.add(a1);
-		defaultPlayers.add(a2);
-		
-		params.put(RLParamNames.PLAYERS, params);
-		*/
 		return params;
 	}
 	
