@@ -36,8 +36,8 @@ public class RLParametersTest {
 	
 	@Before
 	public void setUp(){
-		// resets RLParameters
-		RLParameters.getInstance().defaultParameters();
+		// reset is required, because the instance persists between tests
+		RLParameters.getInstance().reset();
 	}
 
 	@Test

@@ -24,7 +24,6 @@ import ai.evaluation.SimpleSqrtEvaluationFunction3;
 import ai.metabot.DummyPolicy;
 import burlap.behavior.singleagent.learning.tdmethods.QLearning;
 import burlap.behavior.stochasticgames.madynamicprogramming.backupOperators.MinMaxQ;
-import burlap.mdp.stochasticgames.agent.SGAgent;
 import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.mdp.stochasticgames.model.JointRewardFunction;
 import burlap.mdp.stochasticgames.world.World;
@@ -135,8 +134,6 @@ public class RLParameters {
 	
 	/**
 	 * Returns the default parameters
-	 * Has the collateral effect of resetting internal variables
-	 * (reward function, list of players, etc) 
 	 * @return {@link Map}
 	 */
 	public Map<String, Object> defaultParameters(){
@@ -161,12 +158,6 @@ public class RLParameters {
 		params.put(RLParamNames.LOOKAHEAD, 100);
 		params.put(RLParamNames.EVALUATION_FUNCTION, SimpleSqrtEvaluationFunction3.class.getSimpleName());
 		
-		// resets stuff
-		players = null;
-		world = null;
-		jointRwd = null;
-		playerNodes = null;
-		
 		//adds the default players - their params: discount, StateFactory, defaultQ, learning rate
 		/*defaultPlayers = new ArrayList<>();
 		QLearning ql1 = new QLearning(null, 0.9f, new SimpleHashableStateFactory(false), 1, 0.1);
@@ -188,6 +179,19 @@ public class RLParameters {
 		params.put(RLParamNames.PLAYERS, params);
 		*/
 		return params;
+	}
+	
+	/**
+	 * Resets parameters to their default values and 
+	 * cleans up internal structures
+	 */
+	public void reset(){
+		// resets stuff
+		params = defaultParameters();
+		players = null;
+		world = null;
+		jointRwd = null;
+		playerNodes = null;
 	}
 
 	/*public Map<String, Object> defaultRLParameters(){
@@ -296,8 +300,6 @@ public class RLParameters {
 			// process previously stored player nodes and creates players accordingly
 			players = new ArrayList<>();
 			for(Node n : playerNodes){
-				System.out.println(n);
-				System.out.println(players);
 				players.add(processPlayerNode(n));
 			}
 		}
@@ -441,10 +443,10 @@ public class RLParameters {
 	/**
 	 * Processes the children of a {@link Node}, and return their values in a Map (paramName -> value)
 	 * @param node a node containing parameters as in <node> <param1 value="1"/> <param2 value="2"/> </node>
-	 * @param defaulParameters a map containing default parameters, so that new values are overwritten
+	 * @param initialParameters a map containing the parameters, so that new values are overwritten
 	 * @return
 	 */
-	private Map<String, Object> fillParameters(Node node, Map<String, Object> defaulParameters) {
+	private Map<String, Object> fillParameters(Node node, Map<String, Object> initialParameters) {
 		
 		for(Node parameter = node.getFirstChild(); parameter != null; parameter = parameter.getNextSibling()){
 			
@@ -452,15 +454,15 @@ public class RLParameters {
 			
 			Element paramElement = (Element) parameter;
 			if (integerParameters().contains(parameter.getNodeName())){
-				defaulParameters.put(parameter.getNodeName(), Integer.parseInt(paramElement.getAttribute("value")));
+				initialParameters.put(parameter.getNodeName(), Integer.parseInt(paramElement.getAttribute("value")));
 			}
 			else if (floatParameters().contains(parameter.getNodeName())){
-				defaulParameters.put(parameter.getNodeName(), Float.parseFloat(paramElement.getAttribute("value")));
+				initialParameters.put(parameter.getNodeName(), Float.parseFloat(paramElement.getAttribute("value")));
 			}
 			else {	//parameter is a string (probably)
-				defaulParameters.put(parameter.getNodeName(), paramElement.getAttribute("value"));
+				initialParameters.put(parameter.getNodeName(), paramElement.getAttribute("value"));
 			}
 		}
-		return defaulParameters;
+		return initialParameters;
 	}
 }
