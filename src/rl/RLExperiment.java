@@ -72,9 +72,9 @@ public class RLExperiment {
 		parameters = rlParams.parametersFromCommandLine(cmdLine);
 
 		// adds players to the world
-		World gameWorld = (World) parameters.get(RLParamNames.ABSTRACTION_MODEL);
+		World gameWorld = (World) rlParams.getParameter(RLParamNames.ABSTRACTION_MODEL);
 		@SuppressWarnings("unchecked")
-		List<PersistentLearner> agents = (List<PersistentLearner>) parameters.get(RLParamNames.PLAYERS);
+		List<PersistentLearner> agents = (List<PersistentLearner>) rlParams.getParameter(RLParamNames.PLAYERS);
 
 		if (agents.size() < 2) {
 			throw new RuntimeException("Less than 2 players were specified for the experiment");
