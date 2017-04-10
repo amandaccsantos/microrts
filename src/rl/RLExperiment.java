@@ -118,7 +118,7 @@ public class RLExperiment {
 						agent.saveKnowledge(String.format("%s/q_%s_%d.txt", outDir, agent.agentName(), episodeNumber));
 					}
 				
-				
+					/* FIXME: cast raises exception when agent is not SGQLearningAdapter
 					EnumerableSGDomain enumDomain = (EnumerableSGDomain) gameWorld.getDomain();
 					for (State s : enumDomain.enumerate()) {
 	                	for (PersistentLearner agent : agents) {
@@ -129,6 +129,7 @@ public class RLExperiment {
 		                    }
 	                	}
 	                }
+	                */
 				}
 				
 			}
@@ -147,6 +148,7 @@ public class RLExperiment {
 			agent.saveKnowledge(String.format("%s/q_%s_final.txt", outDir, agent.agentName()));
 		}
 	
+		/* FIXME: cast raises exception when agent is not SGQLearningAdapter
 		EnumerableSGDomain enumDomain = (EnumerableSGDomain) gameWorld.getDomain();
 		for (State s : enumDomain.enumerate()) {
         	for (PersistentLearner agent : agents) {
@@ -157,6 +159,7 @@ public class RLExperiment {
                 }
         	}
         }
+        */
 		//}
 		
 		//prints results for final episode
