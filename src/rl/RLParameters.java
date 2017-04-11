@@ -417,10 +417,10 @@ public class RLParameters {
 	 * Processes the children of a {@link Node}, and return their values in a Map (paramName -> value)
 	 * @param node a node containing parameters as in <node> <param1 value="1"/> <param2 value="2"/> </node>
 	 * @return
-	 */
+	 *
 	private Map<String, Object> fillParameters(Node node) {
 		return fillParameters(node, new HashMap<String, Object>());
-	}
+	}*/
 	
 	/**
 	 * Processes the children of a {@link Node}, and return their values in a Map (paramName -> value)

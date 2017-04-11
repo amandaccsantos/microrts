@@ -66,11 +66,7 @@ public class MetaGameLearningExample {
 		SGDomain microRTSDomain = null;
 		try {
 			microRTSDomain = new GameStagesDomain();
-		} catch (JDOMException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
+		} catch (JDOMException | IOException e) {
 			e.printStackTrace();
 		}//(SGDomain) microRTSGame.generateDomain();
 		SGAgentType agentType = new SGAgentType("agent", microRTSDomain.getActionTypes());
