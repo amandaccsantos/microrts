@@ -23,7 +23,7 @@ public class MetaBotTest {
         int iterationsBudget = -1;
         
         //bots.add(new MetaBot(timeBudget, iterationsBudget, unitTypeTable, "/tmp/qltest/qtable0_99"));
-        bots.add(new ai.rl.MetaBot());
+        bots.add(new ai.rl.MetaBot("MinimaxQ", "/tmp/mmq-vs-workerrush/q_learner_final.txt", "stages"));
         bots.add(new RangedRush(unitTypeTable));
         PrintStream out = System.out;
         
