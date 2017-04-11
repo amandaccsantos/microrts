@@ -5,6 +5,6 @@ classpath=.:bin:lib/*
 
 echo "Launching experiment..."
 
-java -classpath $classpath rl.RLExperiment "$@" 
+java -classpath $classpath -Djava.library.path=lib/ rl.RLExperiment "$@" 
 
 echo "Done."
