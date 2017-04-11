@@ -22,7 +22,8 @@ public class MetaBotTest {
         int timeBudget = 100;
         int iterationsBudget = -1;
         
-        bots.add(new MetaBot(timeBudget, iterationsBudget, unitTypeTable, "/tmp/qltest/qtable0_99"));
+        //bots.add(new MetaBot(timeBudget, iterationsBudget, unitTypeTable, "/tmp/qltest/qtable0_99"));
+        bots.add(new ai.rl.MetaBot());
         bots.add(new RangedRush(unitTypeTable));
         PrintStream out = System.out;
         
