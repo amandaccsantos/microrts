@@ -4,6 +4,8 @@ import java.io.PrintStream;
 import java.util.LinkedList;
 import java.util.List;
 
+import ai.abstraction.HeavyRush;
+import ai.abstraction.LightRush;
 import ai.abstraction.RangedRush;
 import ai.abstraction.WorkerRush;
 import ai.core.AI;
@@ -15,9 +17,6 @@ public class MetaBotTest {
 	public static void main(String args[]) throws Exception {
 		List<AI> bots = new LinkedList<>();
         UnitTypeTable unitTypeTable = new UnitTypeTable();
-        
-        int timeBudget = 100;
-        int iterationsBudget = -1;
         
         //bots.add(new MetaBot(timeBudget, iterationsBudget, unitTypeTable, "/tmp/qltest/qtable0_99"));
         //bots.add(new ai.rl.MetaBot("MinimaxQ", "/tmp/mmq-vs-workerrush/q_learner_final.txt", "stages"));
