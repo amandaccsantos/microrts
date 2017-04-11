@@ -4,12 +4,9 @@ import java.io.PrintStream;
 import java.util.LinkedList;
 import java.util.List;
 
-import ai.abstraction.HeavyRush;
-import ai.abstraction.LightRush;
 import ai.abstraction.RangedRush;
 import ai.abstraction.WorkerRush;
 import ai.core.AI;
-import ai.metabot.MetaBot;
 import rts.PhysicalGameState;
 import rts.units.UnitTypeTable;
 
@@ -23,8 +20,9 @@ public class MetaBotTest {
         int iterationsBudget = -1;
         
         //bots.add(new MetaBot(timeBudget, iterationsBudget, unitTypeTable, "/tmp/qltest/qtable0_99"));
-        bots.add(new ai.rl.MetaBot("MinimaxQ", "/tmp/mmq-vs-workerrush/q_learner_final.txt", "stages"));
-        bots.add(new RangedRush(unitTypeTable));
+        //bots.add(new ai.rl.MetaBot("MinimaxQ", "/tmp/mmq-vs-workerrush/q_learner_final.txt", "stages"));
+        bots.add(new ai.rl.MetaBot());
+        bots.add(new WorkerRush(unitTypeTable));
         PrintStream out = System.out;
         
         // Separate the matchs by map:

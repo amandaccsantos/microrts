@@ -100,11 +100,9 @@ public class MetaBot extends AI {
 				learnerType.equalsIgnoreCase(PersistentMultiAgentQLearning.class.getName()) || 
 				learnerType.equalsIgnoreCase(PersistentMultiAgentQLearning.class.getSimpleName())){
 			
-			// creates an adversary...
 			
-			
-			//before returning: must call 'gameStarting'
-			// therefore, must register another 'foo' agent in the world
+			// before returning: must call 'gameStarting'
+			// therefore, must register an adversary in the world
 			// and must know beforehand whether this is player 0 or 1
 			PersistentMultiAgentQLearning agent = new PersistentMultiAgentQLearning(
 				w.getDomain(), 0., 0., new SimpleHashableStateFactory(false), 
@@ -112,6 +110,7 @@ public class MetaBot extends AI {
 				new SGAgentType("MinimaxQ", w.getDomain().getActionTypes())
 			);
 			
+			// creates an adversary...
 			MultiAgentQLearning adversary = new MultiAgentQLearning(w.getDomain(), 0., 0., new SimpleHashableStateFactory(false), 
 				1000, new MinMaxQ(), false, "adversary", 
 				new SGAgentType("MinimaxQ", w.getDomain().getActionTypes())
@@ -124,6 +123,7 @@ public class MetaBot extends AI {
 			// makes agent initialize its structures
 			agent.gameStarting(w, 0);
 			
+			// hopefully, now agent is good to go
 			return agent;
 		}
 		
