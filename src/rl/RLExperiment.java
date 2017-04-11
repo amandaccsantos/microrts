@@ -118,7 +118,9 @@ public class RLExperiment {
 		String outDir = (String) parameters.get(RLParamNames.OUTPUT_DIR);
 		File dir = new File(outDir);
 		if (!dir.exists()) {
-			dir.mkdir();
+			if(dir.mkdir() == false){
+				throw new RuntimeException("Unable to create directory " + outDir);
+			}
 		}
 		PrintWriter output = null;
 

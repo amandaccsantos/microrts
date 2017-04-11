@@ -6,10 +6,10 @@
 <experiment>
 	<parameters>
 		<episodes value="200" />
-		<game-duration value="3000" /> <!-- has no effect yet -->
+		<game-duration value="3000" /> 
 		<abstraction-model value="aggregatediff" />
 		<reward-function value="simpleweighted" />
-
+		<debug-level value="2" />
 	</parameters>
 
 	<player name="learner" type="QLearning">

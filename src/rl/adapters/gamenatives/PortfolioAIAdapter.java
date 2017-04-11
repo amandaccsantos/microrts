@@ -13,6 +13,8 @@ import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.agent.SGAgent;
 import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.mdp.stochasticgames.world.World;
+import rl.RLParamNames;
+import rl.RLParameters;
 import rl.adapters.learners.PersistentLearner;
 import rl.models.common.MicroRTSState;
 import rl.models.common.ScriptActionTypes;
@@ -110,7 +112,7 @@ public class PortfolioAIAdapter implements SGAgent, PersistentLearner {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-        System.out.println("Returning " + currentStrategy.getClass().getSimpleName());
+        //System.out.println("Returning " + currentStrategy.getClass().getSimpleName());
         return nameToAction.get(currentStrategy.getClass().getSimpleName());
 	}
 
@@ -154,6 +156,9 @@ public class PortfolioAIAdapter implements SGAgent, PersistentLearner {
 			portfolioArray, deterministic, timeout, 
 			playouts, lookahead, evalFunc
 		);
+		
+		// sets the debug level accordingly
+		PortfolioAI.DEBUG = (int) RLParameters.getInstance().getParameter(RLParamNames.DEBUG_LEVEL);
 	}
 	
 	public int getTimeout(){

@@ -113,6 +113,7 @@ public class RLParameters {
 			integerParams.add(RLParamNames.TIMEOUT);
 			integerParams.add(RLParamNames.PLAYOUTS);
 			integerParams.add(RLParamNames.LOOKAHEAD);
+			integerParams.add(RLParamNames.DEBUG_LEVEL);
 		}
 		return integerParams;
 	}
@@ -146,6 +147,7 @@ public class RLParameters {
 		
 		params.put(RLParamNames.REWARD_FUNCTION, MicroRTSRewardFactory.WIN_LOSS);
 		params.put(RLParamNames.ABSTRACTION_MODEL, WorldFactory.STAGES);
+		params.put(RLParamNames.DEBUG_LEVEL, 0); // currently only affects PortfolioAI
 		
 		// parameters of RL methods
 		params.put(RLParamNames.DISCOUNT, 0.9f);
@@ -157,27 +159,7 @@ public class RLParameters {
 		params.put(RLParamNames.PLAYOUTS, -1);
 		params.put(RLParamNames.LOOKAHEAD, 100);
 		params.put(RLParamNames.EVALUATION_FUNCTION, SimpleSqrtEvaluationFunction3.class.getSimpleName());
-		
-		//adds the default players - their params: discount, StateFactory, defaultQ, learning rate
-		/*defaultPlayers = new ArrayList<>();
-		QLearning ql1 = new QLearning(null, 0.9f, new SimpleHashableStateFactory(false), 1, 0.1);
-		QLearning ql2 = new QLearning(null, 0.9f, new SimpleHashableStateFactory(false), 1, 0.1);
 
-		// create a single-agent interface for each of our learning algorithm
-		SGQLearningAdapter a1 = new SGQLearningAdapter(
-			defaultWorld.getDomain(), ql1, "agent0", 
-			new SGAgentType("qlearning", defaultWorld.getDomain().getActionTypes())
-		);
-		SGQLearningAdapter a2 = new SGQLearningAdapter(
-			defaultWorld.getDomain(), ql2, "agent1", 
-			new SGAgentType("qlearning", defaultWorld.getDomain().getActionTypes())
-		);
-		
-		defaultPlayers.add(a1);
-		defaultPlayers.add(a2);
-		
-		params.put(RLParamNames.PLAYERS, params);
-		*/
 		return params;
 	}
 	
@@ -435,10 +417,10 @@ public class RLParameters {
 	 * Processes the children of a {@link Node}, and return their values in a Map (paramName -> value)
 	 * @param node a node containing parameters as in <node> <param1 value="1"/> <param2 value="2"/> </node>
 	 * @return
-	 */
+	 *
 	private Map<String, Object> fillParameters(Node node) {
 		return fillParameters(node, new HashMap<String, Object>());
-	}
+	}*/
 	
 	/**
 	 * Processes the children of a {@link Node}, and return their values in a Map (paramName -> value)

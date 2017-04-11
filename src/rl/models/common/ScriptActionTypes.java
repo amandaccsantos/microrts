@@ -7,6 +7,7 @@ import java.util.Map;
 
 import ai.abstraction.BuildBarracks;
 import ai.abstraction.Expand;
+import ai.abstraction.HeavyRush;
 import ai.abstraction.LightRush;
 import ai.abstraction.RangedRush;
 import ai.abstraction.WorkerRush;
@@ -21,6 +22,7 @@ public class ScriptActionTypes {
 	public static final String WORKER_RUSH = WorkerRush.class.getSimpleName();
 	public static final String LIGHT_RUSH = LightRush.class.getSimpleName();
 	public static final String RANGED_RUSH = RangedRush.class.getSimpleName();
+	public static final String HEAVY_RUSH = HeavyRush.class.getSimpleName();
 	public static final String EXPAND = Expand.class.getSimpleName();
 	public static final String BUILD_BARRACKS = BuildBarracks.class.getSimpleName();
 
@@ -31,8 +33,10 @@ public class ScriptActionTypes {
 		actionTypes.add(new UniversalActionType(WORKER_RUSH));
 		actionTypes.add(new UniversalActionType(LIGHT_RUSH));
 		actionTypes.add(new UniversalActionType(RANGED_RUSH));
+		actionTypes.add(new UniversalActionType(HEAVY_RUSH));
 		actionTypes.add(new UniversalActionType(EXPAND));
 		actionTypes.add(new UniversalActionType(BUILD_BARRACKS));
+		
 		
 		return actionTypes;
 	}
@@ -47,6 +51,7 @@ public class ScriptActionTypes {
 		actionTypeMap.put(WORKER_RUSH, new UniversalActionType(WORKER_RUSH));
 		actionTypeMap.put(LIGHT_RUSH, new UniversalActionType(LIGHT_RUSH));
 		actionTypeMap.put(RANGED_RUSH, new UniversalActionType(RANGED_RUSH));
+		actionTypeMap.put(HEAVY_RUSH, new UniversalActionType(HEAVY_RUSH));
 		actionTypeMap.put(EXPAND, new UniversalActionType(EXPAND));
 		actionTypeMap.put(BUILD_BARRACKS, new UniversalActionType(BUILD_BARRACKS));
 		
@@ -63,6 +68,7 @@ public class ScriptActionTypes {
 		actionMap.put(WORKER_RUSH, new UniversalActionType(WORKER_RUSH).associatedAction(null));
 		actionMap.put(LIGHT_RUSH, new UniversalActionType(LIGHT_RUSH).associatedAction(null));
 		actionMap.put(RANGED_RUSH, new UniversalActionType(RANGED_RUSH).associatedAction(null));
+		actionMap.put(HEAVY_RUSH, new UniversalActionType(HEAVY_RUSH).associatedAction(null));
 		actionMap.put(EXPAND, new UniversalActionType(EXPAND).associatedAction(null));
 		actionMap.put(BUILD_BARRACKS, new UniversalActionType(BUILD_BARRACKS).associatedAction(null));
 		
@@ -80,6 +86,7 @@ public class ScriptActionTypes {
 		actions.put(WORKER_RUSH, new WorkerRush(unitTypeTable));
 		actions.put(LIGHT_RUSH, new LightRush(unitTypeTable));
 		actions.put(RANGED_RUSH, new RangedRush(unitTypeTable));
+		actions.put(HEAVY_RUSH, new HeavyRush(unitTypeTable));
 		actions.put(EXPAND, new Expand(unitTypeTable));
 		actions.put(BUILD_BARRACKS, new BuildBarracks(unitTypeTable));
 		
