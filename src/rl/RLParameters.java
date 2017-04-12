@@ -58,6 +58,11 @@ public class RLParameters {
 	private  Set<String> floatParams = null;
 	
 	/**
+	 * A {@link Set} with names of boolean parameters
+	 */
+	private Set<String> boolParams = null;
+	
+	/**
 	 * A {@link Map} String -> Object with parameter values
 	 */
 	private Map<String, Object> params;
@@ -132,6 +137,15 @@ public class RLParameters {
 		return floatParams;
 	}
 	
+	public Set<String> boolParameters(){
+		if(boolParams == null){
+			boolParams = new HashSet<>();
+			boolParams.add(RLParamNames.QUIET_LEARNING);
+		}
+		
+		return boolParams;
+	}
+	
 	
 	/**
 	 * Returns the default parameters
@@ -148,6 +162,7 @@ public class RLParameters {
 		params.put(RLParamNames.REWARD_FUNCTION, MicroRTSRewardFactory.WIN_LOSS);
 		params.put(RLParamNames.ABSTRACTION_MODEL, WorldFactory.STAGES);
 		params.put(RLParamNames.DEBUG_LEVEL, 0); // currently only affects PortfolioAI
+		params.put(RLParamNames.QUIET_LEARNING, false);
 		
 		// parameters of RL methods
 		params.put(RLParamNames.DISCOUNT, 0.9f);
@@ -440,6 +455,9 @@ public class RLParameters {
 			}
 			else if (floatParameters().contains(parameter.getNodeName())){
 				initialParameters.put(parameter.getNodeName(), Float.parseFloat(paramElement.getAttribute("value")));
+			}
+			else if(boolParameters().contains(parameter.getNodeName())){
+				initialParameters.put(parameter.getNodeName(), Boolean.parseBoolean(paramElement.getAttribute("value")));
 			}
 			else {	//parameter is a string (probably)
 				initialParameters.put(parameter.getNodeName(), paramElement.getAttribute("value"));

@@ -1,13 +1,7 @@
 package rl;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Locale;
@@ -36,21 +30,13 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import burlap.behavior.singleagent.learning.tdmethods.QLearning;
 import burlap.behavior.stochasticgames.GameEpisode;
-import burlap.behavior.valuefunction.QValue;
 import burlap.debugtools.DPrint;
-import burlap.mdp.core.state.State;
 import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.agent.SGAgent;
 import burlap.mdp.stochasticgames.world.World;
-import rl.adapters.domain.EnumerableSGDomain;
 import rl.adapters.learners.PersistentLearner;
-import rl.adapters.learners.SGQLearningAdapter;
 import rl.models.common.MicroRTSState;
-
-import rts.Player;
-import tests.rl.RLParametersTest;
 
 /**
  * Manages a Reinforcement Learning experiment in microRTS The RL experiment has
@@ -71,9 +57,6 @@ public class RLExperiment {
 			System.exit(0);
 		}
 
-		// checks for the quiet parameter
-		boolean quiet = cmdLine.hasOption("quiet");
-
 		// loads parameters from file
 		Map<String, Object> parameters = null;
 
@@ -89,6 +72,9 @@ public class RLExperiment {
 
 		// overrides parameters with ones supplied in command line (if needed)
 		parameters = rlParams.parametersFromCommandLine(cmdLine);
+		
+		// checks for the quiet parameter
+		boolean quietLearning = (boolean) rlParams.getParameter(RLParamNames.QUIET_LEARNING);
 
 		// adds players to the world
 		World gameWorld = (World) rlParams.getParameter(RLParamNames.ABSTRACTION_MODEL);
@@ -122,48 +108,32 @@ public class RLExperiment {
 				throw new RuntimeException("Unable to create directory " + outDir);
 			}
 		}
-		PrintWriter output = null;
+		//PrintWriter output = null;
 
 		// declares episode variable (will store final episode info after loop
 		// finishes)
 		GameEpisode episode = null;
 
-		try {
-			output = new PrintWriter(new BufferedWriter(new FileWriter(outDir + "/output.txt", false)));
-			for (int episodeNumber = 0; episodeNumber < numEpisodes; episodeNumber++) {
-				Timestamp timestamp_epi_i = new Timestamp(System.currentTimeMillis());
-				episode = gameWorld.runGame();
-				Timestamp timestamp_epi_f = new Timestamp(System.currentTimeMillis());
-				// episodes.add(episode);
-				printEpisodeInfo(episodeNumber, episode, outDir + "/episode_" + episodeNumber + 
-						".xml", timestamp_epi_i, timestamp_epi_f, agents);
-				
-				System.out.print(String.format("\rEpisode #%7d finished.", episodeNumber));
+		for (int episodeNumber = 0; episodeNumber < numEpisodes; episodeNumber++) {
+			Timestamp timestamp_epi_i = new Timestamp(System.currentTimeMillis());
+			episode = gameWorld.runGame();
+			Timestamp timestamp_epi_f = new Timestamp(System.currentTimeMillis());
+			
+			// writes episode data using our format and BURLAP's default
+			printEpisodeInfo(episodeNumber, episode, outDir + "/episode_" + episodeNumber + 
+					".xml", timestamp_epi_i, timestamp_epi_f, agents);
+			
+			episode.write(String.format("%s/episode_%d", outDir, episodeNumber));
+			
+			// let them know that episode has finished
+			System.out.print(String.format("\rEpisode #%7d finished.", episodeNumber));
 
-				// writes episode data and q-values
-				if (!quiet) {
-					episode.write(String.format("%s/episode_%d", outDir, episodeNumber));
-					for (PersistentLearner agent : agents) {
-						agent.saveKnowledge(String.format("%s/q_%s_%d.txt", outDir, agent.agentName(), episodeNumber));
-					}
-
-					/*
-					 * FIXME: cast raises exception when agent is not
-					 * SGQLearningAdapter EnumerableSGDomain enumDomain =
-					 * (EnumerableSGDomain) gameWorld.getDomain(); for (State s
-					 * : enumDomain.enumerate()) { for (PersistentLearner agent
-					 * : agents) { QLearning qLearner = (QLearning)
-					 * ((SGQLearningAdapter) agent).getSingleAgentLearner();
-					 * output.println(String.format("%s: %.3f", s,
-					 * qLearner.value(s))); for (QValue q : qLearner.qValues(s))
-					 * { output.println(String.format("%s: %.3f", q.a, q.q)); }
-					 * } }
-					 */
+			// writes knowledge of agents, unless we're meant to be quiet
+			if (!quietLearning) {
+				for (PersistentLearner agent : agents) {
+					agent.saveKnowledge(String.format("%s/q_%s_%d.txt", outDir, agent.agentName(), episodeNumber));
 				}
-
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 
 		Timestamp timestamp_f = new Timestamp(System.currentTimeMillis());
@@ -171,30 +141,12 @@ public class RLExperiment {
 		// finished training
 		System.out.println("\nTraining finished"); // has leading \n because previous print has no trailing \n
 
-		// if I did not print during training, print now:
-		// if(quiet){
-		// episode.write(String.format("%s/episode_%d", outDir, episodeNumber));
+		// write final knowledge of agents
 		for (PersistentLearner agent : agents) {
 			agent.saveKnowledge(String.format("%s/q_%s_final.txt", outDir, agent.agentName()));
 		}
 
-		/*
-		 * FIXME: cast raises exception when agent is not SGQLearningAdapter
-		 * EnumerableSGDomain enumDomain = (EnumerableSGDomain)
-		 * gameWorld.getDomain(); for (State s : enumDomain.enumerate()) { for
-		 * (PersistentLearner agent : agents) { QLearning qLearner = (QLearning)
-		 * ((SGQLearningAdapter) agent).getSingleAgentLearner();
-		 * output.println(String.format("%s: %.3f", s, qLearner.value(s))); for
-		 * (QValue q : qLearner.qValues(s)) { output.println(String.format(
-		 * "%s: %.3f", q.a, q.q)); } } }
-		 */
-		// }
-
-		// prints results for final episode
-		// printEpisodeInfo(numEpisodes - 1, episode, outDir + "/final_episode.xml");
-		// printEpisodeInfo(episodes.size() - 1, episodes.get(episodes.size() -
-		// 1), outDir + "/final_episode.txt");
-		// printEpisodesInfo(episodes, outDir + "/episodes.txt");
+		// prints experiment summary
 		printExperimentSummary(outDir + "/summary.xml", args, timestamp_i, timestamp_f, numEpisodes);
 	}
 
@@ -204,7 +156,7 @@ public class RLExperiment {
 
 		options.addOption("c", RLParamNames.CONFIG_FILE, true, "Path to configuration file.");
 		options.addOption("o", RLParamNames.OUTPUT_DIR, true, "Directory to generate output.");
-		options.addOption("q", "quiet", false, "Don't generate enormous ammount of files");
+		options.addOption("q", RLParamNames.QUIET_LEARNING, false, "Don't output agent knowledge every episode.");
 
 		CommandLine line = null;
 		CommandLineParser parser = new DefaultParser();
