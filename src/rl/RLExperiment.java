@@ -131,10 +131,13 @@ public class RLExperiment {
 		try {
 			output = new PrintWriter(new BufferedWriter(new FileWriter(outDir + "/output.txt", false)));
 			for (int episodeNumber = 0; episodeNumber < numEpisodes; episodeNumber++) {
+				Timestamp timestamp_epi_i = new Timestamp(System.currentTimeMillis());
 				episode = gameWorld.runGame();
+				Timestamp timestamp_epi_f = new Timestamp(System.currentTimeMillis());
 				// episodes.add(episode);
-				printEpisodeInfo(episodeNumber, episode, outDir + "/episode_" + episodeNumber + ".xml");
-
+				printEpisodeInfo(episodeNumber, episode, outDir + "/episode_" + episodeNumber + 
+						".xml", timestamp_epi_i, timestamp_epi_f, agents);
+				
 				System.out.print(String.format("\rEpisode #%7d finished.", episodeNumber));
 
 				// writes episode data and q-values
@@ -221,14 +224,14 @@ public class RLExperiment {
 
 	}
 
-	private static void printEpisodesInfo(List<GameEpisode> episodes, String path) {
+	/*private static void printEpisodesInfo(List<GameEpisode> episodes, String path) {
 
 		for (int i = 0; i < episodes.size(); i++) {
 			printEpisodeInfo(i, episodes.get(i), path);
 		}
-	}
+	}*/
 
-	private static void printEpisodeInfo(int episodeNumber, GameEpisode episode, String path) {
+	private static void printEpisodeInfo(int episodeNumber, GameEpisode episode, String path, Timestamp timestamp_epi_i, Timestamp timestamp_epi_f, List<PersistentLearner> agents) {
 		MicroRTSState finalState = (MicroRTSState) episode.states.get(episode.states.size() - 1);		
 		
 		try {
@@ -241,6 +244,34 @@ public class RLExperiment {
 			Attr attribute_ep = doc_writer.createAttribute("value");  
 			attribute_ep.setValue(Integer.toString(episodeNumber));  
 			rootElement.setAttributeNode(attribute_ep);
+						
+			int num = 0;
+			for (PersistentLearner agent : agents) {
+				Element names = doc_writer.createElement("agent_" + num);
+				rootElement.appendChild(names);
+			
+				Attr attribute_dur = doc_writer.createAttribute("name");  
+				attribute_dur.setValue(agent.agentName());  
+				names.setAttributeNode(attribute_dur);
+				num++;				
+			}
+			
+			Element timeElement = doc_writer.createElement("timestamp");
+			rootElement.appendChild(timeElement);
+
+			Element initialTimestamp = doc_writer.createElement("initial-timestamp");
+			timeElement.appendChild(initialTimestamp);
+			
+			Attr attribute_epi_i = doc_writer.createAttribute("value");  
+			attribute_epi_i.setValue(timestamp_epi_i.toString());  
+			initialTimestamp.setAttributeNode(attribute_epi_i);  
+			
+			Element finalTimestamp = doc_writer.createElement("final-timestamp");
+			timeElement.appendChild(finalTimestamp);
+			
+			Attr attribute_epi_f = doc_writer.createAttribute("value");  
+			attribute_epi_f.setValue(timestamp_epi_f.toString());  
+			finalTimestamp.setAttributeNode(attribute_epi_f);
 			
 			Element duration = doc_writer.createElement("duration");
 			rootElement.appendChild(duration);
