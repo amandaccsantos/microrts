@@ -6,9 +6,10 @@
 <experiment>
 	<parameters>
 		<episodes value="1000" />
-		<game-duration value="3000" /> <!-- has no effect yet -->
+		<game-duration value="3000" /> 
 		<abstraction-model value="aggregatediff" />
 		<output-dir value="results" />
+		<quiet-learning value="true" />
 	</parameters>
 
 	<player name="learner" type="SGQLearningAdapter">

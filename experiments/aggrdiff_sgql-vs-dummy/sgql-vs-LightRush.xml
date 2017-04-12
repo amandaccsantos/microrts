@@ -9,6 +9,7 @@
 		<game-duration value="3000" /> <!-- has no effect yet -->
 		<abstraction-model value="aggregatediff" />
 		<output-dir value="results" />
+		<quiet-learning value="true" />
 	</parameters>
 
 	<player name="learner" type="SGQLearningAdapter">

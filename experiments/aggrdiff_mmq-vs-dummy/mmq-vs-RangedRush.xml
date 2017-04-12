@@ -6,6 +6,7 @@
 		<abstraction-model value="aggregatediff" />
 		<output-dir value="/tmp/mmq-vs-rangedrush" />
 		<reward-function value="simpleweighted" />
+		<quiet-learning value="true" />
 	</parameters>
 
 	<player name="learner" type="MinimaxQ">
