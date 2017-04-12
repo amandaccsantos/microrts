@@ -161,8 +161,8 @@ public class RLExperiment {
 		CommandLine line = null;
 		CommandLineParser parser = new DefaultParser();
 
+		// parse the command line arguments
 		try {
-			// parse the command line arguments
 			line = parser.parse(options, args);
 		} catch (ParseException exp) {
 			// oops, something went wrong

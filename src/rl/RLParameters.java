@@ -319,6 +319,10 @@ public class RLParameters {
 			);
 		}
 		
+		if(line.hasOption(RLParamNames.QUIET_LEARNING)){
+			params.put(RLParamNames.QUIET_LEARNING, true);
+		}
+		
 		return params;
 	}
 	

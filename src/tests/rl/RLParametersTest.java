@@ -49,14 +49,13 @@ public class RLParametersTest {
 		
 		Map<String, Object> parameters =  rlParams.loadFromFile("src/tests/rl/example.xml"); //may throw exceptions
 		
-		//tests parameter values
+		// tests parameter values
 		assertEquals(100, (int)parameters.get(RLParamNames.EPISODES));
+		assertEquals(MicroRTSRewardFactory.SIMPLE_WEIGHTED, parameters.get(RLParamNames.REWARD_FUNCTION));
+		assertTrue((boolean) parameters.get(RLParamNames.QUIET_LEARNING));
 		
 		World w = (World) rlParams.getParameter(RLParamNames.ABSTRACTION_MODEL);
 		assertTrue(w.getDomain() instanceof AggregateStateDomain);
-		
-		assertEquals(MicroRTSRewardFactory.SIMPLE_WEIGHTED, parameters.get(RLParamNames.REWARD_FUNCTION));
-		
 		
 		@SuppressWarnings("unchecked")
 		List<SGAgent> players = (List<SGAgent>) rlParams.getParameter(RLParamNames.PLAYERS);
@@ -66,7 +65,7 @@ public class RLParametersTest {
 			
 			//casts the player and tests its attributes 
 			SGQLearningAdapter sgql = (SGQLearningAdapter) player;
-			if (sgql.agentName().equals("learner")){ // instanceof PersistentMultiAgentQLearning){
+			if (sgql.agentName().equals("learner")){ 
 				
 				QLearning ql = (QLearning) sgql.getSingleAgentLearner();
 				//tests whether attributes were correctly loaded
@@ -86,7 +85,7 @@ public class RLParametersTest {
 				assertEquals(0.9, discount, 0.0000001);
 				
 			}
-			else if (player.agentName().equals("dummy")){ // instanceof SGQLearningAdapter){	//both agents in example are SGQLearningAdapter
+			else if (player.agentName().equals("dummy")){ 
 				//casts the player and tests its attributes 
 
 				QLearning ql = (QLearning) sgql.getSingleAgentLearner();

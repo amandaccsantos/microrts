@@ -6,10 +6,10 @@
 <experiment>
 	<parameters>
 		<episodes value="100" />
-		<game-duration value="3000" /> <!-- has no effect yet -->
+		<game-duration value="3000" /> 
 		<abstraction-model value="aggregate" />
 		<reward-function value="simpleweighted" />
-
+		<quiet-learning value="true" />
 	</parameters>
 
 	<player name="learner" type="QLearning">
