@@ -133,6 +133,7 @@ public class RLExperiment {
 			for (int episodeNumber = 0; episodeNumber < numEpisodes; episodeNumber++) {
 				episode = gameWorld.runGame();
 				// episodes.add(episode);
+				printEpisodeInfo(episodeNumber, episode, outDir + "/episode_" + episodeNumber + ".xml");
 
 				System.out.print(String.format("\rEpisode #%7d finished.", episodeNumber));
 
@@ -165,9 +166,7 @@ public class RLExperiment {
 		Timestamp timestamp_f = new Timestamp(System.currentTimeMillis());
 		
 		// finished training
-		System.out.println("\nTraining finished"); // has leading \n because
-													// previous print has no
-													// trailing \n
+		System.out.println("\nTraining finished"); // has leading \n because previous print has no trailing \n
 
 		// if I did not print during training, print now:
 		// if(quiet){
@@ -189,7 +188,7 @@ public class RLExperiment {
 		// }
 
 		// prints results for final episode
-		printEpisodeInfo(numEpisodes - 1, episode, outDir + "/final_episode.txt");
+		// printEpisodeInfo(numEpisodes - 1, episode, outDir + "/final_episode.xml");
 		// printEpisodeInfo(episodes.size() - 1, episodes.get(episodes.size() -
 		// 1), outDir + "/final_episode.txt");
 		// printEpisodesInfo(episodes, outDir + "/episodes.txt");
@@ -230,41 +229,84 @@ public class RLExperiment {
 	}
 
 	private static void printEpisodeInfo(int episodeNumber, GameEpisode episode, String path) {
-		PrintWriter out;
+		MicroRTSState finalState = (MicroRTSState) episode.states.get(episode.states.size() - 1);		
+		
 		try {
-			out = new PrintWriter(new BufferedWriter(new FileWriter(path, true)));
-		} catch (IOException e) {
-			e.printStackTrace();
-			return;
-		}
+			DocumentBuilder dBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+			Document doc_writer = dBuilder.newDocument();
 
-		episode.write(String.format("%s.ep", path));
+			Element rootElement = doc_writer.createElement("episode");
+			doc_writer.appendChild(rootElement);
+			
+			Attr attribute_ep = doc_writer.createAttribute("value");  
+			attribute_ep.setValue(Integer.toString(episodeNumber));  
+			rootElement.setAttributeNode(attribute_ep);
+			
+			Element duration = doc_writer.createElement("duration");
+			rootElement.appendChild(duration);
+			
+			Attr attribute_dur = doc_writer.createAttribute("value");  
+			attribute_dur.setValue(Double.toString(episode.numTimeSteps()));  
+			duration.setAttributeNode(attribute_dur);
+			
+			Element states = doc_writer.createElement("states-visited");
+			rootElement.appendChild(states);
+			
+			Attr attribute_st = doc_writer.createAttribute("value");  
+			attribute_st.setValue(Integer.toString(episode.states.size()));  
+			states.setAttributeNode(attribute_st);
+			
+			Element f_state = doc_writer.createElement("final-state");
+			rootElement.appendChild(f_state);
+			
+			Attr attribute_f = doc_writer.createAttribute("value");  
+			attribute_f.setValue(episode.states.get(episode.states.size() - 1).toString());  
+			f_state.setAttributeNode(attribute_f);
+			
+			List<double[]> jointRewards = episode.jointRewards;
+			double[] finalRewards = jointRewards.get(jointRewards.size() - 1);
+			
+			Element jointR = doc_writer.createElement("joint-rewards");
+			rootElement.appendChild(jointR);
+			
+			Attr attribute_jr = doc_writer.createAttribute("value");  
+			attribute_jr.setValue(String.format(Locale.ROOT, "%f, %f", finalRewards[0], finalRewards[1]));  
+			jointR.setAttributeNode(attribute_jr);
+						
+			Element jointAction = doc_writer.createElement("joint-actions");
+			rootElement.appendChild(jointAction);
+			
+			for (JointAction ja : episode.jointActions) {
+				Element initialTime = doc_writer.createElement("joint-action");
+				jointAction.appendChild(initialTime);
+				
+				Attr attribute_i = doc_writer.createAttribute("value");  
+				attribute_i.setValue(ja.toString());  
+				initialTime.setAttributeNode(attribute_i); 
+			}
+			
+			Element f_state_dump = doc_writer.createElement("final-state-dump");
+			f_state_dump.appendChild(doc_writer.createTextNode(finalState.dump()));  
+			rootElement.appendChild(f_state_dump);
+			
+			// write the content into xml file
+			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+			Transformer transformer = transformerFactory.newTransformer();
+			DOMSource source = new DOMSource(doc_writer);
+			StreamResult result = new StreamResult(new File(path));
 
-		out.println("Episode " + episodeNumber);
-		out.println("Duration: " + episode.numTimeSteps());
-		out.println("States visited: " + episode.states.size());
-		out.println("\nJoint actions: ");
+			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+			transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
 
-		for (JointAction ja : episode.jointActions) {
-			out.println(ja);
-		}
+			// Output to console for testing
+			// StreamResult result = new StreamResult(System.out);
 
-		out.println("\nFinal state:");
-		MicroRTSState finalState = (MicroRTSState) episode.states.get(episode.states.size() - 1);
-		out.println(finalState);
-		out.println("\nFinal state dump: ");
-		out.println(finalState.dump());
-
-		/*
-		 * for(State s : episode.states){ out.println("state: " + s); }
-		 */
-		List<double[]> jointRewards = episode.jointRewards;
-		double[] finalRewards = jointRewards.get(jointRewards.size() - 1);
-
-		// Locale.ROOT ensures the use of '.' as decimal separator
-		out.println(String.format(Locale.ROOT, "\nFinal rewards: %f,%f", finalRewards[0], finalRewards[1]));
-
-		out.close();
+			transformer.transform(source, result);
+		} catch (ParserConfigurationException pce) {
+			pce.printStackTrace();
+		} catch (TransformerException tfe) {
+			tfe.printStackTrace();
+		}	
 	}
 
 	private static void printExperimentSummary(String path, String[] args, Timestamp timestamp_i, Timestamp timestamp_f, int numEpisodes) {
