@@ -12,7 +12,7 @@
 	<player name="learner" type="MinimaxQ">
 		<discount value="0.9" />
 		<learning-rate value="0.1" />
-		<initial-q value="0" />
+		<initial-q value="1000" />
 	</player>
 
 	<player name="dummy" type="Dummy">
