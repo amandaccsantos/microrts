@@ -1,12 +1,8 @@
-<!-- 
- This file is associated with tests.rl.RLParametersTest, only change it 
- if you're going to update the test. Otherwise, the test will crash.
--->
- 
+
 <experiment>
 	<parameters>
 		<episodes value="1000" />
-		<game-duration value="3000" /> <!-- has no effect yet -->
+		<game-duration value="3000" /> 
 		<abstraction-model value="stages" />
 		<output-dir value="results" />
 	</parameters>
