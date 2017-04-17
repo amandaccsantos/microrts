@@ -194,5 +194,13 @@ public class AggregateDiffState extends GameStage {
 		}
 		return true;
 	}
+	
+	@Override
+	/**
+	 * Returns a hash code according to the string representation
+	 */
+	public int hashCode(){
+		return toString().hashCode();
+	}
 
 }
