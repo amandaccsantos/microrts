@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import ai.RandomAI;
-import ai.metabot.MetaBot;
+import ai.metagame.MetaBot;
 import ailoader.AILoader;
 
 public class AILoaderTest {

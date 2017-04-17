@@ -21,7 +21,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import ai.evaluation.SimpleSqrtEvaluationFunction3;
-import ai.metabot.DummyPolicy;
+import ai.metagame.DummyPolicy;
 import burlap.behavior.singleagent.learning.tdmethods.QLearning;
 import burlap.behavior.stochasticgames.madynamicprogramming.backupOperators.MinMaxQ;
 import burlap.mdp.stochasticgames.agent.SGAgentType;

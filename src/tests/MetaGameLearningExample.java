@@ -12,7 +12,7 @@ import java.util.List;
 import org.jdom.JDOMException;
 
 import ai.abstraction.LightRush;
-import ai.metabot.DummyPolicy;
+import ai.metagame.DummyPolicy;
 import burlap.behavior.singleagent.auxiliary.StateReachability;
 import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.behavior.singleagent.learning.tdmethods.QLearning;

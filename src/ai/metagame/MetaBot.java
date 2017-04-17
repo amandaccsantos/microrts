@@ -1,4 +1,4 @@
-package ai.metabot;
+package ai.metagame;
 
 import java.util.HashMap;
 import java.util.HashSet;

@@ -16,7 +16,7 @@ import org.junit.Test;
 import org.xml.sax.SAXException;
 
 import ai.evaluation.SimpleSqrtEvaluationFunction3;
-import ai.metabot.DummyPolicy;
+import ai.metagame.DummyPolicy;
 import burlap.behavior.learningrate.LearningRate;
 import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.MDPSolver;
