@@ -21,7 +21,6 @@ import burlap.mdp.core.state.State;
 import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.mdp.stochasticgames.world.World;
-import cern.colt.Arrays;
 import rl.adapters.domain.EnumerableSGDomain;
 import rl.adapters.learners.PersistentLearner;
 import rl.models.aggregatediff.AggregateDifferencesDomain;
@@ -291,7 +290,7 @@ public class BackwardInduction implements PersistentLearner {
 		
 		System.out.println("Solving...");
 		bi.solve((MicroRTSState) domain.getInitialState());
-		System.out.println("Solved.");
+		System.out.println("\nSolved.");
 		
 	}
 }
