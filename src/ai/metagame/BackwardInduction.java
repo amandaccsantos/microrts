@@ -100,14 +100,14 @@ public class BackwardInduction implements PersistentLearner {
 				}
 			}
 			try {
-				formulate(s);
+				V.put(s, calculateValue(s)); 
+				visited.add(s);
 			} catch (IOException|InterruptedException e) {
 				System.err.println("Error while solving for state " + s);
 				e.printStackTrace();
 				System.exit(0);
 			}
-			V.put(s, 0.); //TODO solve s from Q(s)
-			visited.add(s);
+			
 			
 			System.out.print(String.format("\rClosed state number %7d", visited.size()));
 		}
@@ -151,12 +151,12 @@ public class BackwardInduction implements PersistentLearner {
 	
 	/**
 	 * Formulates the normal-form game contained in a state
-	 * for Gambit to solve
+	 * for Gambit to solve and returns its value
 	 * @param s
 	 * @throws IOException 
 	 * @throws InterruptedException 
 	 */
-	public void formulate(State s) throws IOException, InterruptedException{
+	public double calculateValue(State s) throws IOException, InterruptedException{
 		BufferedWriter fileWriter;
 		fileWriter = new BufferedWriter(new FileWriter("/tmp/state.nfg"));
 		
@@ -181,6 +181,7 @@ public class BackwardInduction implements PersistentLearner {
 		fileWriter.close();
 		
 		// starts gambit and captures its output
+		// TODO: checks for trivial games, avoiding unnecessary calls to gambit
 		
 		// using gambit-lcp because it returns a single equilibrium
 		// 15-digit precision, hope numeric errors don't accumulate
@@ -208,6 +209,28 @@ public class BackwardInduction implements PersistentLearner {
 		}
 		
 		//TODO now we have the policy, how about the value?
+		double stateValue = 0;
+		int agentActionIndex = 0;
+		for(ActionType a : type.actions){
+			int opponentActionIndex = 0;
+			for(ActionType o : type.actions){
+				JointAction ja = new JointAction();
+				ja.addAction(a.associatedAction(null));
+				ja.addAction(o.associatedAction(null));
+				
+				/*
+				 *  adds the value of each outcome by the probability of its occurrence
+				 *  which is dictated by the policies
+				 */
+				stateValue += agentPolicy[agentActionIndex] * opponentPolicy[opponentActionIndex]
+						* Q.get(s).get(ja);
+				
+				opponentActionIndex++;
+			}
+			agentActionIndex++;
+		}
+		
+		return stateValue;
 	}
 
 	@Override
