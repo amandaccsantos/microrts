@@ -11,7 +11,7 @@ public class MicroRTSTerminalFunction implements TerminalFunction {
 	int timeLimit;
 	
 	public MicroRTSTerminalFunction() {
-		// retrieves timeLimit from parameters -> StackOverflow!
+		// retrieves timeLimit from parameters 
 		timeLimit = (int) RLParameters.getInstance().getParameter(RLParamNames.GAME_DURATION);
 	}
 

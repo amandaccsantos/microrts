@@ -1,9 +1,14 @@
 package ai.metagame;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -93,7 +98,13 @@ public class BackwardInduction implements PersistentLearner {
 					
 				}
 			}
-			
+			try {
+				formulate(s);
+			} catch (IOException|InterruptedException e) {
+				System.err.println("Error while solving for state " + s);
+				e.printStackTrace();
+				System.exit(0);
+			}
 			V.put(s, 0.); //TODO solve s from Q(s)
 			visited.add(s);
 			
@@ -135,6 +146,69 @@ public class BackwardInduction implements PersistentLearner {
 		System.out.println("Done.");
 		System.out.println("V entries: " + V.size());
 		System.out.println("Q entries: " + Q.size());
+	}
+	
+	/**
+	 * Formulates the normal-form game contained in a state
+	 * for Gambit to solve
+	 * @param s
+	 * @throws IOException 
+	 * @throws InterruptedException 
+	 */
+	public void formulate(State s) throws IOException, InterruptedException{
+		BufferedWriter fileWriter;
+		fileWriter = new BufferedWriter(new FileWriter("/tmp/state.nfg"));
+		
+		fileWriter.write("NFG 1 R \"" + s + "\"\n");
+		fileWriter.write(
+			String.format("{\"Player0\" \"Player1\"}{%d %d}\n", type.actions.size(), type.actions.size())
+		);
+		
+		//fills Q values for the given state 
+		for(ActionType a : type.actions){
+			for(ActionType o : type.actions){
+				JointAction ja = new JointAction();
+				ja.addAction(a.associatedAction(null));
+				ja.addAction(o.associatedAction(null));
+				
+				double myPayoff = Q.get(s).get(ja);
+				fileWriter.write(
+					String.format(Locale.ROOT, "%f %f ", myPayoff, -myPayoff)
+				);
+			}
+		}
+		fileWriter.close();
+		
+		// starts gambit and captures its output
+		
+		// using gambit-lcp because it returns a single equilibrium
+		// 15-digit precision, hope numeric errors don't accumulate
+		Process gambit = Runtime.getRuntime().exec("gambit-lcp -d 15 -q /tmp/state.nfg > /tmp/result.txt");
+		gambit.waitFor();
+		
+		//Scanner scanner = new Scanner(new File("/tmp/result.txt"));
+		String result = new String(Files.readAllBytes(Paths.get("/tmp/result.txt")));
+		
+		// resulting String is NE,prob1a,prob1b,...,prob2a,prob2b 
+		String[] parts = result.trim().split(",");
+		
+		double[] agentPolicy = new double[type.actions.size()];
+		double[] opponentPolicy = new double[type.actions.size()];
+		
+		// reads agent policy
+		for(int i = 0; i < agentPolicy.length; i++){
+			// i+1 ignores the first token 'NE'
+			agentPolicy[i] = Double.parseDouble(parts[i+i]);
+		}
+		
+		// reads opponent policy
+		for(int i = 0; i < opponentPolicy.length; i++){
+			// i+1 ignores the first token 'NE'
+			opponentPolicy[i] = Double.parseDouble(parts[i+i]);
+		}
+		System.out.println("Policies: " + agentPolicy + " / " + opponentPolicy);
+		
+		//TODO now we have the policy, how about the value?
 	}
 
 	@Override
