@@ -16,17 +16,11 @@ import burlap.mdp.core.state.State;
 import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.mdp.stochasticgames.world.World;
-import rl.WorldFactory;
 import rl.adapters.domain.EnumerableSGDomain;
 import rl.adapters.learners.PersistentLearner;
-import rl.models.aggregatediff.AggregateDiffState;
 import rl.models.aggregatediff.AggregateDifferencesDomain;
 import rl.models.common.MicroRTSState;
 import rl.models.common.MicroRTSTerminalFunction;
-import rl.models.common.ScriptActionTypes;
-import rts.GameState;
-import rts.PhysicalGameState;
-import rts.units.UnitTypeTable;
 
 public class BackwardInduction implements PersistentLearner {
 	String name;
@@ -77,7 +71,7 @@ public class BackwardInduction implements PersistentLearner {
 		
 		// finds the value of the state
 		if(! visited.contains(s)){
-			
+			//System.out.print("\rEntering " + s +"     ");
 			for(ActionType a : type.actions){
 				for(ActionType o : type.actions){
 					JointAction ja = new JointAction();
@@ -87,7 +81,7 @@ public class BackwardInduction implements PersistentLearner {
 					MicroRTSState next = (MicroRTSState) domain.getJointActionModel().sample(s, ja);
 					try {
 						if(!Q.containsKey(s)){
-							System.out.println("WARNING: missing key for " + s);
+							System.err.println("WARNING: missing key for " + s);
 							Q.put(s, new HashMap<>());
 						}
 						Q.get(s).put(ja, solve(next));		// recursive call
@@ -195,14 +189,12 @@ public class BackwardInduction implements PersistentLearner {
 	 */
 	public static void main(String[] args) throws JDOMException, IOException{
 		TerminalFunction tf = new MicroRTSTerminalFunction();
-		EnumerableSGDomain domain = new AggregateDifferencesDomain();
+		AggregateDifferencesDomain domain = new AggregateDifferencesDomain();
 		
 		BackwardInduction bi = new BackwardInduction("test", domain, tf);
 		
-		State initialState = ((AggregateDifferencesDomain) domain).getInitialState();
-		
 		System.out.println("Solving...");
-		bi.solve((MicroRTSState) initialState);
+		bi.solve((MicroRTSState) domain.getInitialState());
 		System.out.println("Solved.");
 		
 	}
