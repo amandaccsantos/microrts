@@ -1,13 +1,10 @@
 package tests.rl.adapters.learners;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -15,16 +12,14 @@ import org.junit.Test;
 import burlap.behavior.stochasticgames.madynamicprogramming.backupOperators.MinMaxQ;
 import burlap.debugtools.DPrint;
 import burlap.mdp.core.action.Action;
-import burlap.mdp.core.state.State;
 import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.mdp.stochasticgames.world.World;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
 import rl.WorldFactory;
-import rl.adapters.domain.EnumerableSGDomain;
 import rl.adapters.learners.PersistentMultiAgentQLearning;
-import rl.models.stages.GameStages;
 import rl.models.stages.GameStage;
+import rl.models.stages.GameStages;
 
 public class PersistentMultiAgentQLearningTest {
 
