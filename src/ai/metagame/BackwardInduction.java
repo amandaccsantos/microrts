@@ -198,19 +198,14 @@ public class BackwardInduction implements PersistentLearner {
 		double[] agentPolicy = new double[type.actions.size()];
 		double[] opponentPolicy = new double[type.actions.size()];
 		
-		// reads agent policy
-		int i; // preserves between the two loops
-		for(i = 0; i < agentPolicy.length; i++){
-			// i+1 ignores the first token 'NE'
+		// reads policies
+		for(int i = 0; i < agentPolicy.length; i++){
+			// i+1 to skip the first token 'NE'
 			agentPolicy[i] = Double.parseDouble(parts[i+1]);
+			
+			// opponent policy offset 'length' from agentPolicy 
+			opponentPolicy[i] = Double.parseDouble(parts[i + agentPolicy.length + 1]);
 		}
-		
-		// reads opponent policy -- uses i from previous loop
-		for( ; i < opponentPolicy.length; i++){
-			// i+1 ignores the first token 'NE'
-			opponentPolicy[i] = Double.parseDouble(parts[i+1]);
-		}
-		System.out.println("Policies: " + Arrays.toString(agentPolicy) + " / " + Arrays.toString(opponentPolicy));
 		
 		//TODO now we have the policy, how about the value?
 	}
