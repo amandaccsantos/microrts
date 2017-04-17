@@ -1,10 +1,10 @@
 package ai.metagame;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -21,6 +21,7 @@ import burlap.mdp.core.state.State;
 import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.mdp.stochasticgames.world.World;
+import cern.colt.Arrays;
 import rl.adapters.domain.EnumerableSGDomain;
 import rl.adapters.learners.PersistentLearner;
 import rl.models.aggregatediff.AggregateDifferencesDomain;
@@ -183,11 +184,13 @@ public class BackwardInduction implements PersistentLearner {
 		
 		// using gambit-lcp because it returns a single equilibrium
 		// 15-digit precision, hope numeric errors don't accumulate
-		Process gambit = Runtime.getRuntime().exec("gambit-lcp -d 15 -q /tmp/state.nfg > /tmp/result.txt");
+		Process gambit = Runtime.getRuntime().exec("gambit-lcp -d 15 -q /tmp/state.nfg");
+		BufferedReader bri = new BufferedReader (new InputStreamReader(gambit.getInputStream()));
+		String result = bri.readLine();	//get the first equilibrium
+	    bri.close();
 		gambit.waitFor();
-		
 		//Scanner scanner = new Scanner(new File("/tmp/result.txt"));
-		String result = new String(Files.readAllBytes(Paths.get("/tmp/result.txt")));
+		//String result = new String(Files.readAllBytes(Paths.get("/tmp/result.txt")));
 		
 		// resulting String is NE,prob1a,prob1b,...,prob2a,prob2b 
 		String[] parts = result.trim().split(",");
@@ -196,17 +199,18 @@ public class BackwardInduction implements PersistentLearner {
 		double[] opponentPolicy = new double[type.actions.size()];
 		
 		// reads agent policy
-		for(int i = 0; i < agentPolicy.length; i++){
+		int i; // preserves between the two loops
+		for(i = 0; i < agentPolicy.length; i++){
 			// i+1 ignores the first token 'NE'
-			agentPolicy[i] = Double.parseDouble(parts[i+i]);
+			agentPolicy[i] = Double.parseDouble(parts[i+1]);
 		}
 		
-		// reads opponent policy
-		for(int i = 0; i < opponentPolicy.length; i++){
+		// reads opponent policy -- uses i from previous loop
+		for( ; i < opponentPolicy.length; i++){
 			// i+1 ignores the first token 'NE'
-			opponentPolicy[i] = Double.parseDouble(parts[i+i]);
+			opponentPolicy[i] = Double.parseDouble(parts[i+1]);
 		}
-		System.out.println("Policies: " + agentPolicy + " / " + opponentPolicy);
+		System.out.println("Policies: " + Arrays.toString(agentPolicy) + " / " + Arrays.toString(opponentPolicy));
 		
 		//TODO now we have the policy, how about the value?
 	}
