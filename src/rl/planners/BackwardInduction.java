@@ -1,4 +1,4 @@
-package ai.metagame;
+package rl.planners;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

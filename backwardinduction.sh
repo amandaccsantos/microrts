@@ -5,6 +5,6 @@ classpath=.:bin:lib/*
 
 echo "Launching backward induction..."
 
-java -classpath $classpath -Xmx2G -Xss4G -Djava.library.path=lib/ ai.metagame.BackwardInduction "$@" 
+java -classpath $classpath -Xmx2G -Xss4G -Djava.library.path=lib/ rl.planners.BackwardInduction "$@" 
 
 echo "Done."
