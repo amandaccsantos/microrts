@@ -104,7 +104,7 @@ public class RLExperiment {
 		String outDir = (String) parameters.get(RLParamNames.OUTPUT_DIR);
 		File dir = new File(outDir);
 		if (!dir.exists()) {
-			if(dir.mkdir() == false){
+			if(dir.mkdirs() == false){
 				throw new RuntimeException("Unable to create directory " + outDir);
 			}
 		}
@@ -246,26 +246,28 @@ public class RLExperiment {
 			attribute_f.setValue(episode.states.get(episode.states.size() - 1).toString());  
 			f_state.setAttributeNode(attribute_f);
 			
-			List<double[]> jointRewards = episode.jointRewards;
-			double[] finalRewards = jointRewards.get(jointRewards.size() - 1);
-			
 			Element jointR = doc_writer.createElement("joint-rewards");
 			rootElement.appendChild(jointR);
 			
-			Attr attribute_jr = doc_writer.createAttribute("value");  
-			attribute_jr.setValue(String.format(Locale.ROOT, "%f, %f", finalRewards[0], finalRewards[1]));  
-			jointR.setAttributeNode(attribute_jr);
+			for (double[] jr : episode.jointRewards) {
+				Element joint_reward = doc_writer.createElement("joint-reward");
+				jointR.appendChild(joint_reward);
+				
+				Attr attribute_jr = doc_writer.createAttribute("value");  
+				attribute_jr.setValue(String.format(Locale.ROOT, "%f, %f", jr[0], jr[1]));  
+				joint_reward.setAttributeNode(attribute_jr); 
+			}
 						
 			Element jointAction = doc_writer.createElement("joint-actions");
 			rootElement.appendChild(jointAction);
 			
 			for (JointAction ja : episode.jointActions) {
-				Element initialTime = doc_writer.createElement("joint-action");
-				jointAction.appendChild(initialTime);
+				Element joint_action = doc_writer.createElement("joint-action");
+				jointAction.appendChild(joint_action);
 				
 				Attr attribute_i = doc_writer.createAttribute("value");  
 				attribute_i.setValue(ja.toString());  
-				initialTime.setAttributeNode(attribute_i); 
+				joint_action.setAttributeNode(attribute_i); 
 			}
 			
 			Element f_state_dump = doc_writer.createElement("final-state-dump");
