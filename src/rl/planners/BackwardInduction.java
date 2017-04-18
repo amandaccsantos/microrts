@@ -65,6 +65,25 @@ public class BackwardInduction implements PersistentLearner {
 		preAllocate();
 	}
 	
+	/**
+	 * Returns the value of a given state
+	 * @param s
+	 * @return
+	 */
+	public double value(State s){
+		return V.get(s);
+	}
+	
+	/**
+	 * Returns the value of a given state-joint action pair
+	 * @param s
+	 * @param ja
+	 * @return
+	 */
+	public double value(State s, JointAction ja){
+		return Q.get(s).get(ja);
+	}
+	
 	public double solve(MicroRTSState s){
 		
 		// for a terminal state, store its value and return it
@@ -133,7 +152,7 @@ public class BackwardInduction implements PersistentLearner {
 		
 		List<? extends State> allStates = domain.enumerate();
 		
-		System.out.println("Pre-allocating for " + allStates.size() + " states");
+		//System.out.println("Pre-allocating for " + allStates.size() + " states");
 		
 		// creates an entry in V for each state
 		for(State s : allStates){
@@ -154,9 +173,9 @@ public class BackwardInduction implements PersistentLearner {
 			}
 		}
 		
-		System.out.println("Done.");
-		System.out.println("V entries: " + V.size());
-		System.out.println("Q entries: " + Q.size());
+		//System.out.println("Done.");
+		//System.out.println("V entries: " + V.size());
+		//System.out.println("Q entries: " + Q.size());
 	}
 	
 	/**
