@@ -37,6 +37,7 @@ import rl.adapters.learners.PersistentLearner;
 import rl.models.aggregatediff.AggregateDifferencesDomain;
 import rl.models.common.MicroRTSState;
 import rl.models.common.MicroRTSTerminalFunction;
+import util.Pair;
 
 public class BackwardInduction implements PersistentLearner {
 	String name;
@@ -128,14 +129,8 @@ public class BackwardInduction implements PersistentLearner {
 					
 				}
 			}
-			try {
-				V.put(s, calculateValue(s)); 
-				visited.add(s);
-			} catch (IOException|InterruptedException e) {
-				System.err.println("Error while solving for state " + s);
-				e.printStackTrace();
-				System.exit(0);
-			}
+			V.put(s, calculateValue(s)); 
+			visited.add(s);
 			
 			
 			System.out.print(String.format("\rClosed state number %7d", visited.size()));
@@ -179,13 +174,57 @@ public class BackwardInduction implements PersistentLearner {
 	}
 	
 	/**
-	 * Formulates the normal-form game contained in a state
-	 * for Gambit to solve and returns its value
+	 * Solves the game for a state and returns its value
 	 * @param s
-	 * @throws IOException 
-	 * @throws InterruptedException 
+	 * @return
 	 */
-	public double calculateValue(State s) throws IOException, InterruptedException{
+	public double calculateValue(State s) {
+		Pair<double[], double[]> policies = null;
+		try {
+			policies = getPoliciesFor(s);
+		} catch (IOException | InterruptedException e) {
+			System.err.println("Error while calculating policy for state " + s);
+			e.printStackTrace();
+			System.exit(0);
+		}
+		
+		double[] agentPolicy = policies.m_a;
+		double[] opponentPolicy = policies.m_b;
+		
+		double stateValue = 0;
+		int agentActionIndex = 0;
+		for(ActionType a : type.actions){
+			int opponentActionIndex = 0;
+			for(ActionType o : type.actions){
+				JointAction ja = new JointAction();
+				ja.addAction(a.associatedAction(null));
+				ja.addAction(o.associatedAction(null));
+				
+				/*
+				 *  adds the value of each outcome by the probability of its occurrence
+				 *  which is dictated by the policies
+				 */
+				stateValue += agentPolicy[agentActionIndex] * opponentPolicy[opponentActionIndex]
+						* Q.get(s).get(ja);
+				
+				opponentActionIndex++;
+			}
+			agentActionIndex++;
+		}
+		
+		return stateValue;
+	}
+	
+	/**
+	 * Solves the game for a state and returns the equilibrium policy
+	 * @param s
+	 * @return
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
+	public Pair<double[], double[]>  getPoliciesFor(State s) throws IOException, InterruptedException{
+		
+		// writes a file with a normal-form game for Gambit
 		BufferedWriter fileWriter;
 		fileWriter = new BufferedWriter(new FileWriter("/tmp/state.nfg"));
 		
@@ -219,8 +258,6 @@ public class BackwardInduction implements PersistentLearner {
 		String result = bri.readLine();	//get the first equilibrium
 	    bri.close();
 		gambit.waitFor();
-		//Scanner scanner = new Scanner(new File("/tmp/result.txt"));
-		//String result = new String(Files.readAllBytes(Paths.get("/tmp/result.txt")));
 		
 		// resulting String is NE,prob1a,prob1b,...,prob2a,prob2b 
 		String[] parts = result.trim().split(",");
@@ -237,29 +274,10 @@ public class BackwardInduction implements PersistentLearner {
 			opponentPolicy[i] = Double.parseDouble(parts[i + agentPolicy.length + 1]);
 		}
 		
-		double stateValue = 0;
-		int agentActionIndex = 0;
-		for(ActionType a : type.actions){
-			int opponentActionIndex = 0;
-			for(ActionType o : type.actions){
-				JointAction ja = new JointAction();
-				ja.addAction(a.associatedAction(null));
-				ja.addAction(o.associatedAction(null));
-				
-				/*
-				 *  adds the value of each outcome by the probability of its occurrence
-				 *  which is dictated by the policies
-				 */
-				stateValue += agentPolicy[agentActionIndex] * opponentPolicy[opponentActionIndex]
-						* Q.get(s).get(ja);
-				
-				opponentActionIndex++;
-			}
-			agentActionIndex++;
-		}
-		
-		return stateValue;
+		return new Pair<double[], double[]>(agentPolicy, opponentPolicy);
 	}
+	
+	
 
 	@Override
 	public String agentName() {
@@ -278,8 +296,51 @@ public class BackwardInduction implements PersistentLearner {
 
 	@Override
 	public Action action(State s) {
-		// TODO Auto-generated method stub
-		return null;
+		Pair<double[], double[]> policies = null;
+		try {
+			policies = getPoliciesFor(s);
+		} catch (IOException | InterruptedException e) {
+			System.err.println("Error while getting action for state " + s);
+			e.printStackTrace();
+			return null;
+		}
+		
+		// uses the policy of row or column player depending on my number
+		double[] myPolicy = agentNumber == 0 ? policies.m_a : policies.m_b;
+		
+		// use myPolicy to perform a roulette selection
+		return rouletteSelection(myPolicy);
+		
+	}
+	
+	/**
+	 * Selects an action according to the given probability vector
+	 * Code from http://stackoverflow.com/a/10949834
+	 * @param probabilities
+	 * @return
+	 */
+	public Action rouletteSelection(double[] probabilities) {
+	    float totalScore = 0;
+	    float runningScore = 0;
+	    for (double prob : probabilities) {
+	        totalScore += prob;
+	    }
+
+	    float rnd = (float) (Math.random() * totalScore);
+
+	    List<ActionType> actionTypes = this.type.actions;
+	    
+	    //for (gene g : genes) {
+	    for(int i = 0; i < probabilities.length; i++){
+	        if (rnd >= runningScore && rnd<=runningScore+ probabilities[i]){
+	            //selected
+	        	return actionTypes.get(i).associatedAction(null);
+	        }
+	        runningScore += probabilities[i];
+	    }
+	    
+	    // wut? didn't find an action?
+	    return null;
 	}
 
 	@Override
@@ -291,7 +352,6 @@ public class BackwardInduction implements PersistentLearner {
 	@Override
 	public void gameTerminated() {
 		// do nothing
-		
 	}
 
 	@Override
@@ -412,9 +472,7 @@ public class BackwardInduction implements PersistentLearner {
 			else if (n.getNodeName() == "state"){
 				Element e = (Element) n;
 				
-				//FIXME works only for AggregateDiffState
 				String stateID = e.getAttribute("id");
-				//AggregateDiffState state = AggregateDiffState.fromString(stateID);
 				MicroRTSState state = (MicroRTSState) nameToState.get(stateID);
 				V.put(state, Double.parseDouble(e.getAttribute("value")));
 				

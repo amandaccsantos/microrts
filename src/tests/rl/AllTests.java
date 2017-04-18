@@ -12,6 +12,7 @@ import tests.rl.models.aggregatediff.TestAggregateDiffDomain;
 import tests.rl.models.aggregatediff.TestAggregateDiffState;
 import tests.rl.models.common.TestSimpleWeightedFeatures;
 import tests.rl.models.common.TestSimpleWeightedFeaturesTerminal;
+import tests.rl.planners.TestBackwardInduction;
 
 @RunWith(Suite.class)
 @SuiteClasses({ 
@@ -28,6 +29,8 @@ import tests.rl.models.common.TestSimpleWeightedFeaturesTerminal;
 	
 	TestSimpleWeightedFeatures.class,
 	TestSimpleWeightedFeaturesTerminal.class,
+	
+	TestBackwardInduction.class,
 	
 })
 
