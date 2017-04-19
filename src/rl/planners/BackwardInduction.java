@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -40,18 +41,58 @@ import rl.models.common.MicroRTSTerminalFunction;
 import util.Pair;
 
 public class BackwardInduction implements PersistentLearner {
+	
+	/**
+	 * Agent's name
+	 */
 	String name;
+	
+	/**
+	 * Agent's type
+	 */
 	SGAgentType type;
+	
+	/**
+	 * Directory to use for communicating with Gambit library
+	 */
+	String workingDir;
+	
+	/**
+	 * Agent's number in a game (0 or 1) -- important when selecting the policy
+	 */
 	int agentNumber;
 	
+	/**
+	 * State value function
+	 */
 	Map<MicroRTSState, Double> V;
+	
+	/**
+	 * State-action value function
+	 */
 	Map<MicroRTSState, Map<JointAction, Double>> Q;
 	
+	/**
+	 * Stores which states were already visited
+	 */
 	Set<MicroRTSState> visited;
 	
+	/**
+	 * The domain in which this agent is in
+	 */
 	EnumerableSGDomain domain;
+	
+	/**
+	 * A function to test whether state is terminal 
+	 */
 	TerminalFunction terminalFunction;
 	
+	/**
+	 * 
+	 * @param name
+	 * @param domain
+	 * @param terminal
+	 */
 	public BackwardInduction(String name, EnumerableSGDomain domain, TerminalFunction terminal){
 		this.name = name;
 		this.type = new SGAgentType("BackwardInduction", domain.getActionTypes());
@@ -63,6 +104,16 @@ public class BackwardInduction implements PersistentLearner {
 		this.domain = domain;
 		terminalFunction = terminal;
 
+		// uses a unique identifier for the working dir
+		workingDir = "/tmp/bi_" + UUID.randomUUID().toString() + "/";
+		
+		// creates the working dir
+		File dir = new File(workingDir);
+
+		if(dir.mkdirs() == false){
+			throw new RuntimeException("Unable to create working directory " + workingDir);
+		}
+		
 		preAllocate();
 	}
 	
@@ -85,6 +136,13 @@ public class BackwardInduction implements PersistentLearner {
 		return Q.get(s).get(ja);
 	}
 	
+	/**
+	 * Uses the backward induction algorithm to solve and return the
+	 * value of a state. Caches solved states so that they don't need
+	 * to be solved twice
+	 * @param s
+	 * @return
+	 */
 	public double solve(MicroRTSState s){
 		
 		// for a terminal state, store its value and return it
@@ -225,8 +283,9 @@ public class BackwardInduction implements PersistentLearner {
 	public Pair<double[], double[]>  getPoliciesFor(State s) throws IOException, InterruptedException{
 		
 		// writes a file with a normal-form game for Gambit
+		String fileForGambit = workingDir + "/state.nfg";
 		BufferedWriter fileWriter;
-		fileWriter = new BufferedWriter(new FileWriter("/tmp/state.nfg"));
+		fileWriter = new BufferedWriter(new FileWriter(fileForGambit));
 		
 		fileWriter.write("NFG 1 R \"" + s + "\"\n");
 		fileWriter.write(
@@ -253,7 +312,7 @@ public class BackwardInduction implements PersistentLearner {
 		
 		// using gambit-lcp because it returns a single equilibrium
 		// 15-digit precision, hope numeric errors don't accumulate
-		Process gambit = Runtime.getRuntime().exec("gambit-lcp -d 15 -q /tmp/state.nfg");
+		Process gambit = Runtime.getRuntime().exec("gambit-lcp -d 15 -q " + fileForGambit);
 		BufferedReader bri = new BufferedReader (new InputStreamReader(gambit.getInputStream()));
 		String result = bri.readLine();	//get the first equilibrium
 	    bri.close();
@@ -389,12 +448,6 @@ public class BackwardInduction implements PersistentLearner {
 				fileWriter.write(
 					String.format(Locale.ROOT, "<state id='%s' value='%f'>\n", s, V.get(s))
 				); 
-				
-				// runs through joint actions and write their values
-				/*List<JointAction> jointActions = JointAction.getAllJointActions(
-					s, 
-					world.getRegisteredAgents()
-				);*/
 				
 				for(ActionType playerAction : this.type.actions){
 					for(ActionType opponentAction : this.type.actions){
