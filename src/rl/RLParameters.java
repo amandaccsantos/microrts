@@ -28,11 +28,14 @@ import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.mdp.stochasticgames.model.JointRewardFunction;
 import burlap.mdp.stochasticgames.world.World;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
+import rl.adapters.domain.EnumerableSGDomain;
 import rl.adapters.gamenatives.PortfolioAIAdapter;
 import rl.adapters.learners.PersistentLearner;
 import rl.adapters.learners.PersistentMultiAgentQLearning;
 import rl.adapters.learners.SGQLearningAdapter;
 import rl.models.common.MicroRTSRewardFactory;
+import rl.models.common.MicroRTSTerminalFunction;
+import rl.planners.BackwardInduction;
 
 
 /**
@@ -424,6 +427,19 @@ public class RLParameters {
 				(int) playerParams.get(RLParamNames.PLAYOUTS),
 				(int) playerParams.get(RLParamNames.LOOKAHEAD),
 				(String) playerParams.get(RLParamNames.EVALUATION_FUNCTION)
+			);
+			
+			return agent;
+		}
+		
+		// Backward Induction
+		else if(e.getAttribute("type").equalsIgnoreCase("BI") || 
+				e.getAttribute("type").equalsIgnoreCase("BackwardInduction")) {
+			
+			BackwardInduction agent = new BackwardInduction(
+				e.getAttribute("name"), 
+				(EnumerableSGDomain) world.getDomain(), 
+				new MicroRTSTerminalFunction()
 			);
 			
 			return agent;
