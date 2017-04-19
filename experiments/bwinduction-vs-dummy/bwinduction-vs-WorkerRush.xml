@@ -1,7 +1,7 @@
  
 <experiment>
 	<parameters>
-		<episodes value="1" />
+		<episodes value="100" />
 		<game-duration value="3000" /> 
 		<abstraction-model value="aggregatediff" />
 		<output-dir value="/tmp/bwinduction-vs-workerrush" />
