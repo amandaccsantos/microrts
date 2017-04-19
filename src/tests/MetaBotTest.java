@@ -19,7 +19,8 @@ public class MetaBotTest {
         UnitTypeTable unitTypeTable = new UnitTypeTable();
         
         //bots.add(new MetaBot(timeBudget, iterationsBudget, unitTypeTable, "/tmp/qltest/qtable0_99"));
-        bots.add(new ai.rl.MetaBot("BackwardInduction", "/tmp/solution-winloss.xml", "aggregatediff"));
+        //bots.add(new ai.rl.MetaBot("BackwardInduction", "/tmp/solution-winloss.xml", "aggregatediff"));
+        bots.add(new ai.rl.MetaBot("MinimaxQ", "/tmp/solution-winloss.xml", "aggregatediff"));
         //bots.add(new ai.rl.MetaBot());
         System.out.println("Added MetaBot.");
         

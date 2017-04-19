@@ -140,8 +140,8 @@ public class MetaBot extends AI {
 			);
 			
 		}
-		else {
-			// error
+		if(agent == null) {
+			// error: agent has not being initialized because name does not match
 			throw new RuntimeException("Unrecognized learner type: " + learnerType);
 		}
 		
