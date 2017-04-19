@@ -7,7 +7,7 @@
 	<parameters>
 		<episodes value="100" />
 		<game-duration value="3000" /> 
-		<abstraction-model value="aggregate" />
+		<abstraction-model value="aggregatediff" />
 		<reward-function value="simpleweighted" />
 		<quiet-learning value="true" />
 	</parameters>
@@ -16,6 +16,7 @@
 		<discount value="0.9" />
 		<learning-rate value="0.1" />
 		<initial-q value="1" />
+		<path-to-knowledge value="src/tests/rl/sgql_aggrdiff.xml" />
 	</player>
 
 	<player name="dummy" type="Dummy">
