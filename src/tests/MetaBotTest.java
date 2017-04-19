@@ -19,16 +19,23 @@ public class MetaBotTest {
         UnitTypeTable unitTypeTable = new UnitTypeTable();
         
         //bots.add(new MetaBot(timeBudget, iterationsBudget, unitTypeTable, "/tmp/qltest/qtable0_99"));
-        //bots.add(new ai.rl.MetaBot("MinimaxQ", "/tmp/mmq-vs-workerrush/q_learner_final.txt", "stages"));
-        bots.add(new ai.rl.MetaBot());
-        bots.add(new WorkerRush(unitTypeTable));
+        bots.add(new ai.rl.MetaBot("BackwardInduction", "/tmp/solution-winloss.xml", "aggregatediff"));
+        //bots.add(new ai.rl.MetaBot());
+        System.out.println("Added MetaBot.");
+        
+        bots.add(new LightRush(unitTypeTable));
+        System.out.println("Added adversary.");
+        
         PrintStream out = System.out;
         
-        // Separate the matchs by map:
+        // prepares maps
         List<PhysicalGameState> maps = new LinkedList<PhysicalGameState>();        
-        //maps.add(PhysicalGameState.load("maps/basesWorkers8x8.xml", unitTypeTable));
-        maps.add(PhysicalGameState.load("maps/24x24/basesWorkers24x24A.xml", unitTypeTable));
+        maps.add(PhysicalGameState.load("maps/basesWorkers24x24.xml", unitTypeTable));
+        System.out.println("Maps prepared.");
+        
+        // runs the 'tournament'
         Experimenter.runExperiments(bots, maps, unitTypeTable, 1, 3000, 300, true, out);
+        System.out.println("Done.");
 	}
     
 }

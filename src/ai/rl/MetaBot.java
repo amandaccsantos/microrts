@@ -16,13 +16,16 @@ import burlap.mdp.stochasticgames.model.JointRewardFunction;
 import burlap.mdp.stochasticgames.world.World;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
 import rl.WorldFactory;
+import rl.adapters.domain.EnumerableSGDomain;
 import rl.adapters.learners.PersistentLearner;
 import rl.adapters.learners.PersistentMultiAgentQLearning;
 import rl.adapters.learners.SGQLearningAdapter;
 import rl.models.aggregatediff.AggregateDifferencesDomain;
 import rl.models.common.MicroRTSState;
+import rl.models.common.MicroRTSTerminalFunction;
 import rl.models.common.ScriptActionTypes;
 import rl.models.common.SimpleWeightedFeatures;
+import rl.planners.BackwardInduction;
 import rts.GameState;
 import rts.PlayerAction;
 
@@ -81,6 +84,7 @@ public class MetaBot extends AI {
 		
 		// creates the world object from the string specification
 		World w = WorldFactory.fromString(worldModelName, rwdFunc);
+		PersistentLearner agent = null;
 		
 		// QLearning -> SGQLearningAdapter
 		if (learnerType.equalsIgnoreCase("QLearning") || 
@@ -88,7 +92,7 @@ public class MetaBot extends AI {
 				learnerType.equalsIgnoreCase(SGQLearningAdapter.class.getSimpleName())){
 			
 			QLearning ql = new QLearning(null, 0.9, new SimpleHashableStateFactory(false), 1000, 0);
-			return new SGQLearningAdapter(
+			agent = new SGQLearningAdapter(
 				w.getDomain(), ql, "QLearning", 
 				new SGAgentType("QLearning", w.getDomain().getActionTypes())
 			);
@@ -104,7 +108,7 @@ public class MetaBot extends AI {
 			// before returning: must call 'gameStarting'
 			// therefore, must register an adversary in the world
 			// and must know beforehand whether this is player 0 or 1
-			PersistentMultiAgentQLearning agent = new PersistentMultiAgentQLearning(
+			agent = new PersistentMultiAgentQLearning(
 				w.getDomain(), 0., 0., new SimpleHashableStateFactory(false), 
 				1000, new MinMaxQ(), false, "MinimaxQ", 
 				new SGAgentType("MinimaxQ", w.getDomain().getActionTypes())
@@ -124,11 +128,27 @@ public class MetaBot extends AI {
 			agent.gameStarting(w, 0);
 			
 			// hopefully, now agent is good to go
-			return agent;
 		}
 		
-		// error
-		throw new RuntimeException("Unrecognized learner type: " + learnerType);
+		// BackwardInduction 
+		if (learnerType.equalsIgnoreCase("BackwardInduction") || 
+				learnerType.equalsIgnoreCase(BackwardInduction.class.getName()) || 
+				learnerType.equalsIgnoreCase(BackwardInduction.class.getSimpleName())){
+			
+			agent = new BackwardInduction(
+				"BackwardInduction", (EnumerableSGDomain) w.getDomain(), new MicroRTSTerminalFunction()
+			);
+			
+		}
+		else {
+			// error
+			throw new RuntimeException("Unrecognized learner type: " + learnerType);
+		}
+		
+		if(pathToKnowledge != null){
+			agent.loadKnowledge(pathToKnowledge);
+		}
+		return agent;
 	}
 
 	@Override
