@@ -15,6 +15,7 @@
 	</player>
 
 	<player name="Nash" type="BackwardInduction">
+		<path-to-knowledge value="/tmp/solution.xml" /> <!-- make sure it exists or you'll be in trouble -->
 	</player>
 
 

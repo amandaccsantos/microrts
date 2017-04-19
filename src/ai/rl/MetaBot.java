@@ -31,7 +31,6 @@ import rts.PlayerAction;
 
 public class MetaBot extends AI {
 	
-	
 	// parameters
 	String learnerType;
 	String pathToKnowledge;
