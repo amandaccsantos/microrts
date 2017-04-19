@@ -20,7 +20,7 @@ import rl.models.common.MicroRTSState;
 import rl.models.common.ScriptActionTypes;
 import rts.units.UnitTypeTable;
 
-public class PortfolioAIAdapter implements SGAgent, PersistentLearner {
+public class PortfolioAIAdapter implements PersistentLearner {
 	
 	String name;
 	SGAgentType type;

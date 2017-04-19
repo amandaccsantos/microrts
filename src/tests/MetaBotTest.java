@@ -9,6 +9,7 @@ import ai.abstraction.LightRush;
 import ai.abstraction.RangedRush;
 import ai.abstraction.WorkerRush;
 import ai.core.AI;
+import ai.portfolio.NashPortfolioAI;
 import rts.PhysicalGameState;
 import rts.units.UnitTypeTable;
 
@@ -20,12 +21,13 @@ public class MetaBotTest {
         
         //bots.add(new MetaBot(timeBudget, iterationsBudget, unitTypeTable, "/tmp/qltest/qtable0_99"));
         //bots.add(new ai.rl.MetaBot("BackwardInduction", "/tmp/solution-winloss.xml", "aggregatediff"));
-        bots.add(new ai.rl.MetaBot("MinimaxQ", "/tmp/solution-winloss.xml", "aggregatediff"));
+        //bots.add(new ai.rl.MetaBot("MinimaxQ", "/tmp/solution-winloss.xml", "aggregatediff"));
         //bots.add(new ai.rl.MetaBot());
-        System.out.println("Added MetaBot.");
+        bots.add(new NashPortfolioAI(unitTypeTable));
+        System.out.println("Added first player.");
         
         bots.add(new LightRush(unitTypeTable));
-        System.out.println("Added adversary.");
+        System.out.println("Added second player.");
         
         PrintStream out = System.out;
         
