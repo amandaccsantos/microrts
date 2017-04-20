@@ -4,11 +4,15 @@ import java.io.PrintStream;
 import java.util.LinkedList;
 import java.util.List;
 
+import ai.RandomBiasedAI;
+import ai.abstraction.BuildBarracks;
+import ai.abstraction.Expand;
 import ai.abstraction.HeavyRush;
 import ai.abstraction.LightRush;
 import ai.abstraction.RangedRush;
 import ai.abstraction.WorkerRush;
 import ai.core.AI;
+import ai.evaluation.SimpleSqrtEvaluationFunction3;
 import ai.portfolio.NashPortfolioAI;
 import rts.PhysicalGameState;
 import rts.units.UnitTypeTable;
@@ -23,7 +27,21 @@ public class MetaBotTest {
         //bots.add(new ai.rl.MetaBot("BackwardInduction", "/tmp/solution-winloss.xml", "aggregatediff"));
         //bots.add(new ai.rl.MetaBot("MinimaxQ", "/tmp/solution-winloss.xml", "aggregatediff"));
         //bots.add(new ai.rl.MetaBot());
-        bots.add(new NashPortfolioAI(unitTypeTable));
+        AI player1 = new NashPortfolioAI(
+    		new AI[]{
+	    		new WorkerRush(unitTypeTable),
+	            new LightRush(unitTypeTable),
+	            new RangedRush(unitTypeTable),
+	            new HeavyRush(unitTypeTable),
+	            //new BuildBarracks(unitTypeTable),
+	            //new Expand(unitTypeTable)
+            },
+           new boolean[]{true,true,true,true,},
+           100, -1, 100,
+           new SimpleSqrtEvaluationFunction3()
+        );
+        
+        bots.add(player1);
         System.out.println("Added first player.");
         
         bots.add(new LightRush(unitTypeTable));

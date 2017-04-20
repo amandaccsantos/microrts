@@ -85,7 +85,7 @@ public class NashPortfolioAI extends PortfolioAI {
             for(int i = 0;i<n;i++) {
                 System.out.print("    ");
                 for(int j = 0;j<n;j++) {
-                    System.out.print(scores[i][j]/counts[i][j] + "\t");
+                	System.out.print(String.format(Locale.ROOT, "%.5f\t", scores[i][j]/counts[i][j]));
                 }
                 System.out.println("");
             }
@@ -139,7 +139,11 @@ public class NashPortfolioAI extends PortfolioAI {
 		for(int i = 0; i < strategies.length; i++){
 			for(int j = 0; j < strategies.length; j++){
 				
-				double myPayoff = scores[i][j]/counts[i][j];
+				double myPayoff = scores[i][j] / counts[i][j];
+				
+				// replaces NaN with zero to avoid empty output from Gambit
+				myPayoff = Double.isNaN(myPayoff) ? 0. : myPayoff;
+				
 				fileWriter.write(
 					String.format(Locale.ROOT, "%f %f ", myPayoff, -myPayoff)
 				);
