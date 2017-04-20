@@ -17,6 +17,8 @@ import ai.evaluation.EvaluationFunction;
 import ai.evaluation.SimpleSqrtEvaluationFunction3;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+
 import rts.GameState;
 import rts.PlayerAction;
 import rts.units.UnitTypeTable;
@@ -28,7 +30,7 @@ import ai.core.InterruptibleAI;
  */
 public class PortfolioAI extends AIWithComputationBudget implements InterruptibleAI {
     
-    public static int DEBUG = 1;
+    public static int DEBUG = 0;
 
     int LOOKAHEAD = 500;
     AI strategies[] = null;
@@ -165,7 +167,7 @@ public class PortfolioAI extends AIWithComputationBudget implements Interruptibl
             for(int i = 0;i<n;i++) {
                 System.out.print("    ");
                 for(int j = 0;j<n;j++) {
-                    System.out.print(scores[i][j]/counts[i][j] + "\t");
+                    System.out.print(String.format(Locale.ROOT, "%.5f\t", scores[i][j]/counts[i][j]));
                 }
                 System.out.println("");
             }

@@ -28,9 +28,9 @@ import rl.RLParamNames;
 import rl.RLParameters;
 import rl.adapters.gamenatives.PortfolioAIAdapter;
 import rl.adapters.learners.SGQLearningAdapter;
-import rl.models.aggregate.AggregateStateDomain;
 import rl.models.aggregatediff.AggregateDifferencesDomain;
 import rl.models.common.MicroRTSRewardFactory;
+import tests.rl.adapters.learners.SGQLearningAdapterTest;
 
 public class RLParametersTest {
 	
@@ -55,7 +55,7 @@ public class RLParametersTest {
 		assertTrue((boolean) parameters.get(RLParamNames.QUIET_LEARNING));
 		
 		World w = (World) rlParams.getParameter(RLParamNames.ABSTRACTION_MODEL);
-		assertTrue(w.getDomain() instanceof AggregateStateDomain);
+		assertTrue(w.getDomain() instanceof AggregateDifferencesDomain);
 		
 		@SuppressWarnings("unchecked")
 		List<SGAgent> players = (List<SGAgent>) rlParams.getParameter(RLParamNames.PLAYERS);
@@ -83,6 +83,10 @@ public class RLParametersTest {
 				Field discountField = revealField(MDPSolver.class, "gamma");
 				double discount = (double) discountField.get(ql);
 				assertEquals(0.9, discount, 0.0000001);
+				
+				// tests player knowledge
+				SGQLearningAdapterTest test = new SGQLearningAdapterTest();
+				test.assertLoadedKnowledgeInAggrDiffModel(sgql);
 				
 			}
 			else if (player.agentName().equals("dummy")){ 

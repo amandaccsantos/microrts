@@ -4,7 +4,7 @@
 		<episodes value="100" />
 		<game-duration value="3000" /> 
 		<abstraction-model value="aggregatediff" />
-		<output-dir value="/tmp/bwinduction-vs-lightrush" />
+		<output-dir value="/tmp/light-vs-lightrush" />
 		<reward-function value="winloss" />
 		<quiet-learning value="true" />
 	</parameters>
@@ -13,8 +13,8 @@
 		<dummy-policy value="LightRush" />
 	</player>
 
-	<player name="Nash" type="BackwardInduction">
-		<path-to-knowledge value="/tmp/solution.xml" /> <!-- make sure it exists or you'll be in trouble -->
+	<player name="light" type="Dummy">
+		<dummy-policy value="LightRush" />
 	</player>
 
 </experiment>

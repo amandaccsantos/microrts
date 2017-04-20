@@ -344,6 +344,8 @@ public class RLParameters {
 		// loads parameters in a map
 		Map<String, Object> playerParams = fillParameters(playerNode, defaultParameters());
 		
+		PersistentLearner agent = null;
+		
 		// QLearning or SGQLearningAdapter
 		if ((e.getAttribute("type").equalsIgnoreCase("QLearning")) || 
 				(e.getAttribute("type").equalsIgnoreCase("SGQLearningAdapter"))){
@@ -357,12 +359,10 @@ public class RLParameters {
 			);
 
 			// create a single-agent interface for the learning algorithm
-			SGQLearningAdapter agent = new SGQLearningAdapter(
+			agent = new SGQLearningAdapter(
 					world.getDomain(), ql, e.getAttribute("name"), 
 					new SGAgentType("QLearning", world.getDomain().getActionTypes())
 			);
-			
-			return agent;
 		}
 		
 		// Dummy
@@ -381,28 +381,18 @@ public class RLParameters {
 				new DummyPolicy((String) playerParams.get(RLParamNames.DUMMY_POLICY), ql)
 			);
 			
-			/*Field policyField = null;
-			try {
-				policyField = ql.getClass().getDeclaredField("learningPolicy");
-			} catch (NoSuchFieldException | SecurityException e1) {
-				e1.printStackTrace();
-			}
-			policyField.setAccessible(true);
-		 	*/
-			
 			// create a single-agent interface the learning algorithm
-			SGQLearningAdapter agent = new SGQLearningAdapter(
+			agent = new SGQLearningAdapter(
 				world.getDomain(), ql, e.getAttribute("name"), 
 				new SGAgentType("Dummy", world.getDomain().getActionTypes())
 			);
-			return agent;
 		}
 		
 		// minimax-Q
 		else if(e.getAttribute("type").equalsIgnoreCase("minimaxQ")) {
 		
 			//MinimaxQ example: https://groups.google.com/forum/#!topic/burlap-discussion/QYP6FKDGDnM
-			PersistentMultiAgentQLearning mmq = new PersistentMultiAgentQLearning(
+			agent = new PersistentMultiAgentQLearning(
 				world.getDomain(), 
 				(float) playerParams.get(RLParamNames.DISCOUNT), 
 				(float) playerParams.get(RLParamNames.LEARNING_RATE), 
@@ -412,15 +402,13 @@ public class RLParameters {
 				e.getAttribute("name"), 
 				new SGAgentType("MiniMaxQ", world.getDomain().getActionTypes())
 			);
-			
-			return mmq;
 		}
 		
 		// PortfolioAI or PortfolioAIAdapter
 		else if(e.getAttribute("type").equalsIgnoreCase("PortfolioAI") || 
 				e.getAttribute("type").equalsIgnoreCase("PortfolioAIAdapter")) {
 			
-			PortfolioAIAdapter agent = new PortfolioAIAdapter(
+			agent = new PortfolioAIAdapter(
 				e.getAttribute("name"), 
 				new SGAgentType("PortfolioAI", world.getDomain().getActionTypes()),
 				(int) playerParams.get(RLParamNames.TIMEOUT),
@@ -429,23 +417,32 @@ public class RLParameters {
 				(String) playerParams.get(RLParamNames.EVALUATION_FUNCTION)
 			);
 			
-			return agent;
 		}
 		
 		// Backward Induction
 		else if(e.getAttribute("type").equalsIgnoreCase("BI") || 
 				e.getAttribute("type").equalsIgnoreCase("BackwardInduction")) {
 			
-			BackwardInduction agent = new BackwardInduction(
+			agent = new BackwardInduction(
 				e.getAttribute("name"), 
 				(EnumerableSGDomain) world.getDomain(), 
 				new MicroRTSTerminalFunction()
 			);
 			
-			return agent;
 		}
 		
-		throw new RuntimeException("Unrecognized player type: " + e.getAttribute("type"));
+		if(agent == null) {
+			// error: agent not initialized because type does not match
+			throw new RuntimeException("Unrecognized player type: " + e.getAttribute("type"));
+		}
+		
+		// checks whether knowledge should be loaded
+		if(playerParams.get(RLParamNames.PATH_TO_KNOWLEDGE) != null){
+			agent.loadKnowledge((String) playerParams.get(RLParamNames.PATH_TO_KNOWLEDGE));
+		}
+		
+		return agent;
+		
 	}
 
 	/**

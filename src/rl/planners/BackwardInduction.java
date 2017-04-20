@@ -279,6 +279,8 @@ public class BackwardInduction implements PersistentLearner {
 	 * @return
 	 * @throws IOException
 	 * @throws InterruptedException
+	 * 
+	 * TODO extract the part that formulates the NFG so that it can be reused
 	 */
 	public Pair<double[], double[]>  getPoliciesFor(State s) throws IOException, InterruptedException{
 		

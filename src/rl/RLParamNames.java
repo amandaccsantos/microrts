@@ -15,6 +15,7 @@ public class RLParamNames {
 	public static final String LEARNING_RATE = "learning-rate";
 	public static final String INITIAL_Q = "initial-q";
 	public static final String DUMMY_POLICY = "dummy-policy";
+	public static final String PATH_TO_KNOWLEDGE = "path-to-knowledge";
 	
 	// parameters of search methods
 	public static final String TIMEOUT = "timeout";

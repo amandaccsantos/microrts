@@ -181,7 +181,7 @@ public class SGQLearningAdapterTest {
 	 * in {@link #QTABLE_AGGREGATEDIFF} file
 	 * @param agent
 	 */
-	private void assertLoadedKnowledgeInAggrDiffModel(SGQLearningAdapter agent){
+	public void assertLoadedKnowledgeInAggrDiffModel(SGQLearningAdapter agent){
 		QLearning qLearner = (QLearning) agent.getSingleAgentLearner();
 		// retrieves the actions for querying later
 		Map<String, Action> theActions = ScriptActionTypes.getMapToActions();
