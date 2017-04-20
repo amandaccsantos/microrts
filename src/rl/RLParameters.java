@@ -22,11 +22,19 @@ import org.xml.sax.SAXException;
 
 import ai.evaluation.SimpleSqrtEvaluationFunction3;
 import ai.metagame.DummyPolicy;
+import burlap.behavior.learningrate.ConstantLR;
+import burlap.behavior.learningrate.ExponentialDecayLR;
+import burlap.behavior.learningrate.LearningRate;
 import burlap.behavior.singleagent.learning.tdmethods.QLearning;
+import burlap.behavior.stochasticgames.madynamicprogramming.SGBackupOperator;
 import burlap.behavior.stochasticgames.madynamicprogramming.backupOperators.MinMaxQ;
+import burlap.behavior.valuefunction.ConstantValueFunction;
+import burlap.behavior.valuefunction.QFunction;
+import burlap.mdp.stochasticgames.SGDomain;
 import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.mdp.stochasticgames.model.JointRewardFunction;
 import burlap.mdp.stochasticgames.world.World;
+import burlap.statehashing.HashableStateFactory;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
 import rl.adapters.domain.EnumerableSGDomain;
 import rl.adapters.gamenatives.PortfolioAIAdapter;
@@ -134,7 +142,7 @@ public class RLParameters {
 		if (floatParams == null){
 			floatParams = new HashSet<>();
 			floatParams.add(RLParamNames.DISCOUNT);
-			floatParams.add(RLParamNames.LEARNING_RATE);
+			//floatParams.add(RLParamNames.LEARNING_RATE); // needs special treatment
 			floatParams.add(RLParamNames.INITIAL_Q);
 		}
 		return floatParams;
@@ -354,14 +362,16 @@ public class RLParameters {
 				null, 
 				(float) playerParams.get(RLParamNames.DISCOUNT), 
 				new SimpleHashableStateFactory(false), 
-				(float) playerParams.get(RLParamNames.INITIAL_Q), 
-				(float) playerParams.get(RLParamNames.LEARNING_RATE)
+				(float) playerParams.get(RLParamNames.INITIAL_Q),
+				0.0	// dummy learning rate, will be changed right away
 			);
+			// sets the appropriate learning rate
+			ql.setLearningRateFunction((LearningRate) playerParams.get(RLParamNames.LEARNING_RATE)); 
 
 			// create a single-agent interface for the learning algorithm
 			agent = new SGQLearningAdapter(
-					world.getDomain(), ql, e.getAttribute("name"), 
-					new SGAgentType("QLearning", world.getDomain().getActionTypes())
+				world.getDomain(), ql, e.getAttribute("name"), 
+				new SGAgentType("QLearning", world.getDomain().getActionTypes())
 			);
 		}
 		
@@ -371,10 +381,10 @@ public class RLParameters {
 			
 			QLearning ql = new QLearning(
 				null, 
-				0, //(float) qlParams.get(RLParamNames.DISCOUNT), 
+				0, // discount 
 				new SimpleHashableStateFactory(false), 
-				0, //(float) qlParams.get(RLParamNames.INITIAL_Q), 
-				0 //(float) qlParams.get(RLParamNames.LEARNING_RATE)
+				0, // initial q 
+				0  // learning rate
 			);
 			
 			ql.setLearningPolicy(
@@ -395,9 +405,9 @@ public class RLParameters {
 			agent = new PersistentMultiAgentQLearning(
 				world.getDomain(), 
 				(float) playerParams.get(RLParamNames.DISCOUNT), 
-				(float) playerParams.get(RLParamNames.LEARNING_RATE), 
+				(LearningRate) playerParams.get(RLParamNames.LEARNING_RATE), 
 				new SimpleHashableStateFactory(),
-				(float) playerParams.get(RLParamNames.INITIAL_Q), 
+				new ConstantValueFunction((float) playerParams.get(RLParamNames.INITIAL_Q)), 
 				new MinMaxQ(), false, 
 				e.getAttribute("name"), 
 				new SGAgentType("MiniMaxQ", world.getDomain().getActionTypes())
@@ -466,15 +476,53 @@ public class RLParameters {
 			
 			if (parameter.getNodeType() != Node.ELEMENT_NODE) continue;	//prevents ClassCastException
 			
+			// treats parameters by type
 			Element paramElement = (Element) parameter;
+			
+			// integers
 			if (integerParameters().contains(parameter.getNodeName())){
 				initialParameters.put(parameter.getNodeName(), Integer.parseInt(paramElement.getAttribute("value")));
 			}
+			
+			// floats
 			else if (floatParameters().contains(parameter.getNodeName())){
 				initialParameters.put(parameter.getNodeName(), Float.parseFloat(paramElement.getAttribute("value")));
 			}
+			
+			// booleans
 			else if(boolParameters().contains(parameter.getNodeName())){
 				initialParameters.put(parameter.getNodeName(), Boolean.parseBoolean(paramElement.getAttribute("value")));
+			}
+			
+			// special parameter: learning rate
+			else if(parameter.getNodeName().equalsIgnoreCase(RLParamNames.LEARNING_RATE)){
+				LearningRate learningRate = null;
+				
+				// tests for constant learning rate
+				if(! paramElement.hasAttribute("type") || paramElement.getAttribute("type").equalsIgnoreCase("constant")){
+					learningRate = new ConstantLR(
+						Double.parseDouble(paramElement.getAttribute("value"))
+					);
+				}
+				
+				// tests for Exponential Decay
+				else if(paramElement.getAttribute("type").equalsIgnoreCase("exponential-decay")){
+					learningRate = new ExponentialDecayLR(
+						Float.parseFloat(paramElement.getAttribute("initial")), 
+						Float.parseFloat(paramElement.getAttribute("rate")), 
+						Float.parseFloat(paramElement.getAttribute("final"))
+					);
+				}
+				
+				// unknown learning rate, raises exception
+				else {
+					throw new RuntimeException("Unknown learning rate type: " + paramElement.getAttribute("type"));
+				}
+				
+				// finally sets the parsed learning rate
+				initialParameters.put(
+					RLParamNames.LEARNING_RATE, learningRate
+				);
 			}
 			else {	//parameter is a string (probably)
 				initialParameters.put(parameter.getNodeName(), paramElement.getAttribute("value"));
