@@ -2,6 +2,7 @@ package ai.portfolio;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -32,9 +33,21 @@ public class NashPortfolioAI extends PortfolioAI {
 	public NashPortfolioAI(AI[] s, boolean[] d, int time, int max_playouts, int la, EvaluationFunction e) {
 		super(s, d, time, max_playouts, la, e);
 		
+		DEBUG = 1;
+		
 		workingDir = "/tmp/nash_" + UUID.randomUUID().toString() + "/";
 		
-		System.out.println("Nash on!");
+		// creates the working dir
+		File dir = new File(workingDir);
+
+		if(dir.mkdirs() == false){
+			throw new RuntimeException("Unable to create working directory " + workingDir);
+		}
+		
+		if(DEBUG > 0) {
+			System.out.println("NashPortfolioAI on working dir: " + workingDir);
+		}
+		
 	}
 	
 	@Override
@@ -81,7 +94,7 @@ public class NashPortfolioAI extends PortfolioAI {
         double[] policy;
 		try {
 			policy = solve();
-		} catch (IOException | InterruptedException e) {
+		} catch (Exception e) {
 			System.err.println("Error while solfing the game from current state. Using default policy");
 			e.printStackTrace();
 			
@@ -193,7 +206,7 @@ public class NashPortfolioAI extends PortfolioAI {
 	
 	@Override
     public AI clone() {
-        return new PortfolioAI(strategies, deterministic, TIME_BUDGET, ITERATIONS_BUDGET, LOOKAHEAD, evaluation);
+        return new NashPortfolioAI(strategies, deterministic, TIME_BUDGET, ITERATIONS_BUDGET, LOOKAHEAD, evaluation);
     }
 
 }
