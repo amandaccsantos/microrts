@@ -9,7 +9,7 @@
 		<quiet-learning value="true" />
 	</parameters>
 
-	<player name="dummy" type="Dummy">
+	<player name="light" type="Dummy">
 		<dummy-policy value="LightRush" />
 	</player>
 
