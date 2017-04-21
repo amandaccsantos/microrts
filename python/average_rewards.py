@@ -1,34 +1,74 @@
-import sys
+import os
+import glob
+import argparse
+import matplotlib.pyplot as plt
 
 if __name__ == '__main__':
-    with open(sys.argv[1] + 'output.txt', 'w+') as results_file:
-        for i in range(1, 4):
-            if i < 10:
-                output = sys.argv[1] + 'out0' + str(i) + '/output.txt'
-            else:
-                output = sys.argv[1] + 'out' + str(i) + '/output.txt'
-            with open(output, 'r') as f:
-                if i == 1:
-                    for line in f:
-                        results_file.write(line)
-                else:
-                    num_line = 0
-                    results_file.seek(0)
-                    lines = results_file.readlines()
-                    lines_in = f.readlines()
-                    for line in lines_in:
-                        line_split = line.split()
-                        value = float(line_split[1].replace(',', '.'))
+    parser = argparse.ArgumentParser(description='')
+    parser.add_argument('-p', '--path', help='Path to directory to be plotted', required=True)
+    parser.add_argument('-e', '--episodes', help='Cumulative reward for X episodes', required=True)
+    args = vars(parser.parse_args())
 
-                        line_result = lines[num_line]
-                        line_result = line_result.split()
-                        value_result = float(line_result[1].replace(',', '.'))
-                        value += value_result
+    rewards_agent0 = [0.0 for x in range(1000)]
+    rewards_agent1 = [0.0 for x in range(1000)]
 
-                        lines_in[num_line] = line_split[0] + ' ' + str(value) + '\n'
-                        num_line += 1
+    window = int(args['episodes'])
+    path = args['path']
 
-                    results_file.seek(0)
-                    results_file.truncate()
-                    for line in lines_in:
-                        results_file.write(line)
+    for num in range(1, 31):
+        if num < 10:
+            file = path + 'out0' + str(num)
+        else:
+            file = path + 'out' + str(num)
+        i = 0
+        for filename in glob.glob(os.path.join(file, '*.game')):
+            f = open(filename, 'r')
+            while True:
+                line = f.readline()
+                if line.startswith("jointRewards"):
+                    while True:
+                        reward = f.readline()
+                        if reward.startswith("states"):
+                            break
+                        replacements = ('[', ']', ',')
+                        for r in replacements:
+                            reward = reward.replace(r, ' ')
+                        reward = reward.split()
+                        rewards_agent0[i] += float(reward[1])/30 #adds the reward of agent 0 accumulated in game i
+                        rewards_agent1[i] += float(reward[2])/30 #adds the reward of agent 1 accumulated in game i
+                elif not line:
+                    break
+            i += 1
+
+    points_agent0 = [0 for x in range(1000 / window)]
+    points_agent1 = [0 for x in range(1000 / window)]
+
+    #calculate the reward of agent 0 accumulated in x games
+    for i in range(len(rewards_agent0)):
+        if i % window == 0 or i == 0:
+            initial = i
+            count = 0
+            for j in range(initial, initial + 10):
+                if count + i < len(rewards_agent0):
+                    interval = i + count - initial
+                    count += 1
+                    if interval < window and i + count < len(rewards_agent0):
+                        points_agent0[i / window] += float(rewards_agent0[i + count])
+
+    #calculate the reward of agent 1 accumulated in x games
+    for i in range(len(rewards_agent1)):
+        if i % window == 0 or i == 0:
+            initial = i
+            count = 0
+            for j in range(initial, initial + 10):
+                if count + i < len(rewards_agent1):
+                    interval = i + count - initial
+                    count += 1
+                    if interval < window and i + count < len(rewards_agent1):
+                        points_agent1[i / window] += float(rewards_agent1[i + count])
+
+    line0, = plt.plot(points_agent0, color='b', label='Agent 0')
+    line1, = plt.plot(points_agent1, color='r', label='Agent 1')
+    plt.legend(handles=[line0, line1])
+    plt.xlabel('Cumulative reward for each ' + str(window) + ' episodes')
+    plt.show()
