@@ -17,6 +17,7 @@ import org.xml.sax.SAXException;
 
 import ai.evaluation.SimpleSqrtEvaluationFunction3;
 import ai.metagame.DummyPolicy;
+import burlap.behavior.learningrate.ExponentialDecayLR;
 import burlap.behavior.learningrate.LearningRate;
 import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.MDPSolver;
@@ -27,6 +28,7 @@ import burlap.mdp.stochasticgames.world.World;
 import rl.RLParamNames;
 import rl.RLParameters;
 import rl.adapters.gamenatives.PortfolioAIAdapter;
+import rl.adapters.learners.PersistentMultiAgentQLearning;
 import rl.adapters.learners.SGQLearningAdapter;
 import rl.models.aggregatediff.AggregateDifferencesDomain;
 import rl.models.common.MicroRTSRewardFactory;
@@ -178,6 +180,57 @@ public class RLParametersTest {
 		}
 	}
 	
+	@Test
+	/**
+	 * Tests whether configurations in example_learningRates.xml are properly loaded
+	 */
+	public void testSpecialLearningRates() throws Exception {
+		RLParameters rlParams = RLParameters.getInstance();
+		
+		rlParams.loadFromFile("src/tests/rl/example_learning-rates.xml");
+		
+		@SuppressWarnings("unchecked")
+		List<SGAgent> players = (List<SGAgent>) rlParams.getParameter(RLParamNames.PLAYERS);
+		
+		for(SGAgent player : players){
+			
+			// tests 'normal-LR' parameters
+			if (player.agentName().equals("normal-LR")){ 
+				SGQLearningAdapter sgql = (SGQLearningAdapter) player;
+				
+				QLearning ql = (QLearning) sgql.getSingleAgentLearner();
+				//tests whether attributes were correctly loaded
+				//code to test learning rate:
+				Field lrField = revealField(ql, "learningRate");
+				LearningRate lr = (LearningRate) lrField.get(ql);
+				assertEquals(0.1, lr.peekAtLearningRate(null, null), 0.0000001);
+			}
+			
+			// tests 'decay-RL' parameters
+			else if (player.agentName().equals("decay-LR")){ 
+				PersistentMultiAgentQLearning mmq = (PersistentMultiAgentQLearning) player;
+				
+				// retrieves learningRate from PersistentMultiAgentQLearning
+				Field lrField = revealField(mmq, "learningRate");
+				LearningRate lr = (LearningRate) lrField.get(mmq);
+				assertTrue(lr instanceof ExponentialDecayLR);
+				assertEquals(1., lr.peekAtLearningRate(null, null), 0.0000001);
+				
+				// retrieves decayRate from ExponentialDecayLR
+				Field decayField = revealField(lr, "decayRate");
+				assertEquals(0.999, (double) decayField.get(lr), 0.000001);
+				
+				// retrieves minimumLR from ExponentialDecayLR
+				Field minField = revealField(lr, "minimumLR");
+				assertEquals(0.1, (double) minField.get(lr), 0.000001);
+				
+				
+			}
+			else {
+				fail("Unknown player name: " + player.agentName());
+			}
+		}
+	}
 	/**
 	 * Changes visibility (private -> public) of a specified object field
 	 * and returns it  
@@ -188,9 +241,26 @@ public class RLParametersTest {
 	 * @throws SecurityException
 	 */
 	private Field revealField(Object obj, String fieldName) throws NoSuchFieldException, SecurityException{
-		Field theField = obj.getClass().getDeclaredField(fieldName);
-		theField.setAccessible(true);
-		return theField;
+		
+		/**
+		 * Goes through class and superclasses looking for the field
+		 * Code adapted from http://stackoverflow.com/a/16296241
+		 */
+		Class<?> current = obj.getClass();
+		while(current.getSuperclass() != null){ // we don't want to process Object.class
+			
+			try{
+				Field theField = current.getDeclaredField(fieldName);
+				theField.setAccessible(true);
+				return theField;
+				
+			} catch (NoSuchFieldException e) {
+				// it's ok bro
+			}
+			current = current.getSuperclass(); // recurse
+		}
+		
+		throw new NoSuchFieldException("Field not found in class and superclasses: " + fieldName);
 	}
 	
 	/**
