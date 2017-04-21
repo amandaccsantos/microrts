@@ -8,6 +8,10 @@ if __name__ == '__main__':
     parser.add_argument('-p', '--path', help='Path to directory to be plotted', required=True)
     parser.add_argument('-e', '--episodes', help='Cumulative reward for X episodes', type=int, required=True)
     parser.add_argument(
+        '-n', '--num-reps', help='Number of repetitions (default=30)',
+         type=int, required=False, default=30
+    )
+    parser.add_argument(
         '-r', '--rep-dir', help='Prefix of the directories with repetitions (default=rep)', 
         required=False, default='rep'
     )
@@ -24,10 +28,11 @@ if __name__ == '__main__':
     path = args['path']
     repdir = args['rep_dir']
     output = args['output']
+    numreps = args['num_reps']
 
-    for num in range(1, 31):
+    for rep_num in range(1, numreps + 1):
         # mounts the file name (rep01, rep02...)
-        working_dir = os.path.join(path, '%s%s' % (repdir, str(num).zfill(2)))
+        working_dir = os.path.join(path, '%s%s' % (repdir, str(rep_num).zfill(2)))
             
         for i, filename in enumerate(glob.glob(os.path.join(working_dir, '*.game'))):
             f = open(filename, 'r')
@@ -43,8 +48,8 @@ if __name__ == '__main__':
                         for r in replacements:
                             reward = reward.replace(r, ' ')
                         reward = reward.split()
-                        rewards_agent0[i] += float(reward[1])/30 #adds the reward of agent 0 accumulated in game i
-                        rewards_agent1[i] += float(reward[2])/30 #adds the reward of agent 1 accumulated in game i
+                        rewards_agent0[i] += float(reward[1]) / numreps #adds the reward of agent 0 accumulated in game i
+                        rewards_agent1[i] += float(reward[2]) / numreps #adds the reward of agent 1 accumulated in game i
                 elif not line:
                     break
 
