@@ -26,13 +26,12 @@ if __name__ == '__main__':
     output = args['output']
 
     for num in range(1, 31):
-        # mounts the file name
-        file = '%s%s%s' % (path, repdir, str(num).zfill(2))
+        # mounts the file name (rep01, rep02...)
+        working_dir = os.path.join(path, '%s%s' % (repdir, str(num).zfill(2)))
             
-        i = 0
-
-        for filename in glob.glob(os.path.join(file, '*.game')):
+        for i, filename in enumerate(glob.glob(os.path.join(working_dir, '*.game'))):
             f = open(filename, 'r')
+            
             while True:
                 line = f.readline()
                 if line.startswith("jointRewards"):
@@ -48,7 +47,6 @@ if __name__ == '__main__':
                         rewards_agent1[i] += float(reward[2])/30 #adds the reward of agent 1 accumulated in game i
                 elif not line:
                     break
-            i += 1
 
     points_agent0 = [0 for x in range(1000 / window)]
     points_agent1 = [0 for x in range(1000 / window)]
