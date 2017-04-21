@@ -6,21 +6,31 @@ import matplotlib.pyplot as plt
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='')
     parser.add_argument('-p', '--path', help='Path to directory to be plotted', required=True)
-    parser.add_argument('-e', '--episodes', help='Cumulative reward for X episodes', required=True)
+    parser.add_argument('-e', '--episodes', help='Cumulative reward for X episodes', type=int, required=True)
+    parser.add_argument(
+        '-r', '--rep-dir', help='Prefix of the directories with repetitions (default=rep)', 
+        required=False, default='rep'
+    )
+    parser.add_argument(
+        '-o', '--output', help='Save the plot to this file instead of showing on screen', 
+        required=False
+    )
     args = vars(parser.parse_args())
 
     rewards_agent0 = [0.0 for x in range(1000)]
     rewards_agent1 = [0.0 for x in range(1000)]
 
-    window = int(args['episodes'])
+    window = args['episodes']
     path = args['path']
+    repdir = args['rep_dir']
+    output = args['output']
 
     for num in range(1, 31):
-        if num < 10:
-            file = path + 'out0' + str(num)
-        else:
-            file = path + 'out' + str(num)
+        # mounts the file name
+        file = '%s%s%s' % (path, repdir, str(num).zfill(2))
+            
         i = 0
+
         for filename in glob.glob(os.path.join(file, '*.game')):
             f = open(filename, 'r')
             while True:
@@ -71,4 +81,8 @@ if __name__ == '__main__':
     line1, = plt.plot(points_agent1, color='r', label='Agent 1')
     plt.legend(handles=[line0, line1])
     plt.xlabel('Cumulative reward for each ' + str(window) + ' episodes')
-    plt.show()
+    
+    if output is None:
+        plt.show()
+    else:
+        plt.savefig(output)
