@@ -4,7 +4,7 @@ import argparse
 import matplotlib.pyplot as plt
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='')
+    parser = argparse.ArgumentParser(description='Plot cumulative rewards in a number of episodes, averaged among repetitions')
     parser.add_argument('-p', '--path', help='Path to directory to be plotted', required=True)
     parser.add_argument('-e', '--episodes', help='Cumulative reward for X episodes', type=int, required=True)
     parser.add_argument(
