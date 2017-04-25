@@ -1,8 +1,7 @@
 import os
 import argparse
+import glob
 import matplotlib.pyplot as plt
-
-dict = {}
 
 parser = argparse.ArgumentParser(description='Plot action-values along episodes')
 parser.add_argument('path', help='Path to file with action-value data')
@@ -13,183 +12,45 @@ args = vars(parser.parse_args())
 outdir = args['outdir']
 
 number = 0
-game = ''
-agent = ''
+results = []
 
-ranged_opening = []
-worker_opening = []
-light_opening = []
-barracks_opening = []
-expand_opening = []
+stage = ''
+for i, filename in enumerate(glob.glob(os.path.join(args['path'], '*.txt'))):
+    if filename.__contains__("q_learner"):
+        number = filename.split('_')[2].split('.')[0]
+        if number == 'final':
+            number = 1000
+        else:
+            number = int(number)
+        f = open(filename, 'r')
+        for line in f:
+            if line.startswith('<state id='):
+                line = line.split('\'')
+                stage = line[1]
+                line = f.next()
+                while True:
+                    if line.startswith('</state>'):
+                        break
+                    line = line.strip()
+                    line = line.split("\'")
+                    results.append((number, stage, line[1], line[3]))
+                    line = f.next()
+        f.close()
 
-ranged_early = []
-worker_early = []
-light_early = []
-barracks_early = []
-expand_early = []
+results.sort(key=lambda x: x[0])
 
-ranged_mid = []
-worker_mid = []
-light_mid = []
-barracks_mid = []
-expand_mid = []
+opening = [item for item in results if item[1] == 'OPENING']
 
-ranged_late = []
-worker_late = []
-light_late = []
-barracks_late = []
-expand_late = []
-
-ranged_end = []
-worker_end = []
-light_end = []
-barracks_end = []
-expand_end = []
-
-f = open(args['path'], 'r')
-#f = open('output.txt', 'r')
-for line in f:
-    if line.startswith("Game: "):
-        line = line.strip()
-        game, number = line.split(": ")
-    elif line.startswith("Value"):
-        line = line.strip()
-        a, agent = line.split("agent ")
-    elif line.startswith("Stage: ") and agent == '0':
-        line = line.strip()
-        line = line.replace(',', '.')
-        a, stage, value = line.split(": ")
-        dict.update({stage: value})
-        line = f.next()
-        if stage == "OPENING":
-            line = line.strip()
-            line = line.replace(',', '.')
-            behavior, b_value = line.split(": ")
-            light_opening.append((number, b_value))
-            line = f.next()
-            line = line.strip()
-            line = line.replace(',', '.')
-            behavior, b_value = line.split(": ")
-            barracks_opening.append((number, b_value))
-            line = f.next()
-            line = line.strip()
-            line = line.replace(',', '.')
-            behavior, b_value = line.split(": ")
-            ranged_opening.append((number, b_value))
-            line = f.next()
-            line = line.strip()
-            line = line.replace(',', '.')
-            behavior, b_value = line.split(": ")
-            expand_opening.append((number, b_value))
-            line = f.next()
-            line = line.strip()
-            line = line.replace(',', '.')
-            behavior, b_value = line.split(": ")
-            worker_opening.append((number, b_value))
-        elif stage == "EARLY":
-            line = line.strip()
-            line = line.replace(',', '.')
-            behavior, b_value = line.split(": ")
-            light_early.append((number, b_value))
-            line = f.next()
-            line = line.strip()
-            line = line.replace(',', '.')
-            behavior, b_value = line.split(": ")
-            barracks_early.append((number, b_value))
-            line = f.next()
-            line = line.strip()
-            line = line.replace(',', '.')
-            behavior, b_value = line.split(": ")
-            ranged_early.append((number, b_value))
-            line = f.next()
-            line = line.strip()
-            line = line.replace(',', '.')
-            behavior, b_value = line.split(": ")
-            expand_early.append((number, b_value))
-            line = f.next()
-            line = line.strip()
-            line = line.replace(',', '.')
-            behavior, b_value = line.split(": ")
-            worker_early.append((number, b_value))
-        elif stage == "MID":
-            line = line.strip()
-            line = line.replace(',', '.')
-            behavior, b_value = line.split(": ")
-            light_mid.append((number, b_value))
-            line = f.next()
-            line = line.strip()
-            line = line.replace(',', '.')
-            behavior, b_value = line.split(": ")
-            barracks_mid.append((number, b_value))
-            line = f.next()
-            line = line.strip()
-            line = line.replace(',', '.')
-            behavior, b_value = line.split(": ")
-            ranged_mid.append((number, b_value))
-            line = f.next()
-            line = line.strip()
-            line = line.replace(',', '.')
-            behavior, b_value = line.split(": ")
-            expand_mid.append((number, b_value))
-            line = f.next()
-            line = line.strip()
-            line = line.replace(',', '.')
-            behavior, b_value = line.split(": ")
-            worker_mid.append((number, b_value))
-        elif stage == "LATE":
-            line = line.strip()
-            line = line.replace(',', '.')
-            behavior, b_value = line.split(": ")
-            light_late.append((number, b_value))
-            line = f.next()
-            line = line.strip()
-            line = line.replace(',', '.')
-            behavior, b_value = line.split(": ")
-            barracks_late.append((number, b_value))
-            line = f.next()
-            line = line.strip()
-            line = line.replace(',', '.')
-            behavior, b_value = line.split(": ")
-            ranged_late.append((number, b_value))
-            line = f.next()
-            line = line.strip()
-            line = line.replace(',', '.')
-            behavior, b_value = line.split(": ")
-            expand_late.append((number, b_value))
-            line = f.next()
-            line = line.strip()
-            line = line.replace(',', '.')
-            behavior, b_value = line.split(": ")
-            worker_late.append((number, b_value))
-        elif stage == "END":
-            line = line.strip()
-            line = line.replace(',', '.')
-            behavior, b_value = line.split(": ")
-            light_end.append((number, b_value))
-            line = f.next()
-            line = line.strip()
-            line = line.replace(',', '.')
-            behavior, b_value = line.split(": ")
-            barracks_end.append((number, b_value))
-            line = f.next()
-            line = line.strip()
-            line = line.replace(',', '.')
-            behavior, b_value = line.split(": ")
-            ranged_end.append((number, b_value))
-            line = f.next()
-            line = line.strip()
-            line = line.replace(',', '.')
-            behavior, b_value = line.split(": ")
-            expand_end.append((number, b_value))
-            line = f.next()
-            line = line.strip()
-            line = line.replace(',', '.')
-            behavior, b_value = line.split(": ")
-            worker_end.append((number, b_value))
-f.close()
+light_opening = [(elem0, elem3) for elem0, elem1, elem2, elem3 in opening if elem2 == 'LightRush']
+heavy_opening = [(elem0, elem3) for elem0, elem1, elem2, elem3 in opening if elem2 == 'HeavyRush']
+barracks_opening = [(elem0, elem3) for elem0, elem1, elem2, elem3 in opening if elem2 == 'BuildBarracks']
+ranged_opening = [(elem0, elem3) for elem0, elem1, elem2, elem3 in opening if elem2 == 'RangedRush']
+expand_opening = [(elem0, elem3) for elem0, elem1, elem2, elem3 in opening if elem2 == 'Expand']
+worker_opening = [(elem0, elem3) for elem0, elem1, elem2, elem3 in opening if elem2 == 'WorkerRush']
 
 plt.figure(1)
 plt.plot(*zip(*light_opening), label='LightRush')
+plt.plot(*zip(*heavy_opening), label='HeavyRush')
 plt.plot(*zip(*barracks_opening), label='BuildBarracks')
 plt.plot(*zip(*ranged_opening), label='RangedRush')
 plt.plot(*zip(*expand_opening), label='Expand')
@@ -197,8 +58,18 @@ plt.plot(*zip(*worker_opening), label='WorkerRush')
 plt.legend(loc=3, borderaxespad=0.)
 plt.savefig(os.path.join(outdir, "opening.png"))
 
+early = [item for item in results if item[1] == 'EARLY']
+
+light_early = [(elem0, elem3) for elem0, elem1, elem2, elem3 in early if elem2 == 'LightRush']
+heavy_early = [(elem0, elem3) for elem0, elem1, elem2, elem3 in early if elem2 == 'HeavyRush']
+barracks_early = [(elem0, elem3) for elem0, elem1, elem2, elem3 in early if elem2 == 'BuildBarracks']
+ranged_early = [(elem0, elem3) for elem0, elem1, elem2, elem3 in early if elem2 == 'RangedRush']
+expand_early = [(elem0, elem3) for elem0, elem1, elem2, elem3 in early if elem2 == 'Expand']
+worker_early = [(elem0, elem3) for elem0, elem1, elem2, elem3 in early if elem2 == 'WorkerRush']
+
 plt.figure(2)
 plt.plot(*zip(*light_early), label='LightRush')
+plt.plot(*zip(*heavy_early), label='HeavyRush')
 plt.plot(*zip(*barracks_early), label='BuildBarracks')
 plt.plot(*zip(*ranged_early), label='RangedRush')
 plt.plot(*zip(*expand_early), label='Expand')
@@ -206,8 +77,18 @@ plt.plot(*zip(*worker_early), label='WorkerRush')
 plt.legend(loc=3, borderaxespad=0.)
 plt.savefig(os.path.join(outdir, "early.png"))
 
+mid = [item for item in results if item[1] == 'MID']
+
+light_mid = [(elem0, elem3) for elem0, elem1, elem2, elem3 in mid if elem2 == 'LightRush']
+heavy_mid = [(elem0, elem3) for elem0, elem1, elem2, elem3 in mid if elem2 == 'HeavyRush']
+barracks_mid = [(elem0, elem3) for elem0, elem1, elem2, elem3 in mid if elem2 == 'BuildBarracks']
+ranged_mid = [(elem0, elem3) for elem0, elem1, elem2, elem3 in mid if elem2 == 'RangedRush']
+expand_mid = [(elem0, elem3) for elem0, elem1, elem2, elem3 in mid if elem2 == 'Expand']
+worker_mid = [(elem0, elem3) for elem0, elem1, elem2, elem3 in mid if elem2 == 'WorkerRush']
+
 plt.figure(3)
 plt.plot(*zip(*light_mid), label='LightRush')
+plt.plot(*zip(*heavy_mid), label='HeavyRush')
 plt.plot(*zip(*barracks_mid), label='BuildBarracks')
 plt.plot(*zip(*ranged_mid), label='RangedRush')
 plt.plot(*zip(*expand_mid), label='Expand')
@@ -215,8 +96,18 @@ plt.plot(*zip(*worker_mid), label='WorkerRush')
 plt.legend(loc=3, borderaxespad=0.)
 plt.savefig(os.path.join(outdir, "mid.png"))
 
+late = [item for item in results if item[1] == 'LATE']
+
+light_late = [(elem0, elem3) for elem0, elem1, elem2, elem3 in late if elem2 == 'LightRush']
+heavy_late = [(elem0, elem3) for elem0, elem1, elem2, elem3 in late if elem2 == 'HeavyRush']
+barracks_late = [(elem0, elem3) for elem0, elem1, elem2, elem3 in late if elem2 == 'BuildBarracks']
+ranged_late = [(elem0, elem3) for elem0, elem1, elem2, elem3 in late if elem2 == 'RangedRush']
+expand_late = [(elem0, elem3) for elem0, elem1, elem2, elem3 in late if elem2 == 'Expand']
+worker_late = [(elem0, elem3) for elem0, elem1, elem2, elem3 in late if elem2 == 'WorkerRush']
+
 plt.figure(4)
 plt.plot(*zip(*light_late), label='LightRush')
+plt.plot(*zip(*heavy_late), label='HeavyRush')
 plt.plot(*zip(*barracks_late), label='BuildBarracks')
 plt.plot(*zip(*ranged_late), label='RangedRush')
 plt.plot(*zip(*expand_late), label='Expand')
@@ -224,8 +115,18 @@ plt.plot(*zip(*worker_late), label='WorkerRush')
 plt.legend(loc=3, borderaxespad=0.)
 plt.savefig(os.path.join(outdir, "late.png"))
 
+end = [item for item in results if item[1] == 'END']
+
+light_end = [(elem0, elem3) for elem0, elem1, elem2, elem3 in end if elem2 == 'LightRush']
+heavy_end = [(elem0, elem3) for elem0, elem1, elem2, elem3 in end if elem2 == 'HeavyRush']
+barracks_end = [(elem0, elem3) for elem0, elem1, elem2, elem3 in end if elem2 == 'BuildBarracks']
+ranged_end = [(elem0, elem3) for elem0, elem1, elem2, elem3 in end if elem2 == 'RangedRush']
+expand_end = [(elem0, elem3) for elem0, elem1, elem2, elem3 in end if elem2 == 'Expand']
+worker_end = [(elem0, elem3) for elem0, elem1, elem2, elem3 in end if elem2 == 'WorkerRush']
+
 plt.figure(5)
 plt.plot(*zip(*light_end), label='LightRush')
+plt.plot(*zip(*heavy_end), label='HeavyRush')
 plt.plot(*zip(*barracks_end), label='BuildBarracks')
 plt.plot(*zip(*ranged_end), label='RangedRush')
 plt.plot(*zip(*expand_end), label='Expand')
