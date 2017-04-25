@@ -1,5 +1,15 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import os
+import argparse
+
+parser = argparse.ArgumentParser(description='Plot action-values along episodes')
+parser.add_argument('path', help='Path to file with action-value data')
+parser.add_argument('outdir', help='Directory to generate plots in')
+
+args = vars(parser.parse_args())
+
+outdir = args['outdir']
 
 dict = {}
 opening = {}
@@ -8,117 +18,94 @@ mid = {}
 late = {}
 end = {}
 
+number = 0
+name = ''
+
 if __name__ == '__main__':
-    number = 0
     game = ''
     agent = ''
-    f = open("../output.txt", 'r')
+    filename = args['path']
+    number = filename.split('_')[2].split('.')[0]
+    name = filename.split('\\')[12].split('.')[0]
+    if number == 'final':
+        number = 1000
+    else:
+        number = int(number)
+    f = open(filename, 'r')
     for line in f:
-        if line.startswith("Game: "):
-            line = line.strip()
-            game, number = line.split(": ")
-        elif line.startswith("Value"):
-            line = line.strip()
-            a, agent = line.split("agent ")
-        elif line.startswith("Stage: "):
-            line = line.strip()
-            line = line.replace(',', '.')
-            a, stage, value = line.split(": ")
-            dict.update({stage: value})
+        if line.startswith('<state id='):
+            line = line.split('\'')
+            stage = line[1]
             line = f.next()
             if stage == "OPENING":
                 while True:
-                    line = line.strip()
-                    line = line.replace(',', '.')
-                    behavior, b_value = line.split(": ")
-                    opening.update({behavior: float(b_value)})
-                    line = f.next()
-                    if line.startswith("WorkerRush: "):
-                        line = line.strip()
-                        line = line.replace(',', '.')
-                        behavior, b_value = line.split(": ")
-                        opening.update({behavior: float(b_value)})
+                    if line.startswith('</state>'):
                         break
+                    line = line.strip()
+                    line = line.split("\'")
+                    opening.update({line[1]: float(line[3])})
+                    line = f.next()
             elif stage == "EARLY":
                 while True:
-                    line = line.strip()
-                    line = line.replace(',', '.')
-                    behavior, b_value = line.split(": ")
-                    early.update({behavior: float(b_value)})
-                    line = f.next()
-                    if line.startswith("WorkerRush: "):
-                        line = line.strip()
-                        line = line.replace(',', '.')
-                        behavior, b_value = line.split(": ")
-                        early.update({behavior: float(b_value)})
+                    if line.startswith('</state>'):
                         break
+                    line = line.strip()
+                    line = line.split("\'")
+                    early.update({line[1]: float(line[3])})
+                    line = f.next()
             elif stage == "MID":
                 while True:
-                    line = line.strip()
-                    line = line.replace(',', '.')
-                    behavior, b_value = line.split(": ")
-                    mid.update({behavior: float(b_value)})
-                    line = f.next()
-                    if line.startswith("WorkerRush: "):
-                        line = line.strip()
-                        line = line.replace(',', '.')
-                        behavior, b_value = line.split(": ")
-                        mid.update({behavior: float(b_value)})
+                    if line.startswith('</state>'):
                         break
+                    line = line.strip()
+                    line = line.split("\'")
+                    mid.update({line[1]: float(line[3])})
+                    line = f.next()
             elif stage == "LATE":
                 while True:
-                    line = line.strip()
-                    line = line.replace(',', '.')
-                    behavior, b_value = line.split(": ")
-                    late.update({behavior: float(b_value)})
-                    line = f.next()
-                    if line.startswith("WorkerRush: "):
-                        line = line.strip()
-                        line = line.replace(',', '.')
-                        behavior, b_value = line.split(": ")
-                        late.update({behavior: float(b_value)})
+                    if line.startswith('</state>'):
                         break
+                    line = line.strip()
+                    line = line.split("\'")
+                    late.update({line[1]: float(line[3])})
+                    line = f.next()
             elif stage == "END":
                 while True:
-                    line = line.strip()
-                    line = line.replace(',', '.')
-                    behavior, b_value = line.split(": ")
-                    end.update({behavior: float(b_value)})
-                    line = f.next()
-                    if line.startswith("WorkerRush: "):
-                        line = line.strip()
-                        line = line.replace(',', '.')
-                        behavior, b_value = line.split(": ")
-                        end.update({behavior: float(b_value)})
+                    if line.startswith('</state>'):
                         break
+                    line = line.strip()
+                    line = line.split("\'")
+                    end.update({line[1]: float(line[3])})
+                    line = f.next()
     f.close()
 
-    multiple_bars = plt.figure()
+multiple_bars = plt.figure()
 
-    N = 5
-    width = 0.1
-    x = range(N)
-    ind = np.arange(N)
+N = 6
+width = 0.1
+x = range(6)
+ind = np.arange(6)
 
-    y = opening.values()
-    z = early.values()
-    k = mid.values()
-    w = late.values()
-    d = end.values()
+y = opening.values()
+z = early.values()
+k = mid.values()
+w = late.values()
+d = end.values()
 
-    ax = plt.subplot()
+ax = plt.subplot()
 
-    ax.set_title(game + ' ' + number + '\n' + 'Value functions for agent ' + agent)
-    ax.set_xticks(ind + width)
-    ax.set_xticklabels(('opening', 'early', 'mid', 'late', 'end'))
+ax.set_title('Value functions for agent ' + name + ' in game ' + str(number) + '\n')
+ax.set_xticks(ind + width)
+ax.set_xticklabels(('opening', 'early', 'mid', 'late', 'end'))
 
-    rects1 = ax.bar(ind, y, width=0.2, color='b', align='center')
-    rects2 = ax.bar(ind + width, z, width=0.2, color='g', align='center')
-    rects3 = ax.bar(ind + width * 2, k, width=0.2, color='r', align='center')
-    rects4 = ax.bar(ind + width * 3, w, width=0.18, color='m', align='center')
-    rects5 = ax.bar(ind + width * 4, d, width=0.12, color='y', align='center')
+rects1 = ax.bar(ind, y, width=0.1, color='b', align='center')
+rects2 = ax.bar(ind + width, z, width=0.1, color='#7CFC00', align='center')
+rects3 = ax.bar(ind + width * 2, k, width=0.1, color='r', align='center')
+rects4 = ax.bar(ind + width * 3, w, width=0.1, color='m', align='center')
+rects5 = ax.bar(ind + width * 4, d, width=0.1, color='#FFA500', align='center')
+rects6 = ax.bar(ind + width * 5, d, width=0.1, color='k', align='center')
 
-    ax.legend((rects1[0], rects2[0], rects3[0], rects4[0], rects5[0]),
-              ('LightRush', 'BuildBarracks', 'RangedRush', 'Expand', 'WorkerRush'))
+ax.legend((rects1[0], rects2[0], rects3[0], rects4[0], rects5[0], rects6[0]),
+          ('LightRush', 'HeavyRush', 'BuildBarracks', 'RangedRush', 'Expand', 'WorkerRush'))
 
-    plt.show()
+plt.savefig(os.path.join(outdir, name + ".png"))
