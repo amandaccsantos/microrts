@@ -54,7 +54,6 @@ public class StagesJointActionModel implements JointModel {
 					e.printStackTrace();
 				}
 				
-				
 				gameState.issueSafe(pa1);
 				gameState.issueSafe(pa2);
 

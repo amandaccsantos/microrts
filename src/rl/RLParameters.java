@@ -380,7 +380,7 @@ public class RLParameters {
 				0, // discount 
 				new SimpleHashableStateFactory(false), 
 				0, // initial q 
-				0  // learning rate
+				0.1  // learning rate - different than zero just to test knowledge at the end
 			);
 			
 			ql.setLearningPolicy(
