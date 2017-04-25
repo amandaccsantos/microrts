@@ -110,6 +110,14 @@ public class GameStage extends MicroRTSState{
 		}
 		return stage == ((GameStage)other).getStage();
 	}
+	
+	@Override
+	/**
+	 * The hash code of a GameStage is the code of its stage enum
+	 */
+	public int hashCode(){
+		return stage.hashCode();
+	}
 
 	@Override
 	public List<Object> variableKeys() {
