@@ -215,6 +215,9 @@ public class RLParametersTest {
 				LearningRate lr = (LearningRate) lrField.get(mmq);
 				assertTrue(lr instanceof ExponentialDecayLR);
 				assertEquals(1., lr.peekAtLearningRate(null, null), 0.0000001);
+				//decreases the learning rate
+				lr.pollLearningRate(1, null, null);
+				assertTrue(lr.peekAtLearningRate(null, null) < 1);
 				
 				// retrieves decayRate from ExponentialDecayLR
 				Field decayField = revealField(lr, "decayRate");
