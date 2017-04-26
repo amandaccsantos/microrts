@@ -59,7 +59,7 @@ plt.plot(*zip(*ranged_opening), label='RangedRush')
 plt.plot(*zip(*expand_opening), label='Expand')
 plt.plot(*zip(*worker_opening), label='WorkerRush')
 plt.legend(loc=3, borderaxespad=0.)
-plt.savefig(os.path.join(outdir, "opening.png"))
+plt.savefig(os.path.join(outdir, "01_opening.png"))
 
 early = [item for item in results if item[1] == 'EARLY']
 
@@ -78,7 +78,7 @@ plt.plot(*zip(*ranged_early), label='RangedRush')
 plt.plot(*zip(*expand_early), label='Expand')
 plt.plot(*zip(*worker_early), label='WorkerRush')
 plt.legend(loc=3, borderaxespad=0.)
-plt.savefig(os.path.join(outdir, "early.png"))
+plt.savefig(os.path.join(outdir, "02_early.png"))
 
 mid = [item for item in results if item[1] == 'MID']
 
@@ -97,7 +97,7 @@ plt.plot(*zip(*ranged_mid), label='RangedRush')
 plt.plot(*zip(*expand_mid), label='Expand')
 plt.plot(*zip(*worker_mid), label='WorkerRush')
 plt.legend(loc=3, borderaxespad=0.)
-plt.savefig(os.path.join(outdir, "mid.png"))
+plt.savefig(os.path.join(outdir, "03_mid.png"))
 
 late = [item for item in results if item[1] == 'LATE']
 
@@ -116,7 +116,7 @@ plt.plot(*zip(*ranged_late), label='RangedRush')
 plt.plot(*zip(*expand_late), label='Expand')
 plt.plot(*zip(*worker_late), label='WorkerRush')
 plt.legend(loc=3, borderaxespad=0.)
-plt.savefig(os.path.join(outdir, "late.png"))
+plt.savefig(os.path.join(outdir, "04_late.png"))
 
 end = [item for item in results if item[1] == 'END']
 
@@ -135,4 +135,4 @@ plt.plot(*zip(*ranged_end), label='RangedRush')
 plt.plot(*zip(*expand_end), label='Expand')
 plt.plot(*zip(*worker_end), label='WorkerRush')
 plt.legend(loc=3, borderaxespad=0.)
-plt.savefig(os.path.join(outdir, "end.png"))
+plt.savefig(os.path.join(outdir, "05_end.png"))
