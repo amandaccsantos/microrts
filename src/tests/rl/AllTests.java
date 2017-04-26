@@ -12,6 +12,7 @@ import tests.rl.models.aggregatediff.TestAggregateDiffDomain;
 import tests.rl.models.aggregatediff.TestAggregateDiffState;
 import tests.rl.models.common.TestSimpleWeightedFeatures;
 import tests.rl.models.common.TestSimpleWeightedFeaturesTerminal;
+import tests.rl.models.stages.StagesJAMTest;
 import tests.rl.planners.TestBackwardInduction;
 
 @RunWith(Suite.class)
@@ -20,10 +21,11 @@ import tests.rl.planners.TestBackwardInduction;
 	SGQLearningAdapterTest.class,
 	PersistentMultiAgentQLearningTest.class,
 	
-	AggregateJAMTest.class,
 	//TestAggregateDomain.class, //enumerate yields too many states
-	
+	StagesJAMTest.class,
+	AggregateJAMTest.class,
 	AggregateDiffStateJAMTest.class,
+	
 	TestAggregateDiffState.class,
 	TestAggregateDiffDomain.class,
 	
