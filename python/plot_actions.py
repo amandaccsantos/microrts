@@ -17,9 +17,10 @@ results = []
 stage = ''
 for i, filename in enumerate(glob.glob(os.path.join(args['path'], '*.txt'))):
     if filename.__contains__("q_learner"):
-        file_name = filename.split('\\')
-        name = file_name[len(file_name) - 1]
+        file_name = os.path.split(filename) # filename.split('/')
+        name = file_name[1] #[len(file_name) - 1]
         number = name.split('_')[2].split('.')[0]
+
         if number == 'final':
             number = 1000
         else:
