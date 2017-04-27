@@ -25,10 +25,11 @@ if __name__ == '__main__':
     game = ''
     agent = ''
     filename = args['path']
-    file_name = filename.split('\\')
-    name = file_name[len(file_name) - 1]
+    file_name = os.path.split(filename)  # filename.split('\\')
+    name = file_name[1]  # file_name[len(file_name) - 1]
     name = name.split('.')[0]
     number = name.split('_')[2]
+
     if number == 'final':
         number = 1000
     else:
