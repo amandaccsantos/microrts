@@ -6,7 +6,8 @@ import matplotlib.pyplot as plt
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Plot cumulative rewards in a number of episodes, averaged among repetitions')
     parser.add_argument('-p', '--path', help='Path to directory to be plotted', required=True)
-    parser.add_argument('-e', '--episodes', help='Cumulative reward for X episodes', type=int, required=True)
+    parser.add_argument('-w', '--window', help='Cumulative reward for X episodes', type=int, required=True)
+    parser.add_argument('-e', '--episodes', help='Number of episodes tested', required=True)
     parser.add_argument(
         '-n', '--num-reps', help='Number of repetitions (default=30)',
          type=int, required=False, default=30
@@ -19,16 +20,18 @@ if __name__ == '__main__':
         '-o', '--output', help='Save the plot to this file instead of showing on screen', 
         required=False
     )
+
     args = vars(parser.parse_args())
 
-    rewards_agent0 = [0.0 for x in range(1000)]
-    rewards_agent1 = [0.0 for x in range(1000)]
-
-    window = args['episodes']
+    episodes = int(args['episodes'])
+    window = args['window']
     path = args['path']
     repdir = args['rep_dir']
     output = args['output']
     numreps = args['num_reps']
+
+    rewards_agent0 = [0.0 for x in range(episodes)]
+    rewards_agent1 = [0.0 for x in range(episodes)]
 
     for rep_num in range(1, numreps + 1):
         # mounts the file name (rep01, rep02...)
@@ -53,8 +56,8 @@ if __name__ == '__main__':
                 elif not line:
                     break
 
-    points_agent0 = [0 for x in range(1000 / window)]
-    points_agent1 = [0 for x in range(1000 / window)]
+    points_agent0 = [0 for x in range(episodes / window)]
+    points_agent1 = [0 for x in range(episodes / window)]
 
     #calculate the reward of agent 0 accumulated in x games
     for i in range(len(rewards_agent0)):
