@@ -11,6 +11,7 @@ import rl.models.aggregate.AggregateStateDomain;
 import rl.models.aggregatediff.AggregateDifferencesDomain;
 import rl.models.common.MicroRTSTerminalFunction;
 import rl.models.common.WinLossRewardFunction;
+import rl.models.singlestate.SingleStateDomain;
 import rl.models.stages.GameStagesDomain;
 
 /**
@@ -24,6 +25,7 @@ public class WorldFactory {
 	public final static String STAGES = "stages";
 	public final static String AGGREGATE = "aggregate";
 	public final static String AGGREGATE_DIFF = "aggregatediff";
+	public final static String SINGLE_STATE = "singlestate";
 	
 	/**
 	 * Returns a World given its name. Uses default JointRewardFunction and TerminalFunction
@@ -60,6 +62,9 @@ public class WorldFactory {
 		}
 		else if(model.equalsIgnoreCase(AGGREGATE_DIFF)){
 			return aggregateDiffStateFeatures(rwdFunc, terminalFunc);
+		} 
+		else if(model.equalsIgnoreCase(SINGLE_STATE)){
+			return singleState(rwdFunc, terminalFunc);
 		}
 		
 		throw new RuntimeException("Unrecognized world name: " + model);
@@ -126,6 +131,18 @@ public class WorldFactory {
 		}
 		
 		World w = new World(aggrDomain, rwdFunc, terminalFunc, aggrDomain.getInitialState());
+		return w;
+	}
+	
+	public static World singleState(JointRewardFunction rwdFunc, TerminalFunction terminalFunc) {
+		SingleStateDomain singleStateDomain = null;
+		try {
+			singleStateDomain = new SingleStateDomain();
+		} catch (JDOMException|IOException e) {
+			e.printStackTrace();
+		}
+
+		World w = new World(singleStateDomain, rwdFunc, terminalFunc, singleStateDomain.getInitialState());
 		return w;
 	}
 
