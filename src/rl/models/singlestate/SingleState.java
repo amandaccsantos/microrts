@@ -7,9 +7,15 @@ import rl.models.stages.GameStage;
 import rl.models.stages.GameStages;
 import rts.GameState;
 
+/**
+ * Provides a one-shot interaction with the environment. Thus, the game stage is either
+ * {@link GameStages#OPENING} or {@link GameStages#FINISHED} 
+ * @author anderson
+ *
+ */
 public class SingleState extends GameStage {
 	
-	GameStages stage;
+	//GameStages stage;
 	
 	public SingleState() {
 		super();
@@ -24,7 +30,6 @@ public class SingleState extends GameStage {
 		return GameStages.OPENING;
 	}	
 	
-	@Override
 	public static List<GameStage> allStates(){
 		List<GameStage> states = new ArrayList<>();
 
@@ -34,5 +39,4 @@ public class SingleState extends GameStage {
 		
 		return states;
 	}
-	
 }

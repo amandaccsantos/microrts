@@ -2,10 +2,13 @@ package rl.models.singlestate;
 
 import java.util.Map;
 
+import javax.swing.JFrame;
+
 import ai.core.AI;
 import burlap.mdp.core.state.State;
 import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.model.JointModel;
+import gui.PhysicalGameStatePanel;
 import rl.models.singlestate.SingleState;
 import rl.models.stages.GameStages;
 import rl.models.stages.StagesDomainGenerator;
@@ -25,23 +28,22 @@ Map<String, AI> actions;
 		SingleState state = (SingleState)s;
 		
 		GameState gameState = state.getUnderlyingState().clone();
-		GameStages currentStage = GameStages.OPENING;
+		GameStages currentStage = state.getStage();// GameStages.OPENING;
 		
 		boolean gameOver = false;
 		boolean changedStage = false;	//stores whether game has advanced a stage
 		
 		//JFrame w = PhysicalGameStatePanel.newVisualizer(gameState, 640, 640, false, PhysicalGameStatePanel.COLORSCHEME_BLACK);
-		
-		long nextTimeToUpdate = System.currentTimeMillis() + StagesDomainGenerator.PERIOD;
+		int delay = 0; //milisseconds
+		long nextTimeToUpdate = System.currentTimeMillis() + delay;
 		
 		//instantiates the AIs that players selected (clones the objects)
 		AI ai1 = actions.get(ja.action(0).actionName()).clone();
 		AI ai2 = actions.get(ja.action(1).actionName()).clone();
-		//System.out.println("Actions: P1: " + ai1 + " / P2: " + ai2);
 		
 		//advance game until next stage is reached or game finishes
 		do {
-			//if (System.currentTimeMillis() >= nextTimeToUpdate) {
+			if (System.currentTimeMillis() >= nextTimeToUpdate) {
 
 				PlayerAction pa1 = null, pa2 = null;
 				try {
@@ -66,19 +68,15 @@ Map<String, AI> actions;
 				changedStage = currentStage != SingleState.frameToStage(gameState.getTime()); 
 				
 				//w.repaint();
-				nextTimeToUpdate += StagesDomainGenerator.PERIOD;
-			/*} else {
-				try {
-					Thread.sleep(1);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}*/
+				nextTimeToUpdate += delay;
+			}
 		} while (!gameOver && !changedStage && gameState.getTime() < StagesDomainGenerator.MAXCYCLES);
 		
-		//returns the new State associated with current underlying game state
-		return new SingleState(gameState); 
-		
+		//returns the new State, with a 'finished' on it
+		SingleState theNewState = new SingleState(gameState); 
+		theNewState.setStage(GameStages.FINISHED);
+		//System.out.println(theNewState);
+		return theNewState; 
 	}
 	
 }

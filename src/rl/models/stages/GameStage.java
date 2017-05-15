@@ -10,7 +10,7 @@ import rts.GameState;
 public class GameStage extends MicroRTSState{
 	
 	//TODO make stage an integer: currentTimestep / STAGE_DURATION (this has more flexibility)
-	GameStages stage;
+	protected GameStages stage;
 	
 	
 	/**

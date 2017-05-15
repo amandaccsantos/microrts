@@ -12,6 +12,7 @@ import tests.rl.models.aggregatediff.TestAggregateDiffDomain;
 import tests.rl.models.aggregatediff.TestAggregateDiffState;
 import tests.rl.models.common.TestSimpleWeightedFeatures;
 import tests.rl.models.common.TestSimpleWeightedFeaturesTerminal;
+import tests.rl.models.singlestate.SingleStateJAMTest;
 import tests.rl.models.stages.StagesJAMTest;
 import tests.rl.planners.TestBackwardInduction;
 
@@ -25,6 +26,7 @@ import tests.rl.planners.TestBackwardInduction;
 	StagesJAMTest.class,
 	AggregateJAMTest.class,
 	AggregateDiffStateJAMTest.class,
+	SingleStateJAMTest.class,
 	
 	TestAggregateDiffState.class,
 	TestAggregateDiffDomain.class,
