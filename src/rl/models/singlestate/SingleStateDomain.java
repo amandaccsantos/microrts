@@ -18,47 +18,47 @@ import rts.units.UnitTypeTable;
 public class SingleStateDomain extends EnumerableSGDomain {
 
 	//some game parameters
-		public static final int MAXCYCLES = 3000;
-		public static final int PERIOD = 20;
-		
-		protected UnitTypeTable unitTypeTable;
-		protected PhysicalGameState physicalGameState;
-		protected GameState gs;
-		
-		/**
-		 * Creates a default domain loading map maps/basesWorkers24x24.xml of microRTS
-		 * @throws JDOMException
-		 * @throws IOException
-		 */
-		public SingleStateDomain() throws JDOMException, IOException {
-			this("maps/basesWorkers24x24.xml");		
-		}
-		
-		public SingleStateDomain(String pathToMap) throws JDOMException, IOException{
-			unitTypeTable = new UnitTypeTable();
-			physicalGameState = PhysicalGameState.load(pathToMap, unitTypeTable);
+	public static final int MAXCYCLES = 3000;
+	public static final int PERIOD = 20;
+	
+	protected UnitTypeTable unitTypeTable;
+	protected PhysicalGameState physicalGameState;
+	protected GameState gs;
+	
+	/**
+	 * Creates a default domain loading map maps/basesWorkers24x24.xml of microRTS
+	 * @throws JDOMException
+	 * @throws IOException
+	 */
+	public SingleStateDomain() throws JDOMException, IOException {
+		this("maps/basesWorkers24x24.xml");		
+	}
+	
+	public SingleStateDomain(String pathToMap) throws JDOMException, IOException{
+		unitTypeTable = new UnitTypeTable();
+		physicalGameState = PhysicalGameState.load(pathToMap, unitTypeTable);
 
-			gs = new GameState(physicalGameState, unitTypeTable);
-			
-			for(UniversalActionType actionType : ScriptActionTypes.getActionTypes()){
-				this.addActionType(actionType);
-			}
+		gs = new GameState(physicalGameState, unitTypeTable);
 		
-			//sets the joint action model containing the valid actions
-			setJointActionModel(new SingleStateJAM(ScriptActionTypes.getActionMapping(unitTypeTable)));
+		for(UniversalActionType actionType : ScriptActionTypes.getActionTypes()){
+			this.addActionType(actionType);
 		}
-		
-		/**
-		 * Returns the initial state for the game
-		 * @return
-		 */
-		public State getInitialState(){
-			return new SingleState(gs);
-		}
+	
+		//sets the joint action model containing the valid actions
+		setJointActionModel(new SingleStateJAM(ScriptActionTypes.getActionMapping(unitTypeTable)));
+	}
+	
+	/**
+	 * Returns the initial state for the game
+	 * @return
+	 */
+	public State getInitialState(){
+		return new SingleState(gs);
+	}
 
-		@Override
-		public List<? extends State> enumerate() {
-			return GameStage.allStates();
-		}
+	@Override
+	public List<? extends State> enumerate() {
+		return GameStage.allStates();
+	}
 
 }
