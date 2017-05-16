@@ -53,12 +53,12 @@ public class SingleStateDomain extends EnumerableSGDomain {
 	 * @return
 	 */
 	public State getInitialState(){
-		return new SingleState(gs);
+		return new SingleState(gs.clone());
 	}
 
 	@Override
 	public List<? extends State> enumerate() {
-		return GameStage.allStates();
+		return SingleState.allStates();
 	}
 
 }
