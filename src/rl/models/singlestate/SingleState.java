@@ -19,6 +19,7 @@ public class SingleState extends GameStage {
 	
 	public SingleState() {
 		super();
+		stage = GameStages.OPENING;	
 	}
 	
 	public SingleState(GameState gameState) {
@@ -27,15 +28,13 @@ public class SingleState extends GameStage {
 	}
 
 	public static GameStages frameToStage(int frameNumber){
-		return GameStages.OPENING;
+		return GameStages.OPENING; //all frames belong to the same state
 	}	
 	
 	public static List<GameStage> allStates(){
 		List<GameStage> states = new ArrayList<>();
-
-		GameStage s = new GameStage();
-		s.setStage(frameToStage(0));
-		states.add(s);
+		
+		states.add(new SingleState());
 		
 		return states;
 	}

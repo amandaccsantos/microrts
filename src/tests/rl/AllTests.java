@@ -13,28 +13,34 @@ import tests.rl.models.aggregatediff.TestAggregateDiffState;
 import tests.rl.models.common.TestSimpleWeightedFeatures;
 import tests.rl.models.common.TestSimpleWeightedFeaturesTerminal;
 import tests.rl.models.singlestate.SingleStateJAMTest;
+import tests.rl.models.singlestate.SingleStateTest;
 import tests.rl.models.stages.StagesJAMTest;
 import tests.rl.planners.TestBackwardInduction;
 
 @RunWith(Suite.class)
-@SuiteClasses({ 
+@SuiteClasses({
+	// misc
 	RLParametersTest.class, 
 	SGQLearningAdapterTest.class,
 	PersistentMultiAgentQLearningTest.class,
+	TestBackwardInduction.class,
 	
-	//TestAggregateDomain.class, //enumerate yields too many states
+	// joint action models
 	StagesJAMTest.class,
 	AggregateJAMTest.class,
 	AggregateDiffStateJAMTest.class,
 	SingleStateJAMTest.class,
 	
+	// states
+	SingleStateTest.class,
 	TestAggregateDiffState.class,
+	
+	// domains
 	TestAggregateDiffDomain.class,
 	
+	//reward functions
 	TestSimpleWeightedFeatures.class,
 	TestSimpleWeightedFeaturesTerminal.class,
-	
-	TestBackwardInduction.class,
 	
 })
 
