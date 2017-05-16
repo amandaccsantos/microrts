@@ -9,8 +9,6 @@ import burlap.mdp.core.action.UniversalActionType;
 import burlap.mdp.core.state.State;
 import rl.adapters.domain.EnumerableSGDomain;
 import rl.models.common.ScriptActionTypes;
-import rl.models.singlestate.SingleStateJAM;
-import rl.models.stages.GameStage;
 import rts.GameState;
 import rts.PhysicalGameState;
 import rts.units.UnitTypeTable;
