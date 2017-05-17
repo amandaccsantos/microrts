@@ -3,6 +3,8 @@ package rl.models.singlestate;
 import java.util.ArrayList;
 import java.util.List;
 
+import burlap.mdp.core.state.State;
+
 import rl.models.stages.GameStage;
 import rl.models.stages.GameStages;
 import rts.GameState;
@@ -30,12 +32,17 @@ public class SingleState extends GameStage {
 	public static GameStages frameToStage(int frameNumber){
 		return GameStages.OPENING; //all frames belong to the same state
 	}	
-	
+
 	public static List<GameStage> allStates(){
 		List<GameStage> states = new ArrayList<>();
 		
 		states.add(new SingleState());
 		
 		return states;
+	}
+	
+	@Override
+	public State copy() {
+		return new SingleState(getUnderlyingState().clone());
 	}
 }
