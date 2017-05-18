@@ -45,7 +45,22 @@ public class SingleStateTest {
 	@Test
 	public void testFrameToStage(){
 		assertEquals(GameStages.OPENING, SingleState.frameToStage(9000));
-	}	
+	}
+	
+	@Test
+	/**
+	 * This test addresses the error that a copy of SingleState instance 
+	 * whose stage is FINISHED, has stage OPENING
+	 */
+	public void testCopy(){
+		SingleState original = new SingleState(underlyingState);
+		original.setStage(GameStages.FINISHED);
+		
+		SingleState copy = (SingleState) original.copy();
+		
+		assertEquals(GameStages.FINISHED, copy.getStage());
+		
+	}
 	
 	@Test
 	public void testAllStates(){

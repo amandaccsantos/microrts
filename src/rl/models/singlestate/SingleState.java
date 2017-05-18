@@ -43,6 +43,10 @@ public class SingleState extends GameStage {
 	
 	@Override
 	public State copy() {
-		return new SingleState(getUnderlyingState().clone());
+		SingleState theCopy = new SingleState(getUnderlyingState().clone());
+		if(this.stage == GameStages.FINISHED){
+			theCopy.setStage(GameStages.FINISHED);
+		}
+		return theCopy;
 	}
 }
