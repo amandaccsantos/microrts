@@ -327,7 +327,14 @@ public class RLParameters {
 		}
 		
 		if(line.hasOption(RLParamNames.QUIET_LEARNING)){
-			params.put(RLParamNames.QUIET_LEARNING, true);
+			String quietValue = line.getOptionValue(RLParamNames.QUIET_LEARNING);
+			if(quietValue.equalsIgnoreCase("true")){
+				params.put(RLParamNames.QUIET_LEARNING, true);
+			}
+			else {
+				params.put(RLParamNames.QUIET_LEARNING, false);
+			}
+			
 		}
 		
 		return params;

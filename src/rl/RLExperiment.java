@@ -156,7 +156,7 @@ public class RLExperiment {
 
 		options.addOption("c", RLParamNames.CONFIG_FILE, true, "Path to configuration file.");
 		options.addOption("o", RLParamNames.OUTPUT_DIR, true, "Directory to generate output.");
-		options.addOption("q", RLParamNames.QUIET_LEARNING, false, "Don't output agent knowledge every episode.");
+		options.addOption("q", RLParamNames.QUIET_LEARNING, true, "Don't output agent knowledge every episode.");
 
 		CommandLine line = null;
 		CommandLineParser parser = new DefaultParser();
