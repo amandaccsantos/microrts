@@ -26,6 +26,7 @@ public class SingleState extends GameStage {
 	
 	public SingleState(GameState gameState) {
 		super(gameState);
+		//TODO check if underlying state is 'gameOver' and set to FINISHED
 		stage = GameStages.OPENING;		
 	}
 

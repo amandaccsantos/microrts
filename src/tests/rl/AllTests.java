@@ -14,6 +14,7 @@ import tests.rl.models.common.TestSimpleWeightedFeatures;
 import tests.rl.models.common.TestSimpleWeightedFeaturesTerminal;
 import tests.rl.models.singlestate.SingleStateJAMTest;
 import tests.rl.models.singlestate.SingleStateTest;
+import tests.rl.models.stages.GameStageTest;
 import tests.rl.models.stages.StagesJAMTest;
 import tests.rl.planners.TestBackwardInduction;
 
@@ -33,6 +34,7 @@ import tests.rl.planners.TestBackwardInduction;
 	
 	// states
 	SingleStateTest.class,
+	GameStageTest.class,
 	TestAggregateDiffState.class,
 	
 	// domains
