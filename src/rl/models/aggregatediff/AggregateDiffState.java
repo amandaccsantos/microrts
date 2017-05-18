@@ -29,6 +29,7 @@ public class AggregateDiffState extends GameStage {
 	/**
 	 * Sets all properties based on the values found in the game state.
 	 * Assumes that 'player' has index 0 and 'opponent' has index 1
+	 * TODO: check if gs is 'gameOver' and set stage to FINISHED
 	 * @param gs
 	 */
 	public AggregateDiffState(GameState gs) {
@@ -166,7 +167,13 @@ public class AggregateDiffState extends GameStage {
 	@Override
 	public State copy() {
 		// if underlying state has not changed, copy will return a equivalent object
-		return new AggregateDiffState(underlyingState.clone());
+		AggregateDiffState theCopy = new AggregateDiffState(underlyingState.clone());
+		
+		// stage is set externally, we must ensure that it is properly propagated:
+		if(this.stage == GameStages.FINISHED){
+			theCopy.setStage(GameStages.FINISHED);
+		}
+		return theCopy;
 	}
 	
 	@Override

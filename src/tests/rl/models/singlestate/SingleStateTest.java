@@ -63,7 +63,6 @@ public class SingleStateTest {
 		
 		// moreover, ensure that copy equals the original
 		assertEquals(original, copy);
-		
 	}
 	
 	@Test

@@ -137,7 +137,11 @@ public class GameStage extends MicroRTSState{
 
 	@Override
 	public State copy() {
-		return new GameStage(getUnderlyingState().clone());
+		GameStage theCopy = new GameStage(getUnderlyingState().clone());
+		if(this.stage == GameStages.FINISHED){
+			theCopy.setStage(GameStages.FINISHED);
+		}
+		return theCopy;
 	}
 	
 	public String toString(){

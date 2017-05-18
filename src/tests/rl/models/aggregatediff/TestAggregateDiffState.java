@@ -11,6 +11,7 @@ import org.junit.Test;
 import rl.models.aggregate.AggregateState;
 import rl.models.aggregatediff.AggregateDiff;
 import rl.models.aggregatediff.AggregateDiffState;
+import rl.models.singlestate.SingleState;
 import rl.models.stages.GameStage;
 import rl.models.stages.GameStages;
 import rts.GameState;
@@ -153,6 +154,24 @@ public class TestAggregateDiffState {
 		assertEquals(AggregateDiff.EVEN, state.lightDiff);
 		assertEquals(AggregateDiff.EVEN, state.rangedDiff);
 		
+	}
+	
+	@Test
+	/**
+	 * This test addresses the error that a copy of SingleState instance 
+	 * whose stage is FINISHED, has stage OPENING
+	 */
+	public void testCopy(){
+		AggregateDiffState original = new AggregateDiffState(underlyingState);
+		original.setStage(GameStages.FINISHED);
+		
+		AggregateDiffState copy = (AggregateDiffState) original.copy();
+		
+		// ensures that copy is FINISHED
+		assertEquals(GameStages.FINISHED, copy.getStage());
+		
+		// moreover, ensure that copy equals the original
+		assertEquals(original, copy);
 	}
 
 }
