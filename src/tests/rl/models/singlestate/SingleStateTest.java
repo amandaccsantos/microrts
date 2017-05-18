@@ -58,7 +58,11 @@ public class SingleStateTest {
 		
 		SingleState copy = (SingleState) original.copy();
 		
+		// ensures that copy is FINISHED
 		assertEquals(GameStages.FINISHED, copy.getStage());
+		
+		// moreover, ensure that copy equals the original
+		assertEquals(original, copy);
 		
 	}
 	
