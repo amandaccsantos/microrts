@@ -6,6 +6,8 @@
 		<game-duration value="3000" />
 		<abstraction-model value="aggregatediff" />
 		<output-dir value="results" />
+		<reward-function value="winloss" />
+		<quiet-learning value="true" />
 	</parameters>
 
 	<player name="learner" type="SGQLearningAdapter">
