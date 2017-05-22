@@ -7,7 +7,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Plot cumulative rewards in a number of episodes, averaged among repetitions')
     parser.add_argument('-p', '--path', help='Path to directory to be plotted', required=True)
     parser.add_argument('-w', '--window', help='Cumulative reward for X episodes', type=int, required=True)
-    parser.add_argument('-e', '--episodes', help='Number of episodes tested', required=True)
+    parser.add_argument('-e', '--episodes', help='Number of episodes tested', type=int, required=True)
     parser.add_argument(
         '-n', '--num-reps', help='Number of repetitions (default=30)',
          type=int, required=False, default=30
@@ -23,7 +23,7 @@ if __name__ == '__main__':
 
     args = vars(parser.parse_args())
 
-    episodes = int(args['episodes'])
+    episodes = args['episodes']
     window = args['window']
     path = args['path']
     repdir = args['rep_dir']
