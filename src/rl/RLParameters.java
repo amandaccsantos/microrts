@@ -20,14 +20,18 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import ai.abstraction.HeavyRush;
+import ai.core.AI;
 import ai.evaluation.SimpleSqrtEvaluationFunction3;
 import ai.metagame.DummyPolicy;
+import ai.metagame.RandomPolicy;
 import burlap.behavior.learningrate.ConstantLR;
 import burlap.behavior.learningrate.ExponentialDecayLR;
 import burlap.behavior.learningrate.LearningRate;
 import burlap.behavior.singleagent.learning.tdmethods.QLearning;
 import burlap.behavior.stochasticgames.madynamicprogramming.backupOperators.MinMaxQ;
 import burlap.behavior.valuefunction.ConstantValueFunction;
+import burlap.mdp.core.action.ActionType;
 import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.mdp.stochasticgames.model.JointRewardFunction;
 import burlap.mdp.stochasticgames.world.World;
@@ -40,6 +44,7 @@ import rl.adapters.learners.SGQLearningAdapter;
 import rl.models.common.MicroRTSRewardFactory;
 import rl.models.common.MicroRTSTerminalFunction;
 import rl.planners.BackwardInduction;
+import rts.units.UnitTypeTable;
 
 
 /**
@@ -375,6 +380,26 @@ public class RLParameters {
 			agent = new SGQLearningAdapter(
 				world.getDomain(), ql, e.getAttribute("name"), 
 				new SGAgentType("QLearning", world.getDomain().getActionTypes())
+			);
+		}
+		
+		// Random single-agent
+		else if ((e.getAttribute("type").equalsIgnoreCase("RandomSA"))){
+			
+			QLearning ql = new QLearning(
+				null, 
+				(float) playerParams.get(RLParamNames.DISCOUNT), 
+				new SimpleHashableStateFactory(false), 
+				(float) playerParams.get(RLParamNames.INITIAL_Q),
+				0.0	// dummy learning rate, will be changed right away
+			);
+			
+			ql.setLearningPolicy(new RandomPolicy(ql));
+
+			// create a single-agent interface for the learning algorithm
+			agent = new SGQLearningAdapter(
+				world.getDomain(), ql, e.getAttribute("name"), 
+				new SGAgentType("RandomSA", world.getDomain().getActionTypes())
 			);
 		}
 		
