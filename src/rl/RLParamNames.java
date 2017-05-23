@@ -31,5 +31,7 @@ public class RLParamNames {
 	
 	// command line only: 
 	public static final String CONFIG_FILE = "config-file";
+	public static final String PLAYER1_POLICY = "player1policy";
+	public static final String PLAYER2_POLICY = "player2policy";
 	
 }

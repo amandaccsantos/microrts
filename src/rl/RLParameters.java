@@ -339,7 +339,14 @@ public class RLParameters {
 			else {
 				params.put(RLParamNames.QUIET_LEARNING, false);
 			}
-			
+		}
+		
+		if(line.hasOption(RLParamNames.PLAYER1_POLICY)){
+			params.put(RLParamNames.PLAYER1_POLICY, line.getOptionValue(RLParamNames.PLAYER1_POLICY));
+		}
+		
+		if(line.hasOption(RLParamNames.PLAYER2_POLICY)){
+			params.put(RLParamNames.PLAYER2_POLICY, line.getOptionValue(RLParamNames.PLAYER2_POLICY));
 		}
 		
 		return params;

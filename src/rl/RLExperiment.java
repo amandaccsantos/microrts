@@ -84,13 +84,27 @@ public class RLExperiment {
 		if (agents.size() < 2) {
 			throw new RuntimeException("Less than 2 players were specified for the experiment");
 		}
-
+		
+		// checks whether player 1 knowledge must be loaded
+		if(parameters.containsKey(RLParamNames.PLAYER1_POLICY)){
+			String path = (String) parameters.get(RLParamNames.PLAYER1_POLICY);
+			agents.get(0).loadKnowledge(path);
+			System.out.println("Loaded player 1 policy from " + path);
+		}
+		
+		// checks whether player 2 knowledge must be loaded
+		if(parameters.containsKey(RLParamNames.PLAYER2_POLICY)){
+			String path = (String) parameters.get(RLParamNames.PLAYER2_POLICY);
+			agents.get(1).loadKnowledge(path);
+			System.out.println("Loaded player 2 policy from " + path);
+		}
+		
 		for (SGAgent agent : agents) {
 			gameWorld.join(agent);
 		}
 
-		// performs training
-		System.out.println("Starting training");
+		// runs the experiment
+		System.out.println("Starting experiment");
 		
 		Timestamp timestamp_i = new Timestamp(System.currentTimeMillis());
 	        
@@ -157,7 +171,9 @@ public class RLExperiment {
 		options.addOption("c", RLParamNames.CONFIG_FILE, true, "Path to configuration file.");
 		options.addOption("o", RLParamNames.OUTPUT_DIR, true, "Directory to generate output.");
 		options.addOption("q", RLParamNames.QUIET_LEARNING, true, "Don't output agent knowledge every episode.");
-
+		options.addOption(RLParamNames.PLAYER1_POLICY, true, "Path to player 1 policy");
+		options.addOption(RLParamNames.PLAYER2_POLICY, true, "Path to player 2 policy");
+		
 		CommandLine line = null;
 		CommandLineParser parser = new DefaultParser();
 
@@ -175,13 +191,6 @@ public class RLExperiment {
 		return line;
 
 	}
-
-	/*private static void printEpisodesInfo(List<GameEpisode> episodes, String path) {
-
-		for (int i = 0; i < episodes.size(); i++) {
-			printEpisodeInfo(i, episodes.get(i), path);
-		}
-	}*/
 
 	private static void printEpisodeInfo(int episodeNumber, GameEpisode episode, String path, Timestamp timestamp_epi_i, Timestamp timestamp_epi_f, List<PersistentLearner> agents) {
 		MicroRTSState finalState = (MicroRTSState) episode.states.get(episode.states.size() - 1);		
