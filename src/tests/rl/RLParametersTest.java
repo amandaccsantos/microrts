@@ -19,6 +19,7 @@ import ai.evaluation.SimpleSqrtEvaluationFunction3;
 import ai.metagame.DummyPolicy;
 import burlap.behavior.learningrate.ExponentialDecayLR;
 import burlap.behavior.learningrate.LearningRate;
+import burlap.behavior.policy.EpsilonGreedy;
 import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.learning.tdmethods.QLearning;
@@ -71,6 +72,13 @@ public class RLParametersTest {
 				
 				QLearning ql = (QLearning) sgql.getSingleAgentLearner();
 				//tests whether attributes were correctly loaded
+				
+				//code to test epsilon
+				Field policyField = revealField(ql, "learningPolicy");
+				Policy pi = (Policy) policyField.get(ql);
+				assertTrue(pi instanceof EpsilonGreedy);
+				assertEquals(0, ((EpsilonGreedy)pi).getEpsilon(), 0.000001);
+				
 				//code to test learning rate:
 				Field lrField = revealField(ql, "learningRate");
 				LearningRate lr = (LearningRate) lrField.get(ql);
@@ -109,6 +117,8 @@ public class RLParametersTest {
 			}
 		}
 	}
+	
+	
 	
 	@Test
 	/**
