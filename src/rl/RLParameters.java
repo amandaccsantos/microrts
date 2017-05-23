@@ -28,8 +28,11 @@ import ai.metagame.RandomPolicy;
 import burlap.behavior.learningrate.ConstantLR;
 import burlap.behavior.learningrate.ExponentialDecayLR;
 import burlap.behavior.learningrate.LearningRate;
+import burlap.behavior.policy.EpsilonGreedy;
 import burlap.behavior.singleagent.learning.tdmethods.QLearning;
+import burlap.behavior.stochasticgames.PolicyFromJointPolicy;
 import burlap.behavior.stochasticgames.madynamicprogramming.backupOperators.MinMaxQ;
+import burlap.behavior.stochasticgames.madynamicprogramming.policies.EMinMaxPolicy;
 import burlap.behavior.valuefunction.ConstantValueFunction;
 import burlap.mdp.core.action.ActionType;
 import burlap.mdp.stochasticgames.agent.SGAgentType;
@@ -144,7 +147,7 @@ public class RLParameters {
 		if (floatParams == null){
 			floatParams = new HashSet<>();
 			floatParams.add(RLParamNames.DISCOUNT);
-			//floatParams.add(RLParamNames.LEARNING_RATE); // needs special treatment
+			floatParams.add(RLParamNames.EPSILON); 
 			floatParams.add(RLParamNames.INITIAL_Q);
 		}
 		return floatParams;
@@ -181,6 +184,7 @@ public class RLParameters {
 		params.put(RLParamNames.DISCOUNT, 0.9f);
 		params.put(RLParamNames.LEARNING_RATE, 0.1f);
 		params.put(RLParamNames.INITIAL_Q, 1.0f);
+		params.put(RLParamNames.EPSILON, 0.1f);
 		
 		// parameters of search methods
 		params.put(RLParamNames.TIMEOUT, 100);
@@ -340,7 +344,14 @@ public class RLParameters {
 			else {
 				params.put(RLParamNames.QUIET_LEARNING, false);
 			}
-			
+		}
+		
+		if(line.hasOption(RLParamNames.PLAYER1_POLICY)){
+			params.put(RLParamNames.PLAYER1_POLICY, line.getOptionValue(RLParamNames.PLAYER1_POLICY));
+		}
+		
+		if(line.hasOption(RLParamNames.PLAYER2_POLICY)){
+			params.put(RLParamNames.PLAYER2_POLICY, line.getOptionValue(RLParamNames.PLAYER2_POLICY));
 		}
 		
 		return params;
@@ -376,6 +387,9 @@ public class RLParameters {
 			);
 			// sets the appropriate learning rate
 			ql.setLearningRateFunction((LearningRate) playerParams.get(RLParamNames.LEARNING_RATE)); 
+			
+			// sets epsilon
+			ql.setLearningPolicy(new EpsilonGreedy(ql, (float) playerParams.get(RLParamNames.EPSILON)));
 
 			// create a single-agent interface for the learning algorithm
 			agent = new SGQLearningAdapter(
@@ -429,7 +443,7 @@ public class RLParameters {
 				0, // discount 
 				new SimpleHashableStateFactory(false), 
 				0, // initial q 
-				0.1  // learning rate - different than zero just to test knowledge at the end
+				0.1  // learning rate - not zero just to test knowledge at the end
 			);
 			
 			ql.setLearningPolicy(
@@ -447,7 +461,7 @@ public class RLParameters {
 		else if(e.getAttribute("type").equalsIgnoreCase("minimaxQ")) {
 		
 			//MinimaxQ example: https://groups.google.com/forum/#!topic/burlap-discussion/QYP6FKDGDnM
-			agent = new PersistentMultiAgentQLearning(
+			PersistentMultiAgentQLearning pmaq = new PersistentMultiAgentQLearning(
 				world.getDomain(), 
 				(float) playerParams.get(RLParamNames.DISCOUNT), 
 				(LearningRate) playerParams.get(RLParamNames.LEARNING_RATE), 
@@ -457,6 +471,13 @@ public class RLParameters {
 				e.getAttribute("name"), 
 				new SGAgentType("MiniMaxQ", world.getDomain().getActionTypes())
 			);
+			
+			// sets epsilon
+			float epsilon = (float) playerParams.get(RLParamNames.EPSILON);
+			pmaq.setLearningPolicy(new PolicyFromJointPolicy(new EMinMaxPolicy(epsilon)));
+			
+			// passes the PersistentMultiAgentQLearning as the game playing agent
+			agent = pmaq;
 		}
 		
 		// PortfolioAI or PortfolioAIAdapter

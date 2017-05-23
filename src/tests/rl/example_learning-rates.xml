@@ -22,6 +22,7 @@
 		<discount value="0.9" />
 		<learning-rate type="exponential-decay" initial="1.0" final="0.1" rate="0.999" />
 		<initial-q value="1" />
+		<epsilon value="0.15" />
 	</player>
 
 </experiment>
