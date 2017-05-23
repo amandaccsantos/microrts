@@ -38,6 +38,7 @@ import burlap.mdp.stochasticgames.world.World;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
 import rl.adapters.domain.EnumerableSGDomain;
 import rl.adapters.gamenatives.PortfolioAIAdapter;
+import rl.adapters.learners.MultiAgentRandom;
 import rl.adapters.learners.PersistentLearner;
 import rl.adapters.learners.PersistentMultiAgentQLearning;
 import rl.adapters.learners.SGQLearningAdapter;
@@ -401,6 +402,22 @@ public class RLParameters {
 				world.getDomain(), ql, e.getAttribute("name"), 
 				new SGAgentType("RandomSA", world.getDomain().getActionTypes())
 			);
+		}
+		
+		// Random multi-agent
+		else if ((e.getAttribute("type").equalsIgnoreCase("RandomMA"))){
+
+			// create a multi-agent random interface
+			agent = new MultiAgentRandom(
+					world.getDomain(), 
+					(float) playerParams.get(RLParamNames.DISCOUNT), 
+					(LearningRate) playerParams.get(RLParamNames.LEARNING_RATE), 
+					new SimpleHashableStateFactory(),
+					new ConstantValueFunction((float) playerParams.get(RLParamNames.INITIAL_Q)), 
+					new MinMaxQ(), false, 
+					e.getAttribute("name"), 
+					new SGAgentType("RandomMA", world.getDomain().getActionTypes())
+				);
 		}
 		
 		// Dummy
