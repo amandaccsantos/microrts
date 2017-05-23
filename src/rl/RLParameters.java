@@ -388,7 +388,7 @@ public class RLParameters {
 			ql.setLearningRateFunction((LearningRate) playerParams.get(RLParamNames.LEARNING_RATE)); 
 			
 			// sets epsilon
-			ql.setLearningPolicy(new EpsilonGreedy((float) playerParams.get(RLParamNames.EPSILON)));
+			ql.setLearningPolicy(new EpsilonGreedy(ql, (float) playerParams.get(RLParamNames.EPSILON)));
 
 			// create a single-agent interface for the learning algorithm
 			agent = new SGQLearningAdapter(
