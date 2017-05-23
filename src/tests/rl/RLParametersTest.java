@@ -23,6 +23,8 @@ import burlap.behavior.policy.EpsilonGreedy;
 import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.MDPSolver;
 import burlap.behavior.singleagent.learning.tdmethods.QLearning;
+import burlap.behavior.stochasticgames.PolicyFromJointPolicy;
+import burlap.behavior.stochasticgames.madynamicprogramming.policies.EMinMaxPolicy;
 import burlap.behavior.valuefunction.QFunction;
 import burlap.mdp.stochasticgames.agent.SGAgent;
 import burlap.mdp.stochasticgames.world.World;
@@ -118,7 +120,42 @@ public class RLParametersTest {
 		}
 	}
 	
-	
+	@Test
+	public void testEpsilonInMultiAgentQLearning() throws SAXException, IOException, ParserConfigurationException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException{
+		RLParameters rlParams = RLParameters.getInstance();
+		
+		//this file also has a different epsilon for the 2nd player
+		rlParams.loadFromFile("src/tests/rl/example_learning-rates.xml");
+		
+		@SuppressWarnings("unchecked")
+		List<SGAgent> players = (List<SGAgent>) rlParams.getParameter(RLParamNames.PLAYERS);
+		
+		for(SGAgent player : players){
+			
+			if (player.agentName().equals("normal-LR")){ 
+				// do nothing
+			}
+			
+			// tests 'decay-RL' parameters
+			else if (player.agentName().equals("decay-LR")){ 
+				PersistentMultiAgentQLearning mmq = (PersistentMultiAgentQLearning) player;
+				
+				// retrieves learningPolicy from PersistentMultiAgentQLearning
+				Field policyField = revealField(mmq, "learningPolicy");
+				PolicyFromJointPolicy pi = (PolicyFromJointPolicy) policyField.get(mmq);
+				
+				// retrieves epsilon from the JointPolicy
+				assertTrue(pi.getJointPolicy() instanceof EMinMaxPolicy);
+				EMinMaxPolicy mmpi = (EMinMaxPolicy) pi.getJointPolicy();
+				Field epsilonField = revealField(mmpi, "epsilon");
+				double epsilon = (double) epsilonField.get(mmpi);
+				assertEquals(0.15, epsilon, 0.0000001);
+			}
+			else {
+				fail("Unknown player name: " + player.agentName());
+			}
+		}
+	}
 	
 	@Test
 	/**
