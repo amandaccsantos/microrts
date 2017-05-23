@@ -1,48 +1,35 @@
 package ai.metagame;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import rl.models.common.ScriptActionTypes;
+
 import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.learning.tdmethods.QLearning;
-import burlap.behavior.valuefunction.QValue;
 import burlap.debugtools.RandomFactory;
 import burlap.mdp.core.action.Action;
+import burlap.mdp.core.action.UniversalActionType;
 import burlap.mdp.core.state.State;
 
 public class RandomPolicy implements Policy {
 
-	List<String> actions;
-	String randomAction;
+	List<UniversalActionType> actions;
+	UniversalActionType randomAction;
 	protected QLearning qLearner;
 	protected Random rand = RandomFactory.getMapped(0);
 
 	public RandomPolicy(QLearning learner) {
-		this.actions = new ArrayList<String>();
-		this.qLearner = learner;
-
-		actions.add("HeavyRush");
-		actions.add("LightRush");
-		actions.add("RangedRush");
-		actions.add("WorkerRush");
-		
-		this.randomAction = actions.get(this.rand.nextInt(this.actions.size()));
+		this.qLearner = learner;		
 	}
 
 	@Override
-	public Action action(State s) {
-		// traverses the list of qValues to find which action corresponds to pre-defined behavior
-		List<QValue> qValues = qLearner.qValues(s);
-
-		for (QValue qValue : qValues) {
-			if (qValue.a.actionName().equals(this.randomAction)) {
-				return qValue.a;
-			}
-		}
-		// should not get here!
-		System.err.println(String.format("Behavior %s not found in state %s!", this.randomAction, s));
-		return null;
+	public Action action(State s) {		
+		// Returns a random action 
+		this.actions = ScriptActionTypes.getActionTypes();
+		this.randomAction = actions.get(this.rand.nextInt(this.actions.size()));
+		
+		return this.randomAction.associatedAction(null);
 	}
 
 	@Override
