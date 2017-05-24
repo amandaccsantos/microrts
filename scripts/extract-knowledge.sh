@@ -1,5 +1,9 @@
 #!/bin/bash
 
+print "This script has an error in which it copies policies from"
+print "all experiments in /tmp/extracted to a destination directory."
+print "It works, but you'll end up with extra files and directories."
+
 cwd=$(pwd)
 
 mkdir /tmp/extracted/
