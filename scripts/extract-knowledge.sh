@@ -1,29 +1,36 @@
 #!/bin/bash
 
-print "This script has an error in which it copies policies from"
-print "all experiments in /tmp/extracted to a destination directory."
-print "It works, but you'll end up with extra files and directories."
+
+if [ "$#" -lt 3 ]; then
+	echo "Usage: ./extract-knowledge.sh file destdir num-reps"
+	exit
+fi
 
 cwd=$(pwd)
 
-mkdir /tmp/extracted/
-cd /tmp/extracted/
+# creates temp. dir to extract files
+mkdir /tmp/extracted
+cd /tmp/extracted
 
 # extraction
-for i in $1/*.tar.gz; do
-	echo "Extracting from $i"
-	tar xvf $i --no-anchored q_learner_final.txt
+echo "Extracting from $1"
+tar xvf $1 --no-anchored q_learner_final.txt
+
+# goes to destination directory
+cd $cwd
+mkdir $2
+cd $2
+
+echo "Moving files to $2"
+for j in $(seq -f "%02g" 1 $3); do
+	# using * because I assume there's only one directory inside extracted
+	mv /tmp/extracted/*/rep"$j"/q_learner_final.txt "q_final_rep$j.xml"
 done
 
-# renaming
-for i in ./*; do
-	mkdir "$1/$i"
-	echo "Renaming inside $i"
-	for j in $(seq -f "%02g" 1 $2); do
-		mv "$i/rep$j/q_learner_final.txt" "$1/$i/q_final_rep$j.xml"
-	done
-done
+# cleanup
+echo "Cleaning up"
+rm -rf /tmp/extracted
 
 cd $cwd
 
-echo "Done. Resulting files are in directories inside $1"
+echo "Done. Resulting files are in $2"
