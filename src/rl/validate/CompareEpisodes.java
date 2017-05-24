@@ -3,9 +3,6 @@ package rl.validate;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.nio.file.FileSystems;
-import java.nio.file.PathMatcher;
-import java.nio.file.Paths;
 import java.util.List;
 
 import org.yaml.snakeyaml.Yaml;
@@ -81,13 +78,12 @@ public class CompareEpisodes {
 	}
 
 	public static void main(String[] args) {
-		// args: contain the input directory
 		
-		PathMatcher matcher =
-			    FileSystems.getDefault().getPathMatcher("glob:" + Paths.get(args[0], "*.game"));
+		boolean allEqual = true;
+		//PathMatcher matcher =
+		//    FileSystems.getDefault().getPathMatcher("glob:" + Paths.get(args[0], "*.game"));
 		
-		
-		// retrieves the list of files in the given directory
+		// retrieves the list of files in the given directory (in args[0])
 		File[] listOfFiles = new File(args[0]).listFiles();
 		
 		// compares every pair of files, filtering with PathMatcher
@@ -109,7 +105,8 @@ public class CompareEpisodes {
 					continue;
 				}
 				
-				if(! compare(listOfFiles[i].getName(), listOfFiles[j].getName())){
+				if(! compare(listOfFiles[i].getPath(), listOfFiles[j].getPath())){
+					allEqual = false;
 					System.out.println(String.format(
 						"Files %s and %s are different", listOfFiles[i], listOfFiles[j]
 					));
@@ -118,6 +115,10 @@ public class CompareEpisodes {
 		}
 		
 		System.out.println("Comparison finished.");
+		
+		if (allEqual){
+			System.out.println("All .game files have the same content.");
+		}
 
 	}
 
