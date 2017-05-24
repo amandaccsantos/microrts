@@ -80,17 +80,12 @@ public class CompareEpisodes {
 	public static void main(String[] args) {
 		
 		boolean allEqual = true;
-		//PathMatcher matcher =
-		//    FileSystems.getDefault().getPathMatcher("glob:" + Paths.get(args[0], "*.game"));
 		
 		// retrieves the list of files in the given directory (in args[0])
 		File[] listOfFiles = new File(args[0]).listFiles();
 		
 		// compares every pair of files, filtering with PathMatcher
 		for(int i = 0; i < listOfFiles.length; i++){
-			/*if(! matcher.matches(Paths.get(listOfFiles[i].getName()))){
-				continue;
-			}*/
 			
 			// ignores non .game files
 			if(! listOfFiles[i].getName().endsWith(".game")){
@@ -98,9 +93,6 @@ public class CompareEpisodes {
 			}
 			
 			for (int j = i + 1; j < listOfFiles.length; j++){
-				/*if(! matcher.matches(Paths.get(listOfFiles[j].getName()))){
-					continue;
-				}*/
 				if(! listOfFiles[j].getName().endsWith(".game")){
 					continue;
 				}
