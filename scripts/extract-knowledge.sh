@@ -22,4 +22,4 @@ done
 
 cd $cwd
 
-echo "Done. Resulting files are in directories inside $i"
+echo "Done. Resulting files are in directories inside $1"
