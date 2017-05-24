@@ -7,12 +7,18 @@ import argparse
 import subprocess
 
 
-def manage_experiment(num_execs, num_concurrent, experiment_config, output_prefix, other_options):
+def manage_experiment(num_execs, num_concurrent, experiment_config, output_prefix, 
+policy1_prefix, policy2_prefix, other_options):
+    
     os.makedirs(output_prefix, exist_ok=True)
     
     processes = set()
     total_runs = 0
     total_finished = 0
+    
+    # prevents errors when concatenating...
+    if other_options is None:
+        other_options = ''
     
     while total_finished < num_execs:
         # checks whether some process has finished
@@ -35,9 +41,22 @@ def manage_experiment(num_execs, num_concurrent, experiment_config, output_prefi
         elif total_runs < num_execs:
             total_runs += 1
             print('Starting process number %d' % total_runs)
+            
+            # checks if we need to specify the player's policy
+            additional_args = other_options
+            
+            if policy1_prefix is not None:
+                additional_args += '-player1policy %s%s.xml ' % (policy1_prefix, str(total_runs).zfill(2))
+                
+            if policy2_prefix is not None:
+                additional_args += '-player2policy %s%s.xml ' % (policy2_prefix, str(total_runs).zfill(2))
+            # error: other_options is growing up!
+            #print(other_options, '-player1policy %s%s.xml ' % (policy1_prefix, str(total_runs).zfill(2)))
+            
+            # finally opens the new process
             new_proc = subprocess.Popen(
                 './rlexperiment.sh -c %s -o %s/rep%s %s' \
-                % (experiment_config, output_prefix, str(total_runs).zfill(2), other_options),
+                % (experiment_config, output_prefix, str(total_runs).zfill(2), additional_args),
                 shell=True
             )
             
@@ -72,14 +91,26 @@ if __name__ == '__main__':
     )
     
     parser.add_argument(
+        '--policy1-prefix', type=str, required=False,
+        help="Prefix of policy file of player 1"
+    )
+    
+    parser.add_argument(
+        '--policy2-prefix', type=str, required=False,
+        help="Prefix of policy file of player 2"
+    )
+    
+    parser.add_argument(
         '-r', '--remaining-options', type=str, required=False, 
         help='Remaining experiment options (use quotes - e.g. "--option1 value1 --option2 value2")'
     )
     
     args = parser.parse_args()
+    
     manage_experiment(
         args.number_reps, args.simultaneous, 
         args.experiment_config, args.output_prefix,
+        args.policy1_prefix, args.policy2_prefix,
         args.remaining_options
     )
 
