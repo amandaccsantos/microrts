@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 cwd=$(pwd)
 
@@ -6,9 +6,9 @@ mkdir /tmp/extracted/
 cd /tmp/extracted/
 
 # extraction
-for i in "$1"/*.tar.gz; do
+for i in $1/*.tar.gz; do
 	echo "Extracting from $i"
-	tar xf $i --no-anchored q_learner_final.txt
+	tar xvf $i --no-anchored q_learner_final.txt
 done
 
 # renaming
@@ -21,5 +21,5 @@ for i in ./*; do
 done
 
 cd $cwd
-	
+
 echo "Done. Resulting files are in directories inside $i"
