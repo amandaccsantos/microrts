@@ -4,12 +4,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.yaml.snakeyaml.Yaml;
 
 import burlap.behavior.stochasticgames.GameEpisode;
+import util.Pair;
 
 public class CompareEpisodes {
 	
@@ -130,7 +132,10 @@ public class CompareEpisodes {
 
 	public static void main(String[] args) throws FileNotFoundException {
 		
-		boolean allEqual = true;
+		//boolean allEqual = true;
+		
+		// a list with pairs of different files
+		List<Pair<File, File>> differentFiles = new ArrayList<>(); 
 		
 		//PrintStream out = new PrintStream(new File("/dev/null"));
 		PrintStream out = System.out;
@@ -154,9 +159,10 @@ public class CompareEpisodes {
 				}
 				
 				if(! comparator.compare(listOfFiles[i].getPath(), listOfFiles[j].getPath())){
-					allEqual = false;
+					differentFiles.add(new Pair<>(listOfFiles[i], listOfFiles[j]));
+					
 					System.out.println(String.format(
-						"Files %s and %s are different", listOfFiles[i], listOfFiles[j]
+						"Files %s and %s are different\n", listOfFiles[i], listOfFiles[j]
 					));
 				}
 			}
@@ -164,8 +170,15 @@ public class CompareEpisodes {
 		
 		System.out.println("Comparison finished.");
 		
-		if (allEqual){
+		if (differentFiles.size() == 0){
 			System.out.println("All .game files have the same content.");
+		}
+		
+		else {
+			System.out.println("List of pairwise different files:");
+			for(Pair<File, File> pair : differentFiles){
+				System.out.println(pair.m_a.getName() + ", " + pair.m_b.getName());
+			}
 		}
 
 	}
