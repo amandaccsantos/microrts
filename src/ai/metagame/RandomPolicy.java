@@ -34,10 +34,7 @@ public class RandomPolicy implements Policy {
 
 	@Override
 	public double actionProb(State s, Action a) {
-		if(a.actionName().equals(this.randomAction)){
-			return 1;
-		}
-		return 0;
+		return (1 / this.actions.size());
 	}
 
 	@Override
