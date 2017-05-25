@@ -36,11 +36,14 @@ public class CompareEpisodesTest {
 	public void testCompare() {
 		String dir = "src/tests/rl/validate/";
 		//equal_0 and equal_1 are the same
-		//notequal_0 has different joint rewards
-		//notequal_1 has different joint actions
-		//notequal_2 has different states
+		//notequal_0 has different joint rewards (compared to equal_*)
+		//notequal_1 has different joint actions (compared to equal_*)
+		//notequal_2 has different states (compared to equal_*)
+		
 		assertTrue(comparator.compare(dir + "equal_0.game", dir + "equal_1.game"));
 		assertFalse(comparator.compare(dir + "equal_0.game", dir + "notequal_0.game"));
+		assertFalse(comparator.compare(dir + "equal_0.game", dir + "notequal_1.game"));
+		assertFalse(comparator.compare(dir + "equal_0.game", dir + "notequal_2.game"));
 	}
 
 	@Test
