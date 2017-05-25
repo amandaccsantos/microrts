@@ -17,6 +17,7 @@ import tests.rl.models.singlestate.SingleStateTest;
 import tests.rl.models.stages.GameStageTest;
 import tests.rl.models.stages.StagesJAMTest;
 import tests.rl.planners.TestBackwardInduction;
+import tests.rl.validate.CompareEpisodesTest;
 
 @RunWith(Suite.class)
 @SuiteClasses({
@@ -25,6 +26,7 @@ import tests.rl.planners.TestBackwardInduction;
 	SGQLearningAdapterTest.class,
 	PersistentMultiAgentQLearningTest.class,
 	TestBackwardInduction.class,
+	CompareEpisodesTest.class,
 	
 	// joint action models
 	StagesJAMTest.class,

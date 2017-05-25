@@ -5,6 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,8 +23,8 @@ public class CompareEpisodesTest {
 
 	@Before
 	public void setUp() throws Exception {
-		//out = new PrintStream(new File("/dev/null"));
-		out = new PrintStream(System.out);
+		out = new PrintStream(new File("/dev/null"));
+		//out = new PrintStream(System.out);
 		comparator = new CompareEpisodes(out);
 	}
 	
