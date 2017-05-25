@@ -108,7 +108,7 @@ public class StagesJAMTest {
 		}
 		
 		TerminalFunction tf = new MicroRTSTerminalFunction();
-		
+		assertTrue(((GameStage) newState).getStage() == GameStages.FINISHED);
 		assertTrue(tf.isTerminal(newState));
 	}
 

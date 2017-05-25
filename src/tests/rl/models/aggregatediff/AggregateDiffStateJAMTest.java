@@ -23,6 +23,7 @@ import rl.models.aggregatediff.AggregateDiffState;
 import rl.models.aggregatediff.AggregateDiffStateJAM;
 import rl.models.common.MicroRTSTerminalFunction;
 import rl.models.common.ScriptActionTypes;
+import rl.models.stages.GameStages;
 import rts.GameState;
 import rts.PhysicalGameState;
 import rts.units.UnitTypeTable;
@@ -121,7 +122,7 @@ public class AggregateDiffStateJAMTest {
 		}
 		
 		TerminalFunction tf = new MicroRTSTerminalFunction();
-		
+		assertTrue(((AggregateDiffState) newState).getStage() == GameStages.FINISHED);
 		assertTrue(tf.isTerminal(newState));
 	}
 }

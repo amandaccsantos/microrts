@@ -122,7 +122,7 @@ public class SingleStateJAMTest {
 		}
 		
 		TerminalFunction tf = new MicroRTSTerminalFunction();
-		
+		assertTrue(((SingleState) newState).getStage() == GameStages.FINISHED);
 		assertTrue(tf.isTerminal(newState));
 	}
 }
