@@ -6,6 +6,8 @@ import ai.core.AI;
 import burlap.mdp.core.state.State;
 import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.model.JointModel;
+import rl.RLParamNames;
+import rl.RLParameters;
 import rts.GameState;
 import rts.PlayerAction;
 
@@ -13,9 +15,10 @@ public class AggregateDiffStateJAM implements JointModel {
 	
 	Map<String, AI> actions;
 	
-	public static final int MAXCYCLES = 3000;
+	private int maxCycles;
 	
 	public AggregateDiffStateJAM(Map<String, AI> actions) {
+		maxCycles = (int) RLParameters.getInstance().getParameter(RLParamNames.GAME_DURATION);
 		this.actions = actions;
 	}
 
@@ -54,7 +57,7 @@ public class AggregateDiffStateJAM implements JointModel {
 			//checks whether any state variable has changed
 			changedStage = ! currentState.equals(new AggregateDiffState(gameState)); 
 				
-		} while (!gameOver && !changedStage && gameState.getTime() < MAXCYCLES);
+		} while (!gameOver && !changedStage && gameState.getTime() < maxCycles);
 		
 		//returns the new State associated with current underlying game state
 		return new AggregateDiffState(gameState); 
