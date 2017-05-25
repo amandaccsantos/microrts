@@ -9,6 +9,8 @@ import burlap.mdp.core.state.State;
 import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.model.JointModel;
 import gui.PhysicalGameStatePanel;
+import rl.RLParamNames;
+import rl.RLParameters;
 import rl.models.singlestate.SingleState;
 import rl.models.stages.GameStages;
 import rl.models.stages.StagesDomainGenerator;
@@ -17,10 +19,12 @@ import rts.PlayerAction;
 
 public class SingleStateJAM implements JointModel {
 	
-Map<String, AI> actions;
+	Map<String, AI> actions;
+	int maxCycles;
 	
 	public SingleStateJAM(Map<String, AI> actions) {
 		this.actions = actions;
+		maxCycles = (int) RLParameters.getInstance().getParameter(RLParamNames.GAME_DURATION);
 	}
 
 	@Override
@@ -70,7 +74,7 @@ Map<String, AI> actions;
 				//w.repaint();
 				nextTimeToUpdate += delay;
 			}
-		} while (!gameOver && !changedStage && gameState.getTime() < StagesDomainGenerator.MAXCYCLES);
+		} while (!gameOver && !changedStage && gameState.getTime() < maxCycles);
 		
 		//returns the new State, with a 'finished' on it
 		SingleState theNewState = new SingleState(gameState); 

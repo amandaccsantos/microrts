@@ -8,6 +8,7 @@ import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.model.JointModel;
 import rl.RLParamNames;
 import rl.RLParameters;
+import rl.models.stages.GameStages;
 import rts.GameState;
 import rts.PlayerAction;
 
@@ -60,7 +61,13 @@ public class AggregateDiffStateJAM implements JointModel {
 		} while (!gameOver && !changedStage && gameState.getTime() < maxCycles);
 		
 		//returns the new State associated with current underlying game state
-		return new AggregateDiffState(gameState); 
+		AggregateDiffState newState = new AggregateDiffState(gameState);
+		
+		//timeout is not checked inside GameStage constructor, set finished here
+		if(gameState.getTime() >= maxCycles){
+			newState.setStage(GameStages.FINISHED);
+		}
+		return newState; 
 	}
 
 }

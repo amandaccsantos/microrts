@@ -9,15 +9,19 @@ import burlap.mdp.core.state.State;
 import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.model.JointModel;
 import gui.PhysicalGameStatePanel;
+import rl.RLParamNames;
+import rl.RLParameters;
 import rts.GameState;
 import rts.PlayerAction;
 
 public class StagesJointActionModel implements JointModel {
 	
 	Map<String, AI> actions;
+	int maxCycles;
 	
 	public StagesJointActionModel(Map<String, AI> actions) {
 		this.actions = actions;
+		maxCycles = (int) RLParameters.getInstance().getParameter(RLParamNames.GAME_DURATION);
 	}
 	
 
@@ -75,10 +79,16 @@ public class StagesJointActionModel implements JointModel {
 					e.printStackTrace();
 				}
 			}*/
-		} while (!gameOver && !changedStage && gameState.getTime() < StagesDomainGenerator.MAXCYCLES);
+		} while (!gameOver && !changedStage && gameState.getTime() < maxCycles);
 		
 		//returns the new State associated with current underlying game state
-		return new GameStage(gameState); 
+		GameStage newStage = new GameStage(gameState);
+
+		//timeout is not checked inside GameStage constructor, set finished here
+		if(gameState.getTime() >= maxCycles){
+			newStage.setStage(GameStages.FINISHED);
+		}
+		return newStage; 
 		
 	}
 
