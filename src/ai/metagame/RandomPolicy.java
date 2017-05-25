@@ -34,7 +34,7 @@ public class RandomPolicy implements Policy {
 
 	@Override
 	public double actionProb(State s, Action a) {
-		return (1 / this.actions.size());
+		return (1.0 / this.actions.size());
 	}
 
 	@Override
