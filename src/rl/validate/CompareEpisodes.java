@@ -137,8 +137,12 @@ public class CompareEpisodes {
 		// a list with pairs of different files
 		List<Pair<File, File>> differentFiles = new ArrayList<>(); 
 		
-		//PrintStream out = new PrintStream(new File("/dev/null"));
-		PrintStream out = System.out;
+		PrintStream out = new PrintStream(new File("/dev/null"));
+		// if user requested verbose, lets output details
+		if(args.length > 1 && args[1].equalsIgnoreCase("-v")){
+			out = System.out;
+		}
+		
 		
 		CompareEpisodes comparator = new CompareEpisodes(out);
 		
@@ -161,14 +165,14 @@ public class CompareEpisodes {
 				if(! comparator.compare(listOfFiles[i].getPath(), listOfFiles[j].getPath())){
 					differentFiles.add(new Pair<>(listOfFiles[i], listOfFiles[j]));
 					
-					System.out.println(String.format(
+					out.println(String.format(
 						"Files %s and %s are different\n", listOfFiles[i], listOfFiles[j]
 					));
 				}
 			}
 		}
 		
-		System.out.println("Comparison finished.");
+		//System.out.println("Comparison finished.");
 		
 		if (differentFiles.size() == 0){
 			System.out.println("All .game files have the same content.");
