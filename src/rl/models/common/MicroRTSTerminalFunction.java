@@ -24,7 +24,7 @@ public class MicroRTSTerminalFunction implements TerminalFunction {
 		MicroRTSState state = (MicroRTSState) s;
 		GameState underlying = state.getUnderlyingState();
 		
-		return underlying.getTime() > timeLimit || underlying.gameover();
+		return underlying.getTime() >= timeLimit || underlying.gameover();
 	}
 
 }
