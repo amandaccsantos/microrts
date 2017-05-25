@@ -172,7 +172,7 @@ public class RLParameters {
 		
 		// experiment parameters
 		params.put(RLParamNames.EPISODES, 100);
-		params.put(RLParamNames.GAME_DURATION, 5000);
+		params.put(RLParamNames.GAME_DURATION, 2500);
 		params.put(RLParamNames.OUTPUT_DIR, "/tmp/rl-experiment/");
 		
 		params.put(RLParamNames.REWARD_FUNCTION, MicroRTSRewardFactory.WIN_LOSS);

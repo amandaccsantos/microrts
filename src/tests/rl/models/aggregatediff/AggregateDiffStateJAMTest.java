@@ -114,9 +114,10 @@ public class AggregateDiffStateJAMTest {
 				break;
 			}
 			currentState = newAggrState;
-			System.out.println(underlyingState.getTime());
-			System.out.println(currentState);
-			System.out.println(newAggrState + "\n");
+//			System.out.println((int) RLParameters.getInstance().getParameter(RLParamNames.GAME_DURATION));
+//			System.out.println(underlyingState.getTime());
+//			System.out.println(currentState);
+//			System.out.println(newAggrState + "\n");
 		}
 		
 		TerminalFunction tf = new MicroRTSTerminalFunction();
