@@ -79,21 +79,42 @@ public class CompareEpisodes {
 		
 		for(int i = 0; i < first.size(); i++){
 			try{
-				
 				if(! itemsEqual(first.get(i), second.get(i))){
-					outStream.println(String.format(
-						"Difference on %dth %s: %s vs %s", (i+1), itemName, first.get(i), second.get(i)
-					));
+					printDifference(first, second, itemName, i);
 					equal = false;
 				}
 			}
-			catch(ArrayIndexOutOfBoundsException e){
+			catch(IndexOutOfBoundsException e){
 				// we're safe
 				break;
 			}
 		}
 		
 		return equal;
+	}
+
+	/**
+	 * @param first
+	 * @param second
+	 * @param itemName
+	 * @param index
+	 */
+	protected void printDifference(Object first, Object second, String itemName, int index) {
+		String firstString, secondString;
+		
+		// handles arrays of doubles (joint rewards)
+		if((first instanceof double[]) && (second instanceof double[])) {
+			firstString = Arrays.toString((double[]) first);
+			secondString = Arrays.toString((double[]) second);
+		}
+		else {
+			firstString = first.toString();
+			secondString = second.toString();
+		}
+		
+		outStream.println(String.format(
+			"Difference on %dth %s: %s vs %s", (index+1), itemName, firstString, secondString
+		));
 	}
 	
 	private boolean itemsEqual(Object first, Object second){
@@ -107,11 +128,14 @@ public class CompareEpisodes {
 		return first.equals(second);
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws FileNotFoundException {
 		
 		boolean allEqual = true;
 		
-		CompareEpisodes comparator = new CompareEpisodes(System.out);
+		//PrintStream out = new PrintStream(new File("/dev/null"));
+		PrintStream out = System.out;
+		
+		CompareEpisodes comparator = new CompareEpisodes(out);
 		
 		// retrieves the list of files in the given directory (in args[0])
 		File[] listOfFiles = new File(args[0]).listFiles();
