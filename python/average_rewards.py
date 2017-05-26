@@ -1,7 +1,22 @@
 import os
+import re
 import glob
 import argparse
 import matplotlib.pyplot as plt
+
+def natural_sort(l):
+    """
+    Sorts a list of strings in natural order.
+    E.g. [file1.txt, file2.txt, file10.txt] instead of
+    [file1.txt, file10.txt, file2.txt] (which is lexicographic order)
+    Code from Mark Byers @ StackOverflow (https://stackoverflow.com/a/4836734)
+    :param l: list
+    :return: list
+    """ 
+    
+    convert = lambda text: int(text) if text.isdigit() else text.lower() 
+    alphanum_key = lambda key: [ convert(c) for c in re.split('([0-9]+)', key) ] 
+    return sorted(l, key = alphanum_key)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Plot cumulative rewards in a number of episodes, averaged among repetitions')
@@ -34,10 +49,18 @@ if __name__ == '__main__':
     rewards_agent1 = [0.0 for x in range(episodes)]
 
     for rep_num in range(1, numreps + 1):
-        # mounts the file name (rep01, rep02...)
+        # constructs the dir name (rep01, rep02...)
         working_dir = os.path.join(path, '%s%s' % (repdir, str(rep_num).zfill(2)))
+        #working_dir = os.path.join(path, '%s' % (repdir))
+        
+        # retrieves the list of .game files, sorted in natural order
+        sorted_files = natural_sort(glob.glob(os.path.join(working_dir, '*.game')))
+        #sorted_files = glob.glob(os.path.join(working_dir, '*.game'))
+        
+        for i, filename in enumerate(sorted_files):
             
-        for i, filename in enumerate(glob.glob(os.path.join(working_dir, '*.game'))):
+            #print filename
+            
             f = open(filename, 'r')
             
             while True:
