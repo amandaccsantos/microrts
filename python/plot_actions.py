@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 parser = argparse.ArgumentParser(description='Plot action-values along episodes')
 parser.add_argument('path', help='Path to file with action-value data')
 parser.add_argument('outdir', help='Directory to generate plots in')
+parser.add_argument('episodes', help='Number of episodes tested')
 
 args = vars(parser.parse_args())
 
@@ -22,7 +23,7 @@ for i, filename in enumerate(glob.glob(os.path.join(args['path'], '*.txt'))):
         number = name.split('_')[2].split('.')[0]
 
         if number == 'final':
-            number = 1000
+            number = args['episodes']
         else:
             number = int(number)
         f = open(filename, 'r')
