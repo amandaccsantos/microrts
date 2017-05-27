@@ -1,5 +1,6 @@
 package rl.adapters.gamenatives;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 
@@ -10,7 +11,6 @@ import ai.portfolio.PortfolioAI;
 import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.stochasticgames.JointAction;
-import burlap.mdp.stochasticgames.agent.SGAgent;
 import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.mdp.stochasticgames.world.World;
 import rl.RLParamNames;
@@ -136,9 +136,10 @@ public class PortfolioAIAdapter implements PersistentLearner {
 		// creates an array stating that all AIs in the portfolio are not deterministic
 		// (we're being conservative by not making assumptions on deterministic-ness of AIs)
 		boolean[] deterministic = new boolean[portfolio.size()];
-		for(int i = 0; i < deterministic.length; i++){
+		Arrays.fill(deterministic, false);
+		/*for(int i = 0; i < deterministic.length; i++){
 			deterministic[i] = false;
-		}
+		}*/
 		
 		EvaluationFunction evalFunc = null;
 		try {
