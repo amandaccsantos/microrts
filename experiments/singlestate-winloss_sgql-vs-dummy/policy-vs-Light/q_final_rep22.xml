@@ -5,12 +5,12 @@
 <!-- Note: 'a' stands for action -->
 
 <state id='OPENING'>
-	<a name='LightRush' value='1.0581477016563265' />
-	<a name='HeavyRush' value='1.4915654639972407' />
-	<a name='BuildBarracks' value='0.8918390729623368' />
-	<a name='RangedRush' value='1.0689879109492781' />
-	<a name='Expand' value='1.0357096240682073' />
-	<a name='WorkerRush' value='1.1901655810533212' />
+	<a name='LightRush' value='-1.837668714067529' />
+	<a name='HeavyRush' value='-2.063753660539961' />
+	<a name='BuildBarracks' value='-1.8393893966421633' />
+	<a name='RangedRush' value='-1.7457044070920242' />
+	<a name='Expand' value='-1.8232244412606504' />
+	<a name='WorkerRush' value='-1.9817654192321983' />
 </state>
 
 </knowledge>
