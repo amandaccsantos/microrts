@@ -14,6 +14,7 @@ import ai.abstraction.WorkerRush;
 import ai.core.AI;
 import ai.evaluation.SimpleSqrtEvaluationFunction3;
 import ai.portfolio.NashPortfolioAI;
+import ai.portfolio.PortfolioAI;
 import rts.PhysicalGameState;
 import rts.units.UnitTypeTable;
 
@@ -41,10 +42,24 @@ public class MetaBotTest {
            new SimpleSqrtEvaluationFunction3()
         );
         
+        AI player2 = new PortfolioAI(
+        		new AI[]{
+    	    		new WorkerRush(unitTypeTable),
+    	            new LightRush(unitTypeTable),
+    	            new RangedRush(unitTypeTable),
+    	            new HeavyRush(unitTypeTable),
+    	            //new BuildBarracks(unitTypeTable),
+    	            //new Expand(unitTypeTable)
+                },
+               new boolean[]{true,true,true,true,},
+               100, -1, 100,
+               new SimpleSqrtEvaluationFunction3()
+            );
+        
         bots.add(player1);
         System.out.println("Added first player.");
         
-        bots.add(new LightRush(unitTypeTable));
+        bots.add(player2);
         System.out.println("Added second player.");
         
         PrintStream out = System.out;
