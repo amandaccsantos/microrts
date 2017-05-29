@@ -54,11 +54,12 @@ if __name__ == '__main__':
         #working_dir = os.path.join(path, '%s' % (repdir))
         
         # retrieves the list of .game files, sorted in natural order
-        sorted_files = natural_sort(glob.glob(os.path.join(working_dir, '*.game')))
+        #sorted_files = natural_sort(glob.glob(os.path.join(working_dir, '*.game')))
         #sorted_files = glob.glob(os.path.join(working_dir, '*.game'))
         
-        for i, filename in enumerate(sorted_files):
-            
+        #for i, filename in enumerate(sorted_files):
+        for i in range(episodes):
+            filename = os.path.join(working_dir, 'episode_%d.game' % i)    
             #print filename
             
             f = open(filename, 'r')
