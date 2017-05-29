@@ -5,48 +5,48 @@
 <!-- Note: 'a' stands for action -->
 
 <state id='OPENING'>
-	<a name='LightRush' value='0.8024609786549874' />
-	<a name='HeavyRush' value='0.7924681378176464' />
-	<a name='BuildBarracks' value='0.7773946232417539' />
-	<a name='RangedRush' value='0.7733222908999005' />
-	<a name='Expand' value='0.736664645147737' />
-	<a name='WorkerRush' value='0.9569558006493726' />
+	<a name='LightRush' value='1.2112797242989017' />
+	<a name='HeavyRush' value='1.2097472338990665' />
+	<a name='BuildBarracks' value='1.211509230430692' />
+	<a name='RangedRush' value='1.207901276144933' />
+	<a name='Expand' value='1.214477405059146' />
+	<a name='WorkerRush' value='1.2095759549126106' />
 </state>
 
 <state id='EARLY'>
-	<a name='LightRush' value='0.318018013897519' />
-	<a name='HeavyRush' value='0.26658653078422395' />
-	<a name='BuildBarracks' value='0.2673314412895924' />
-	<a name='RangedRush' value='0.3323147968595499' />
-	<a name='Expand' value='0.28617086799499963' />
-	<a name='WorkerRush' value='0.570585369080024' />
+	<a name='LightRush' value='0.2482008822420927' />
+	<a name='HeavyRush' value='0.17193989917266442' />
+	<a name='BuildBarracks' value='0.20841311045280886' />
+	<a name='RangedRush' value='0.19298100993747794' />
+	<a name='Expand' value='0.21066761977524412' />
+	<a name='WorkerRush' value='0.5057274236530374' />
 </state>
 
 <state id='MID'>
-	<a name='LightRush' value='0.06516064844576112' />
-	<a name='HeavyRush' value='0.5450075088188876' />
-	<a name='BuildBarracks' value='0.0984463533431092' />
-	<a name='RangedRush' value='0.07410358871561767' />
-	<a name='Expand' value='0.03395784637624735' />
-	<a name='WorkerRush' value='0.12917282567534974' />
+	<a name='LightRush' value='-0.14394388618235537' />
+	<a name='HeavyRush' value='-0.47779484137167366' />
+	<a name='BuildBarracks' value='-0.5106214629274871' />
+	<a name='RangedRush' value='-0.2875847713558782' />
+	<a name='Expand' value='-0.4133082888244395' />
+	<a name='WorkerRush' value='-0.038742545491931284' />
 </state>
 
 <state id='LATE'>
-	<a name='LightRush' value='-0.5876636298302951' />
-	<a name='HeavyRush' value='-0.5987832363935093' />
-	<a name='BuildBarracks' value='-0.570384944846006' />
-	<a name='RangedRush' value='-0.5040078781215067' />
-	<a name='Expand' value='-0.5800795480770641' />
-	<a name='WorkerRush' value='-0.5652779479359983' />
+	<a name='LightRush' value='-0.3210155323855927' />
+	<a name='HeavyRush' value='-0.24273585300705008' />
+	<a name='BuildBarracks' value='-0.38645374090993584' />
+	<a name='RangedRush' value='-0.2776981710160723' />
+	<a name='Expand' value='-0.34881359775867676' />
+	<a name='WorkerRush' value='0.22391519020352987' />
 </state>
 
 <state id='END'>
-	<a name='LightRush' value='-0.4846704514507925' />
-	<a name='HeavyRush' value='-0.4832605126906276' />
-	<a name='BuildBarracks' value='-0.48582389563783634' />
-	<a name='RangedRush' value='-0.4829247656174751' />
-	<a name='Expand' value='-0.48163330959590006' />
-	<a name='WorkerRush' value='-0.4857240839561543' />
+	<a name='LightRush' value='-0.25035193303752684' />
+	<a name='HeavyRush' value='-0.23452482652927856' />
+	<a name='BuildBarracks' value='-0.2573230763131861' />
+	<a name='RangedRush' value='-0.24165363208262208' />
+	<a name='Expand' value='-0.2712440049476527' />
+	<a name='WorkerRush' value='-0.047864371007676494' />
 </state>
 
 </knowledge>
