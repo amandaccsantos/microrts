@@ -49,7 +49,7 @@ public class SingleAgentDomain extends EnumerableSGDomain {
 		String opponent = RLParameters.getInstance().getOpponentName();
 		
 		// sets the joint action model containing the valid actions
-		setJointActionModel((JointModel) new SingleAgentModel(ScriptActionTypes.getActionMapping(unitTypeTable), AILoader.loadAI(opponent)));
+		setJointActionModel((JointModel) new SingleAgentJAM(ScriptActionTypes.getActionMapping(unitTypeTable), AILoader.loadAI(opponent)));
 	}
 
 	/**
