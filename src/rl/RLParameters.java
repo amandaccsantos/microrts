@@ -421,10 +421,10 @@ public class RLParameters {
 			// create a multi-agent random interface
 			agent = new MultiAgentRandom(
 					world.getDomain(), 
-					(float) playerParams.get(RLParamNames.DISCOUNT), 
-					(LearningRate) playerParams.get(RLParamNames.LEARNING_RATE), 
+					0.9, 
+					0.1, 
 					new SimpleHashableStateFactory(),
-					new ConstantValueFunction((float) playerParams.get(RLParamNames.INITIAL_Q)), 
+					1000, 
 					new MinMaxQ(), false, 
 					e.getAttribute("name"), 
 					new SGAgentType("RandomMA", world.getDomain().getActionTypes())
