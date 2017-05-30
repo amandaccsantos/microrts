@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.jdom.JDOMException;
 
+import ai.abstraction.RangedRush;
 import burlap.mdp.core.action.UniversalActionType;
 import burlap.mdp.core.state.State;
 import rl.adapters.domain.EnumerableSGDomain;
@@ -44,7 +45,8 @@ public class SingleAgentDomain extends EnumerableSGDomain {
 		}
 
 		// sets the joint action model containing the valid actions
-		setJointActionModel(new SingleAgentJAM(ScriptActionTypes.getActionMapping(unitTypeTable)));
+		// TODO: find opponent AI 
+		setJointActionModel(new SingleAgentJAM(ScriptActionTypes.getActionMapping(unitTypeTable));
 	}
 
 	/**

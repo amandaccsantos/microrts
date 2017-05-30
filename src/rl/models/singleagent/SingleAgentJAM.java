@@ -4,28 +4,32 @@ import java.util.Map;
 
 import rl.RLParamNames;
 import rl.RLParameters;
+import rl.models.aggregatediff.AggregateDiffState;
 import rl.models.singlestate.SingleState;
 import rl.models.stages.GameStages;
 import rts.GameState;
 import rts.PlayerAction;
 import ai.core.AI;
+import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.JointAction;
-import burlap.mdp.stochasticgames.model.JointModel;
+import burlap.mdp.singleagent.environment.EnvironmentOutcome;
+import burlap.mdp.singleagent.model.SampleModel;
 
-public class SingleAgentJAM implements JointModel {
+public class SingleAgentJAM implements SampleModel {
 	
-	Map<String, AI> actions;
+	Map<String, AI> action;
+	AI opponent;
 	int maxCycles;
 	
-	public SingleAgentJAM(Map<String, AI> actions) {
-		this.actions = actions;
+	public SingleAgentJAM(Map<String, AI> action, AI opponent) {
+		this.action = action;
+		this.opponent = opponent;
 		maxCycles = (int) RLParameters.getInstance().getParameter(RLParamNames.GAME_DURATION);
 	}
 
 	@Override
-	public State sample(State s, JointAction ja) {
-		SingleAgent state = (SingleAgent)s;
+	public EnvironmentOutcome sample(State s, Action a) {
+		AggregateDiffState state = (AggregateDiffState)s;
 		
 		GameState gameState = state.getUnderlyingState().clone();
 		GameStages currentStage = state.getStage();// GameStages.OPENING;
@@ -33,13 +37,11 @@ public class SingleAgentJAM implements JointModel {
 		boolean gameOver = false;
 		boolean changedStage = false;	//stores whether game has advanced a stage
 		
-		//JFrame w = PhysicalGameStatePanel.newVisualizer(gameState, 640, 640, false, PhysicalGameStatePanel.COLORSCHEME_BLACK);
 		int delay = 0; //milisseconds
 		long nextTimeToUpdate = System.currentTimeMillis() + delay;
 		
 		//instantiates the AIs that players selected (clones the objects)
-		AI ai1 = actions.get(ja.action(0).actionName()).clone();
-		AI ai2 = actions.get(ja.action(1).actionName()).clone();
+		AI ai = action.get(a.actionName()).clone();
 		
 		//advance game until next stage is reached or game finishes
 		do {
@@ -47,8 +49,8 @@ public class SingleAgentJAM implements JointModel {
 
 				PlayerAction pa1 = null, pa2 = null;
 				try {
-					pa1 = ai1.getAction(0, gameState);
-					pa2 = ai2.getAction(1, gameState);
+					pa1 = ai.getAction(0, gameState);
+					pa2 = opponent.getAction(1, gameState);
 					
 				} catch (Exception e) {
 					System.err.println("An error happened when getting action for a player :(");
@@ -61,11 +63,8 @@ public class SingleAgentJAM implements JointModel {
 				// simulate:
 				gameOver = gameState.cycle();
 				
-				//updates display
-				//w.repaint();
-				
 				//checks whether game has advanced to a new stage
-				changedStage = currentStage != SingleState.frameToStage(gameState.getTime()); 
+				changedStage = currentStage != SingleAgent.frameToStage(gameState.getTime()); 
 				
 				//w.repaint();
 				nextTimeToUpdate += delay;
@@ -73,10 +72,23 @@ public class SingleAgentJAM implements JointModel {
 		} while (!gameOver && !changedStage && gameState.getTime() < maxCycles);
 		
 		//returns the new State, with a 'finished' on it
-		SingleAgent theNewState = new SingleAgent(gameState); 
-		theNewState.setStage(GameStages.FINISHED);
+		SingleState currentState = new SingleState(gameState); 
+		currentState.setStage(GameStages.FINISHED);
+		
+		EnvironmentOutcome theNewState = new EnvironmentOutcome(state, a, currentState, gameState.winner(), true); 
 		//System.out.println(theNewState);
 		return theNewState; 
+	}
+
+	@Override
+	public boolean terminal(State s) {
+		AggregateDiffState state = (AggregateDiffState)s;
+		
+		GameStages currentStage = state.getStage();
+		if (currentStage == GameStages.FINISHED)
+			return true;
+		else
+			return false;
 	}
 	
 }
