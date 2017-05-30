@@ -317,6 +317,56 @@ public class RLParameters {
 		return players;
 	}
 	
+	public String getOpponentName(){
+		
+		List<String> names = new ArrayList<>();
+		for(Node n : playerNodes){
+			names.add(processNode(n));
+			
+		}
+		return names.get(1);
+	}
+	
+	private String processNode(Node playerNode){
+		
+		// tests which type of player is specified and properly loads an agent
+		Element e = (Element) playerNode;
+		
+		if ((e.getAttribute("type").equalsIgnoreCase("QLearning")) || 
+				(e.getAttribute("type").equalsIgnoreCase("SGQLearningAdapter")) || 
+				(e.getAttribute("type").equalsIgnoreCase("RandomSA")) || 
+				(e.getAttribute("type").equalsIgnoreCase("Dummy"))){
+			return "rl.adapters.learners.SGQLearningAdapter";
+		}
+		
+		else if ((e.getAttribute("type").equalsIgnoreCase("RandomMA"))){
+			return "rl.adapters.learners.MultiAgentRandom";
+		}
+		
+		else if(e.getAttribute("type").equalsIgnoreCase("minimaxQ")) {
+			return "rl.adapters.learners.PersistentMultiAgentQLearning";
+		}
+		
+		else if(e.getAttribute("type").equalsIgnoreCase("PortfolioAI") || 
+				e.getAttribute("type").equalsIgnoreCase("PortfolioAIAdapter")) {
+			return "rl.adapters.gamenatives.PortfolioAIAdapter";
+		}
+		
+		else if(e.getAttribute("type").equalsIgnoreCase("NashPortfolioAI") || 
+				e.getAttribute("type").equalsIgnoreCase("NashPortfolioAIAdapter") || 
+				e.getAttribute("type").equalsIgnoreCase("EnhancedPortfolioAI")|| 
+				e.getAttribute("type").equalsIgnoreCase("EnhancedPortfolioAIAdapter")) {
+			return "rl.adapters.gamenatives.NashPortfolioAIAdapter";
+		}
+		
+		else if(e.getAttribute("type").equalsIgnoreCase("BI") || 
+				e.getAttribute("type").equalsIgnoreCase("BackwardInduction")) {
+			return "rl.planners.BackwardInduction";
+		}
+		
+		return null;
+	}
+	
 	/**
 	 * Processes some parameters from command line
 	 * @param line

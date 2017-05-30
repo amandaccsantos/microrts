@@ -5,9 +5,11 @@ import java.util.List;
 
 import org.jdom.JDOMException;
 
-import ai.abstraction.RangedRush;
+import ailoader.AILoader;
 import burlap.mdp.core.action.UniversalActionType;
 import burlap.mdp.core.state.State;
+import burlap.mdp.stochasticgames.model.JointModel;
+import rl.RLParameters;
 import rl.adapters.domain.EnumerableSGDomain;
 import rl.models.common.ScriptActionTypes;
 import rts.GameState;
@@ -43,10 +45,11 @@ public class SingleAgentDomain extends EnumerableSGDomain {
 		for (UniversalActionType actionType : ScriptActionTypes.getActionTypes()) {
 			this.addActionType(actionType);
 		}
-
+		
+		String opponent = RLParameters.getInstance().getOpponentName();
+		
 		// sets the joint action model containing the valid actions
-		// TODO: find opponent AI 
-		// setJointActionModel(new SingleAgentJAM(ScriptActionTypes.getActionMapping(unitTypeTable));
+		setJointActionModel((JointModel) new SingleAgentJAM(ScriptActionTypes.getActionMapping(unitTypeTable), AILoader.loadAI(opponent)));
 	}
 
 	/**
