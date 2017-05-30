@@ -12,21 +12,34 @@ import ai.abstraction.LightRush;
 import ai.abstraction.RangedRush;
 import ai.abstraction.WorkerRush;
 import ai.core.AI;
+import ai.portfolio.NashPortfolioAI;
+import ai.portfolio.PortfolioAI;
+import ai.portfolio.portfoliogreedysearch.PGSAI;
+import ai.puppet.PuppetSearchMCTS;
 import burlap.mdp.core.action.Action;
 import burlap.mdp.core.action.UniversalActionType;
 import rts.units.UnitTypeTable;
 
 public class ScriptActionTypes {
 	
-	//action names
+	//action names for learning algorithms
 	public static final String WORKER_RUSH = WorkerRush.class.getSimpleName();
 	public static final String LIGHT_RUSH = LightRush.class.getSimpleName();
 	public static final String RANGED_RUSH = RangedRush.class.getSimpleName();
 	public static final String HEAVY_RUSH = HeavyRush.class.getSimpleName();
 	public static final String EXPAND = Expand.class.getSimpleName();
 	public static final String BUILD_BARRACKS = BuildBarracks.class.getSimpleName();
-
 	
+	// other action names
+	public static final String PORTFOLIO_AI = PortfolioAI.class.getSimpleName();
+	public static final String NASH_PORTFOLIO_AI = NashPortfolioAI.class.getSimpleName();
+	public static final String PORTFOLIO_GREEDY_SEARCH = PGSAI.class.getSimpleName();
+	public static final String PUPPET_SEARCH = PuppetSearchMCTS.class.getSimpleName();
+
+	/**
+	 * Returns the list of action types that learner algorithms can use
+	 * @return
+	 */
 	public static List<UniversalActionType> getActionTypes() {
 		List<UniversalActionType> actionTypes = new ArrayList<>();
 		 
@@ -37,12 +50,25 @@ public class ScriptActionTypes {
 		actionTypes.add(new UniversalActionType(EXPAND));
 		actionTypes.add(new UniversalActionType(BUILD_BARRACKS));
 		
+		return actionTypes;
+	}
+	
+	public static List<UniversalActionType> getAllActionTypes() {
+		List<UniversalActionType> actionTypes = new ArrayList<>();
+		 
+		actionTypes.add(new UniversalActionType(WORKER_RUSH));
+		actionTypes.add(new UniversalActionType(LIGHT_RUSH));
+		actionTypes.add(new UniversalActionType(RANGED_RUSH));
+		actionTypes.add(new UniversalActionType(HEAVY_RUSH));
+		actionTypes.add(new UniversalActionType(EXPAND));
+		actionTypes.add(new UniversalActionType(BUILD_BARRACKS));
 		
 		return actionTypes;
 	}
 	
 	/**
-	 * Returns a map from action names to {@link UniversalActionType}
+	 * Returns a map from action names to {@link UniversalActionType} that
+	 * learning algorithms can use
 	 * @return
 	 */
 	public static Map<String, UniversalActionType> getMapToActionTypes() {
@@ -59,7 +85,8 @@ public class ScriptActionTypes {
 	}
 	
 	/**
-	 * Returns a map from action names to {@link Action}s
+	 * Returns a map from action names to {@link Action}s that learning
+	 * algorithms can use
 	 * @return
 	 */
 	public static Map<String, Action> getMapToActions() {
