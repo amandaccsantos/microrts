@@ -13,6 +13,7 @@ import ai.core.AI;
 import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
+import burlap.mdp.singleagent.model.RewardFunction;
 import burlap.mdp.singleagent.model.SampleModel;
 
 public class SingleAgentModel implements SampleModel {
@@ -32,10 +33,10 @@ public class SingleAgentModel implements SampleModel {
 		AggregateDiffState state = (AggregateDiffState)s;
 		
 		GameState gameState = state.getUnderlyingState().clone();
-		GameStages currentStage = state.getStage();// GameStages.OPENING;
+		//GameStages currentStage = state.getStage();// GameStages.OPENING;
 		
 		boolean gameOver = false;
-		boolean changedStage = false;	//stores whether game has advanced a stage
+		boolean changedState = false;	//stores whether game has advanced a stage
 		
 		int delay = 0; //milisseconds
 		long nextTimeToUpdate = System.currentTimeMillis() + delay;
@@ -63,21 +64,29 @@ public class SingleAgentModel implements SampleModel {
 				// simulate:
 				gameOver = gameState.cycle();
 				
-				//checks whether game has advanced to a new stage
-				changedStage = currentStage != SingleAgent.frameToStage(gameState.getTime()); 
+				
+				
+				//checks whether game has advanced to a new state
+				changedState = ! state.equals(new AggregateDiffState(gameState)); 
 				
 				//w.repaint();
 				nextTimeToUpdate += delay;
 			}
-		} while (!gameOver && !changedStage && gameState.getTime() < maxCycles);
+		} while (!gameOver && !changedState && gameState.getTime() < maxCycles);
 		
-		//returns the new State, with a 'finished' on it
-		SingleState currentState = new SingleState(gameState); 
-		currentState.setStage(GameStages.FINISHED);
+		//returns the new State associated with current underlying game state
+		AggregateDiffState newState = new AggregateDiffState(gameState);
 		
-		EnvironmentOutcome theNewState = new EnvironmentOutcome(state, a, currentState, gameState.winner(), true); 
+		//timeout is not checked inside GameStage constructor, set finished here
+		if(gameState.getTime() >= maxCycles){
+			newState.setStage(GameStages.FINISHED);
+		}
+		
+		//RewardFunction rf = 
+		
+		EnvironmentOutcome newOutcome = new EnvironmentOutcome(state, a, newState, gameState.winner(), true); 
 		//System.out.println(theNewState);
-		return theNewState; 
+		return newOutcome; 
 	}
 
 	@Override

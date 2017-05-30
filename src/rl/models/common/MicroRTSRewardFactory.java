@@ -14,6 +14,9 @@ public class MicroRTSRewardFactory {
 	public static final String SIMPLE_WEIGHTED = "simpleweighted";
 	public static final String SIMPLE_WEIGHTED_TERMINAL = "simpleweightedterminal";
 	
+	public static final String SINGLE_AGENT_WIN_LOSS = "singleagent-winloss";
+	public static final String SINGLE_AGENT_WEIGHTED = "singleagent-simpleweighted";
+	
 
 	/**
 	 * Returns a JointRewardFunction given its name
@@ -33,6 +36,15 @@ public class MicroRTSRewardFactory {
 		else if (functionName.equalsIgnoreCase(SIMPLE_WEIGHTED_TERMINAL)){
 			return new SimpleWeightedFeaturesTerminal();
 		}
+		/*
+		else if (functionName.equalsIgnoreCase(SINGLE_AGENT_WIN_LOSS)){
+			
+		}
+		
+		else if (functionName.equalsIgnoreCase(SINGLE_AGENT_WEIGHTED)){
+			
+		}*/
+		
 		
 		// should not get here, throws an exception
 		throw new RuntimeException("Unrecognized reward function name: " + functionName);
