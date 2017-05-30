@@ -1,6 +1,6 @@
 <!-- 
 	This can be used to train player 2 against QQ or QR resulting policy.
-	We just need to specify which the policy to be loaded in player 1 via
+	We just need to specify which policy to be loaded by player 1 via
 	command line
 -->
 
