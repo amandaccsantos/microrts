@@ -15,13 +15,13 @@ import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import burlap.mdp.singleagent.model.SampleModel;
 
-public class SingleAgentJAM implements SampleModel {
+public class SingleAgentModel implements SampleModel {
 	
 	Map<String, AI> action;
 	AI opponent;
 	int maxCycles;
 	
-	public SingleAgentJAM(Map<String, AI> action, AI opponent) {
+	public SingleAgentModel(Map<String, AI> action, AI opponent) {
 		this.action = action;
 		this.opponent = opponent;
 		maxCycles = (int) RLParameters.getInstance().getParameter(RLParamNames.GAME_DURATION);
