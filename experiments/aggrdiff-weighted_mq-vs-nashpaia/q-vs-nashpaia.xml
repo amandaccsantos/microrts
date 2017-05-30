@@ -16,7 +16,7 @@
 		<initial-q value="1" />
 	</player>
 
-	<player name='learner' type='NashPortfolioAIAdapter'>
+	<player name='Nash-PAIA' type='NashPortfolioAIAdapter'>
 		<timeout value="5000" />
 		<playouts value="36" />
 		<lookahead value="200" />
