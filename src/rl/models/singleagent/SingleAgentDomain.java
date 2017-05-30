@@ -46,7 +46,7 @@ public class SingleAgentDomain extends EnumerableSGDomain {
 
 		// sets the joint action model containing the valid actions
 		// TODO: find opponent AI 
-		setJointActionModel(new SingleAgentJAM(ScriptActionTypes.getActionMapping(unitTypeTable));
+		// setJointActionModel(new SingleAgentJAM(ScriptActionTypes.getActionMapping(unitTypeTable));
 	}
 
 	/**
