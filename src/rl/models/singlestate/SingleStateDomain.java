@@ -43,7 +43,7 @@ public class SingleStateDomain extends EnumerableSGDomain {
 		}
 	
 		//sets the joint action model containing the valid actions
-		setJointActionModel(new SingleStateJAM(ScriptActionTypes.getActionMapping(unitTypeTable)));
+		setJointActionModel(new SingleStateJAM(ScriptActionTypes.getLearnerActionMapping(unitTypeTable)));
 	}
 	
 	/**

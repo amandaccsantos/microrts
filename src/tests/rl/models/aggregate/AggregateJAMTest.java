@@ -46,7 +46,7 @@ public class AggregateJAMTest {
 		JointAction ja = new JointAction(theActions);
 		
 		AggregateStateJAM jointActionModel = new AggregateStateJAM(
-			ScriptActionTypes.getActionMapping(unitTypeTable)
+			ScriptActionTypes.getLearnerActionMapping(unitTypeTable)
 		);
 		
 		State newState = jointActionModel.sample(currentState, ja);

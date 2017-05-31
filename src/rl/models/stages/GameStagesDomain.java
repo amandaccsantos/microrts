@@ -44,7 +44,7 @@ public class GameStagesDomain extends EnumerableSGDomain {
 		}
 	
 		//sets the joint action model containing the valid actions
-		setJointActionModel(new StagesJointActionModel(ScriptActionTypes.getActionMapping(unitTypeTable)));
+		setJointActionModel(new StagesJointActionModel(ScriptActionTypes.getLearnerActionMapping(unitTypeTable)));
 	}
 	
 	/**

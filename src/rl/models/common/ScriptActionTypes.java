@@ -138,7 +138,7 @@ public class ScriptActionTypes {
 	 * @param unitTypeTable
 	 * @return
 	 */
-	public static Map<String, AI> getActionMapping(UnitTypeTable unitTypeTable){
+	public static Map<String, AI> getLearnerActionMapping(UnitTypeTable unitTypeTable){
 		Map<String, AI> actions = new HashMap<>();
 		
 		actions.put(WORKER_RUSH, new WorkerRush(unitTypeTable));
@@ -147,6 +147,22 @@ public class ScriptActionTypes {
 		actions.put(HEAVY_RUSH, new HeavyRush(unitTypeTable));
 		actions.put(EXPAND, new Expand(unitTypeTable));
 		actions.put(BUILD_BARRACKS, new BuildBarracks(unitTypeTable));
+		
+		return actions;
+	}
+	
+	/**
+	 * Adding a map with extra AIs
+	 * @param unitTypeTable
+	 * @return
+	 */
+	public static Map<String, AI> getAllActionMapping(UnitTypeTable unitTypeTable){
+		Map<String, AI> actions = getLearnerActionMapping(unitTypeTable);
+		
+		actions.put(PORTFOLIO_AI, new PortfolioAI(unitTypeTable));
+		actions.put(NASH_PORTFOLIO_AI, new NashPortfolioAI(unitTypeTable));
+		actions.put(PORTFOLIO_GREEDY_SEARCH, new PGSAI(unitTypeTable));
+		actions.put(PUPPET_SEARCH, new HeavyRush(unitTypeTable));
 		
 		return actions;
 	}

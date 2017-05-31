@@ -38,7 +38,7 @@ public class AILoader {
 	 * @return
 	 */
 	public static AI loadAI(String aiName, UnitTypeTable utt){
-		Map<String, AI> learnerAIs = ScriptActionTypes.getActionMapping(utt);
+		Map<String, AI> learnerAIs = ScriptActionTypes.getLearnerActionMapping(utt);
 		AI toReturn = null;
 		if(learnerAIs.containsKey(aiName)){
 			toReturn = learnerAIs.get(aiName);

@@ -52,7 +52,7 @@ public class SingleAgentDomain extends EnumerableSGDomain {
 		
 		// sets the joint action model containing the valid actions
 		setJointActionModel(new SingleAgentJAM(
-			ScriptActionTypes.getActionMapping(unitTypeTable), 
+			ScriptActionTypes.getLearnerActionMapping(unitTypeTable), 
 			AILoader.loadAI(opponent, unitTypeTable))
 		);
 	}

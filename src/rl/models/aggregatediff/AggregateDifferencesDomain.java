@@ -39,7 +39,7 @@ public class AggregateDifferencesDomain extends GameStagesDomain {
 		super(pathToMap);
 	
 		//sets the joint action model containing the valid actions
-		setJointActionModel(new AggregateDiffStateJAM(ScriptActionTypes.getActionMapping(unitTypeTable)));
+		setJointActionModel(new AggregateDiffStateJAM(ScriptActionTypes.getLearnerActionMapping(unitTypeTable)));
 	}
 	
 	/**

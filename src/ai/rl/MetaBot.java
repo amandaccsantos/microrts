@@ -174,7 +174,7 @@ public class MetaBot extends AI {
 	public PlayerAction getAction(int player, GameState gs) throws Exception {
 		// initializes the portfolio if needed
 		if(portfolio == null){
-			portfolio = ScriptActionTypes.getActionMapping(gs.getUnitTypeTable());
+			portfolio = ScriptActionTypes.getLearnerActionMapping(gs.getUnitTypeTable());
 		}
 		
 		// retrieves the abstract state representation and retrieves an action

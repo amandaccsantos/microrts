@@ -47,7 +47,7 @@ public class SingleStateJAMTest {
 		
 		// instantiates the JAM
 		SingleStateJAM jointActionModel = new SingleStateJAM(
-			ScriptActionTypes.getActionMapping(unitTypeTable)
+			ScriptActionTypes.getLearnerActionMapping(unitTypeTable)
 		);
 		
 		// retrieves possible actions and defines the joint action
@@ -85,7 +85,7 @@ public class SingleStateJAMTest {
 		
 		// instantiates the JAM
 		SingleStateJAM jointActionModel = new SingleStateJAM(
-			ScriptActionTypes.getActionMapping(unitTypeTable)
+			ScriptActionTypes.getLearnerActionMapping(unitTypeTable)
 		);
 		
 		// retrieves possible actions and defines the joint action

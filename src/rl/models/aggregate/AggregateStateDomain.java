@@ -38,7 +38,7 @@ public class AggregateStateDomain extends GameStagesDomain {
 		super(pathToMap);
 	
 		//sets the joint action model containing the valid actions
-		setJointActionModel(new AggregateStateJAM(ScriptActionTypes.getActionMapping(unitTypeTable)));
+		setJointActionModel(new AggregateStateJAM(ScriptActionTypes.getLearnerActionMapping(unitTypeTable)));
 	}
 	
 	/**

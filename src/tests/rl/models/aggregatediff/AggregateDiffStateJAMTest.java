@@ -54,7 +54,7 @@ public class AggregateDiffStateJAMTest {
 		JointAction ja = new JointAction(theActions);
 		
 		AggregateDiffStateJAM jointActionModel = new AggregateDiffStateJAM(
-			ScriptActionTypes.getActionMapping(unitTypeTable)
+			ScriptActionTypes.getLearnerActionMapping(unitTypeTable)
 		);
 		
 		State newState = jointActionModel.sample(currentState, ja);
@@ -90,7 +90,7 @@ public class AggregateDiffStateJAMTest {
 		JointAction ja = new JointAction(theActions);
 		
 		AggregateDiffStateJAM jointActionModel = new AggregateDiffStateJAM(
-			ScriptActionTypes.getActionMapping(unitTypeTable)
+			ScriptActionTypes.getLearnerActionMapping(unitTypeTable)
 		);
 		
 		// samples a new state until timeout

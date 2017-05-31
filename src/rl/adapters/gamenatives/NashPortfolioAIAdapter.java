@@ -126,7 +126,7 @@ public class NashPortfolioAIAdapter implements PersistentLearner {
 		nameToAction = ScriptActionTypes.getMapToLearnerActions();
 		
 		// retrieves the list of AIs and transforms it in an array
-		Map<String, AI> actionMapping = ScriptActionTypes.getActionMapping(unitTypeTable);
+		Map<String, AI> actionMapping = ScriptActionTypes.getLearnerActionMapping(unitTypeTable);
 		portfolio = actionMapping.values();
 		AI[] portfolioArray = portfolio.toArray(new AI[portfolio.size()]);
 		
