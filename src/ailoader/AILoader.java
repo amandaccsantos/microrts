@@ -53,7 +53,7 @@ public class AILoader {
 		
 		else if (aiName.equalsIgnoreCase("Puppet") || 
 				aiName.equalsIgnoreCase("PuppetSearch") || 
-				aiName.equalsIgnoreCase("PuppetMCTS") ){
+				aiName.equalsIgnoreCase("PuppetSearchMCTS") ){
 			
 			toReturn = new PuppetSearchMCTS(utt);
 		}
