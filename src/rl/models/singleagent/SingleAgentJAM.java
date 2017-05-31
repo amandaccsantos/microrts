@@ -39,7 +39,7 @@ public class SingleAgentJAM implements JointModel {
 		AI ai1 = actions.get(ja.action(0).actionName()).clone();
 		
 		// second AI is fixed: our 'embedded' opponent
-		AI ai2 = opponent; //actions.get(ja.action(1).actionName()).clone();
+		AI ai2 = opponent.clone(); //actions.get(ja.action(1).actionName()).clone();
 
 		// advance game until next state is reached or game finishes
 		do {

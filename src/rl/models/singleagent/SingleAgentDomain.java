@@ -8,9 +8,10 @@ import org.jdom.JDOMException;
 import ailoader.AILoader;
 import burlap.mdp.core.action.UniversalActionType;
 import burlap.mdp.core.state.State;
-import burlap.mdp.stochasticgames.model.JointModel;
 import rl.RLParameters;
 import rl.adapters.domain.EnumerableSGDomain;
+import rl.models.aggregatediff.AggregateDiffState;
+import rl.models.aggregatediff.AggregateDifferencesDomain;
 import rl.models.common.ScriptActionTypes;
 import rts.GameState;
 import rts.PhysicalGameState;
@@ -47,9 +48,13 @@ public class SingleAgentDomain extends EnumerableSGDomain {
 		}
 		
 		String opponent = RLParameters.getInstance().getOpponentName();
+		//String opponent = "WorkerRush"; //TODO test
 		
 		// sets the joint action model containing the valid actions
-		setJointActionModel((JointModel) new SingleAgentJAM(ScriptActionTypes.getActionMapping(unitTypeTable), AILoader.loadAI(opponent)));
+		setJointActionModel(new SingleAgentJAM(
+			ScriptActionTypes.getActionMapping(unitTypeTable), 
+			AILoader.loadAI(opponent, unitTypeTable))
+		);
 	}
 
 	/**
@@ -57,12 +62,19 @@ public class SingleAgentDomain extends EnumerableSGDomain {
 	 * @return
 	 */
 	public State getInitialState() {
-		return new SingleAgent(gs);
+		return new AggregateDiffState(gs);
 	}
 
 	@Override
 	public List<? extends State> enumerate() {
-		return SingleAgent.allStates();
+		AggregateDifferencesDomain underlyingDomain = null;
+		try {
+			underlyingDomain = new AggregateDifferencesDomain();
+		} catch (JDOMException | IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return underlyingDomain.enumerate();
 	}
 
 }
