@@ -470,15 +470,15 @@ public class RLParameters {
 
 			// create a multi-agent random interface
 			agent = new MultiAgentRandom(
-					world.getDomain(), 
-					0.9, 
-					0.1, 
-					new SimpleHashableStateFactory(),
-					1000, 
-					new MinMaxQ(), false, 
-					e.getAttribute("name"), 
-					new SGAgentType("RandomMA", world.getDomain().getActionTypes())
-				);
+				world.getDomain(), 
+				0.9, 
+				0.1, 
+				new SimpleHashableStateFactory(),
+				1000, 
+				new MinMaxQ(), false, 
+				e.getAttribute("name"), 
+				new SGAgentType("RandomMA", world.getDomain().getActionTypes())
+			);
 		}
 		
 		// Dummy
@@ -497,7 +497,7 @@ public class RLParameters {
 				new DummyPolicy((String) playerParams.get(RLParamNames.DUMMY_POLICY), ql)
 			);
 			
-			// create a single-agent interface the learning algorithm
+			// create a single-agent interface for the learning algorithm
 			agent = new SGQLearningAdapter(
 				world.getDomain(), ql, e.getAttribute("name"), 
 				new SGAgentType("Dummy", world.getDomain().getActionTypes())
