@@ -175,7 +175,9 @@ public class RLParameters {
 		params.put(RLParamNames.REWARD_FUNCTION, MicroRTSRewardFactory.WIN_LOSS);
 		params.put(RLParamNames.ABSTRACTION_MODEL, WorldFactory.STAGES);
 		params.put(RLParamNames.DEBUG_LEVEL, 0); // currently only affects PortfolioAI
-		params.put(RLParamNames.QUIET_LEARNING, false);
+		params.put(RLParamNames.QUIET_LEARNING, true);
+		
+		
 		
 		// parameters of RL methods
 		params.put(RLParamNames.DISCOUNT, 0.9f);
