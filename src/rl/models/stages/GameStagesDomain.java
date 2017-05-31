@@ -39,7 +39,7 @@ public class GameStagesDomain extends EnumerableSGDomain {
 
 		gs = new GameState(physicalGameState, unitTypeTable);
 		
-		for(UniversalActionType actionType : ScriptActionTypes.getActionTypes()){
+		for(UniversalActionType actionType : ScriptActionTypes.getLearnerActionTypes()){
 			this.addActionType(actionType);
 		}
 	

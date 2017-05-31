@@ -40,7 +40,7 @@ public class ScriptActionTypes {
 	 * Returns the list of action types that learner algorithms can use
 	 * @return
 	 */
-	public static List<UniversalActionType> getActionTypes() {
+	public static List<UniversalActionType> getLearnerActionTypes() {
 		List<UniversalActionType> actionTypes = new ArrayList<>();
 		 
 		actionTypes.add(new UniversalActionType(WORKER_RUSH));
@@ -53,15 +53,19 @@ public class ScriptActionTypes {
 		return actionTypes;
 	}
 	
+	/**
+	 * Gets a broader list of action types
+	 * @return
+	 */
 	public static List<UniversalActionType> getAllActionTypes() {
-		List<UniversalActionType> actionTypes = new ArrayList<>();
-		 
-		actionTypes.add(new UniversalActionType(WORKER_RUSH));
-		actionTypes.add(new UniversalActionType(LIGHT_RUSH));
-		actionTypes.add(new UniversalActionType(RANGED_RUSH));
-		actionTypes.add(new UniversalActionType(HEAVY_RUSH));
-		actionTypes.add(new UniversalActionType(EXPAND));
-		actionTypes.add(new UniversalActionType(BUILD_BARRACKS));
+		List<UniversalActionType> actionTypes = getLearnerActionTypes();
+		
+		// adds the 'special' actions
+		actionTypes.add(new UniversalActionType(PORTFOLIO_AI));
+		actionTypes.add(new UniversalActionType(NASH_PORTFOLIO_AI));
+		actionTypes.add(new UniversalActionType(PORTFOLIO_GREEDY_SEARCH));
+		actionTypes.add(new UniversalActionType(PUPPET_SEARCH));
+		
 		
 		return actionTypes;
 	}

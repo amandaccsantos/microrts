@@ -26,7 +26,7 @@ public class RandomPolicy implements Policy {
 	@Override
 	public Action action(State s) {		
 		// Returns a random action 
-		this.actions = ScriptActionTypes.getActionTypes();
+		this.actions = ScriptActionTypes.getLearnerActionTypes();
 		this.randomAction = actions.get(this.rand.nextInt(this.actions.size()));
 		
 		return this.randomAction.associatedAction(null);

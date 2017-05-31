@@ -42,7 +42,7 @@ public class StagesJAMTest {
 		GameStage initial = (GameStage) domain.getInitialState();
 		
 		// retrieves the available actions
-		List<UniversalActionType> portfolio = ScriptActionTypes.getActionTypes(); 
+		List<UniversalActionType> portfolio = ScriptActionTypes.getLearnerActionTypes(); 
 		
 		// tests for all action combinations
 		for (UniversalActionType uat1 : portfolio){
