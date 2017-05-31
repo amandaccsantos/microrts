@@ -45,6 +45,7 @@ import rl.adapters.learners.PersistentMultiAgentQLearning;
 import rl.adapters.learners.SGQLearningAdapter;
 import rl.models.common.MicroRTSRewardFactory;
 import rl.models.common.MicroRTSTerminalFunction;
+import rl.models.common.ScriptActionTypes;
 import rl.planners.BackwardInduction;
 
 
@@ -177,6 +178,7 @@ public class RLParameters {
 		params.put(RLParamNames.DEBUG_LEVEL, 0); // currently only affects PortfolioAI
 		params.put(RLParamNames.QUIET_LEARNING, true);
 		
+		params.put(RLParamNames.MICRORTS_OPPONENT, ScriptActionTypes.PORTFOLIO_AI);
 		
 		
 		// parameters of RL methods
@@ -207,13 +209,6 @@ public class RLParameters {
 		playerNodes = null;
 	}
 
-	/*public Map<String, Object> defaultRLParameters(){
-		Map<String, Object> params = new HashMap<>();
-		params.put(RLParamNames.DISCOUNT, 0.9f);
-		params.put(RLParamNames.LEARNING_RATE, 0.1f);
-		params.put(RLParamNames.INITIAL_Q, 1.0f);
-	}*/
-	
 	/**
 	 * Reads the parameters of a xml file
 	 * @param path the path to the xml file
@@ -320,13 +315,13 @@ public class RLParameters {
 	}
 	
 	public String getOpponentName(){
-		
-		List<String> names = new ArrayList<>();
+		return (String) params.get(RLParamNames.MICRORTS_OPPONENT);
+		/*List<String> names = new ArrayList<>();
 		for(Node n : playerNodes){
 			names.add(processNode(n));
 			
 		}
-		return names.get(1);
+		return names.get(1);*/
 	}
 	
 	private String processNode(Node playerNode){

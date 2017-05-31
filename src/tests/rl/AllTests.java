@@ -12,6 +12,7 @@ import tests.rl.models.aggregatediff.TestAggregateDiffDomain;
 import tests.rl.models.aggregatediff.TestAggregateDiffState;
 import tests.rl.models.common.TestSimpleWeightedFeatures;
 import tests.rl.models.common.TestSimpleWeightedFeaturesTerminal;
+import tests.rl.models.singleagent.SingleAgentDomainTest;
 import tests.rl.models.singlestate.SingleStateJAMTest;
 import tests.rl.models.singlestate.SingleStateTest;
 import tests.rl.models.stages.GameStageTest;
@@ -41,6 +42,7 @@ import tests.rl.validate.CompareEpisodesTest;
 	
 	// domains
 	TestAggregateDiffDomain.class,
+	SingleAgentDomainTest.class,
 	
 	//reward functions
 	TestSimpleWeightedFeatures.class,

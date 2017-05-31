@@ -35,6 +35,7 @@ import rl.adapters.learners.PersistentMultiAgentQLearning;
 import rl.adapters.learners.SGQLearningAdapter;
 import rl.models.aggregatediff.AggregateDifferencesDomain;
 import rl.models.common.MicroRTSRewardFactory;
+import rl.models.singleagent.SingleAgentDomain;
 import tests.rl.adapters.learners.SGQLearningAdapterTest;
 
 public class RLParametersTest {
@@ -281,6 +282,20 @@ public class RLParametersTest {
 			}
 		}
 	}
+	
+	@Test
+	/**
+	 * Tests loading of example_microrts-opponent.xml
+	 */
+	public void testMicroRTSOpponent() throws SAXException, IOException, ParserConfigurationException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+		RLParameters rlParams = RLParameters.getInstance();
+		
+		rlParams.loadFromFile("src/tests/rl/example_microrts-opponent.xml"); //may throw exceptions
+		
+		assertEquals("PGSAI", rlParams.getOpponentName());
+		assertTrue(rlParams.getWorld().getDomain() instanceof SingleAgentDomain);
+	}
+	
 	/**
 	 * Changes visibility (private -> public) of a specified object field
 	 * and returns it  

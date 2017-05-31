@@ -9,6 +9,7 @@ public class RLParamNames {
 	public static final String REWARD_FUNCTION = "reward-function";
 	public static final String OUTPUT_DIR = "output-dir";
 	public static final String QUIET_LEARNING = "quiet-learning";	// don't output knowledge every episode
+	public static final String MICRORTS_OPPONENT = "microrts-opponent"; //the opponent in SingleAgent model
 	
 	// parameters of RL methods
 	public static final String DISCOUNT = "discount";
