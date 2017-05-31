@@ -51,7 +51,7 @@ public class SingleStateJAMTest {
 		);
 		
 		// retrieves possible actions and defines the joint action
-		Map<String, UniversalActionType> actionMapping = ScriptActionTypes.getMapToActionTypes();
+		Map<String, UniversalActionType> actionMapping = ScriptActionTypes.getMapToLearnerActionTypes();
 		
 		//regardless of the joint actions, the next state should be FINISHED
 		for (UniversalActionType type1 : actionMapping.values()){
@@ -89,7 +89,7 @@ public class SingleStateJAMTest {
 		);
 		
 		// retrieves possible actions and defines the joint action
-		Map<String, UniversalActionType> actionMapping = ScriptActionTypes.getMapToActionTypes();
+		Map<String, UniversalActionType> actionMapping = ScriptActionTypes.getMapToLearnerActionTypes();
 		List<Action> theActions = new ArrayList<>();
 		
 		//will pair worker rush vs worker rush, who run until timeout

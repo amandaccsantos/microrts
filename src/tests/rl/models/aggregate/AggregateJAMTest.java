@@ -39,7 +39,7 @@ public class AggregateJAMTest {
 
 		
 		// retrieves possible actions and defines the joint action
-		Map<String, UniversalActionType> actionMapping = ScriptActionTypes.getMapToActionTypes();
+		Map<String, UniversalActionType> actionMapping = ScriptActionTypes.getMapToLearnerActionTypes();
 		List<Action> theActions = new ArrayList<>();
 		theActions.add(actionMapping.get(ScriptActionTypes.WORKER_RUSH).associatedAction(null));
 		theActions.add(actionMapping.get(ScriptActionTypes.WORKER_RUSH).associatedAction(null));

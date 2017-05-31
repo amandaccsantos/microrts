@@ -75,7 +75,7 @@ public class ScriptActionTypes {
 	 * learning algorithms can use
 	 * @return
 	 */
-	public static Map<String, UniversalActionType> getMapToActionTypes() {
+	public static Map<String, UniversalActionType> getMapToLearnerActionTypes() {
 		Map<String, UniversalActionType> actionTypeMap = new HashMap<>();
 		 
 		actionTypeMap.put(WORKER_RUSH, new UniversalActionType(WORKER_RUSH));
@@ -84,6 +84,18 @@ public class ScriptActionTypes {
 		actionTypeMap.put(HEAVY_RUSH, new UniversalActionType(HEAVY_RUSH));
 		actionTypeMap.put(EXPAND, new UniversalActionType(EXPAND));
 		actionTypeMap.put(BUILD_BARRACKS, new UniversalActionType(BUILD_BARRACKS));
+		
+		return actionTypeMap;
+	}
+	
+	public static Map<String, UniversalActionType> getMapToAllActionTypes() {
+		Map<String, UniversalActionType> actionTypeMap = getMapToLearnerActionTypes();
+		
+		//adds the special action types
+		actionTypeMap.put(PORTFOLIO_AI, new UniversalActionType(PORTFOLIO_AI));
+		actionTypeMap.put(NASH_PORTFOLIO_AI, new UniversalActionType(NASH_PORTFOLIO_AI));
+		actionTypeMap.put(PORTFOLIO_GREEDY_SEARCH, new UniversalActionType(PORTFOLIO_GREEDY_SEARCH));
+		actionTypeMap.put(PUPPET_SEARCH, new UniversalActionType(PUPPET_SEARCH));
 		
 		return actionTypeMap;
 	}

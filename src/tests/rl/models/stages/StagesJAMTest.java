@@ -75,7 +75,7 @@ public class StagesJAMTest {
 		// gets the initial state
 		GameStage currentState = (GameStage) domain.getInitialState();
 		
-		Map<String, UniversalActionType> actionMapping = ScriptActionTypes.getMapToActionTypes();
+		Map<String, UniversalActionType> actionMapping = ScriptActionTypes.getMapToLearnerActionTypes();
 		List<Action> theActions = new ArrayList<>();
 		
 		//will pair worker rush vs worker rush, who run until timeout
