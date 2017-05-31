@@ -92,7 +92,7 @@ public class SGQLearningAdapterTest {
 		QLearning qLearner = (QLearning) agent.getSingleAgentLearner();
 		
 		//retrieves objects regarding game actions
-		Map<String, Action> theActions = ScriptActionTypes.getMapToActions();
+		Map<String, Action> theActions = ScriptActionTypes.getMapToLearnerActions();
 		Action lightRush = theActions.get(ScriptActionTypes.LIGHT_RUSH);
 		Action buildBarracks = theActions.get(ScriptActionTypes.BUILD_BARRACKS);
 		Action rangedRush = theActions.get(ScriptActionTypes.RANGED_RUSH);
@@ -184,7 +184,7 @@ public class SGQLearningAdapterTest {
 	public void assertLoadedKnowledgeInAggrDiffModel(SGQLearningAdapter agent){
 		QLearning qLearner = (QLearning) agent.getSingleAgentLearner();
 		// retrieves the actions for querying later
-		Map<String, Action> theActions = ScriptActionTypes.getMapToActions();
+		Map<String, Action> theActions = ScriptActionTypes.getMapToLearnerActions();
 
 		// string representation of first state on file
 		String repr = "OPENING;BEHIND;BEHIND;BEHIND;BEHIND;BEHIND;BEHIND;BEHIND";
@@ -229,7 +229,7 @@ public class SGQLearningAdapterTest {
 		sgql.loadKnowledge(QTABLE_AGGREGATE);
 		
 		// stores the available actions
-		Map<String, Action> theActions = ScriptActionTypes.getMapToActions();
+		Map<String, Action> theActions = ScriptActionTypes.getMapToLearnerActions();
 		
 		// creates a map with state/player features to manipulate and retrieve specific info
 		Map<Integer, Map<String, Object>> playerFeatures = constructPlayerFeatures();

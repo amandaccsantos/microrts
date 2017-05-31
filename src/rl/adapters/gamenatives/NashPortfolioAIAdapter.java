@@ -123,7 +123,7 @@ public class NashPortfolioAIAdapter implements PersistentLearner {
 	protected void initializePortfolioAI(UnitTypeTable unitTypeTable) {
 		
 		// initializes string -> action map
-		nameToAction = ScriptActionTypes.getMapToActions();
+		nameToAction = ScriptActionTypes.getMapToLearnerActions();
 		
 		// retrieves the list of AIs and transforms it in an array
 		Map<String, AI> actionMapping = ScriptActionTypes.getActionMapping(unitTypeTable);

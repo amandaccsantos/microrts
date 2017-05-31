@@ -87,7 +87,7 @@ public class TestBackwardInduction {
 	
 	private JointAction constructJointAction(String component1, String component2) {
 
-		Map<String, Action> nameToAction = ScriptActionTypes.getMapToActions();
+		Map<String, Action> nameToAction = ScriptActionTypes.getMapToLearnerActions();
 		List<Action> components = new ArrayList<>();
 		components.add(nameToAction.get(component1));
 		components.add(nameToAction.get(component2));

@@ -105,7 +105,7 @@ public class ScriptActionTypes {
 	 * algorithms can use
 	 * @return
 	 */
-	public static Map<String, Action> getMapToActions() {
+	public static Map<String, Action> getMapToLearnerActions() {
 		Map<String, Action> actionMap = new HashMap<>();
 		 
 		actionMap.put(WORKER_RUSH, new UniversalActionType(WORKER_RUSH).associatedAction(null));
@@ -115,6 +115,21 @@ public class ScriptActionTypes {
 		actionMap.put(EXPAND, new UniversalActionType(EXPAND).associatedAction(null));
 		actionMap.put(BUILD_BARRACKS, new UniversalActionType(BUILD_BARRACKS).associatedAction(null));
 		
+		return actionMap;
+	}
+	
+	/**
+	 * Returns a map with extra actions
+	 * @return
+	 */
+	public static Map<String, Action> getMapToAllActions() {
+		Map<String, Action> actionMap = getMapToLearnerActions();
+		
+		actionMap.put(PORTFOLIO_AI, new UniversalActionType(PORTFOLIO_AI).associatedAction(null));
+		actionMap.put(NASH_PORTFOLIO_AI, new UniversalActionType(NASH_PORTFOLIO_AI).associatedAction(null));
+		actionMap.put(PORTFOLIO_GREEDY_SEARCH, new UniversalActionType(PORTFOLIO_GREEDY_SEARCH).associatedAction(null));
+		actionMap.put(PUPPET_SEARCH, new UniversalActionType(PUPPET_SEARCH).associatedAction(null));
+		 
 		return actionMap;
 	}
 	
