@@ -35,9 +35,16 @@ if __name__ == '__main__':
                         if line.startswith('states:'):
                             break
             count += num
-
+	
+    output = open(path + 'victories.txt', 'w')
+    
     mean_games = num_games / rep_num
     mean_victories = count / rep_num
+
+    output.write('Number of games: ' + str(mean_games) + '\n')
+    output.write('Number of victories: ' + str(mean_victories) + '\n')
+    output.write('Victory rate: ' + str("{:.0%}".format(mean_victories/mean_games)) + '\n')
+
 
     print 'Number of games: ' + str(mean_games)
     print 'Number of victories: ' + str(mean_victories)
