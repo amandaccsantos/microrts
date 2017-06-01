@@ -11,6 +11,7 @@ import ai.abstraction.HeavyRush;
 import ai.abstraction.LightRush;
 import ai.abstraction.RangedRush;
 import ai.abstraction.WorkerRush;
+import ai.ahtn.AHTNAI;
 import ai.core.AI;
 import ai.evaluation.SimpleSqrtEvaluationFunction3;
 import ai.portfolio.NashPortfolioAI;
@@ -42,6 +43,7 @@ public class MetaBotTest {
            100, -1, 100,
            new SimpleSqrtEvaluationFunction3()
         );
+        NashPortfolioAI.DEBUG = 0;
         
         /*AI player2 = new PortfolioAI(
     		new AI[]{
@@ -56,7 +58,7 @@ public class MetaBotTest {
            100, -1, 100,
            new SimpleSqrtEvaluationFunction3()
         );*/
-        AI player2 = new PGSAI(unitTypeTable);
+        AI player2 = new AHTNAI(unitTypeTable);
         
         bots.add(player1);
         System.out.println("Added first player.");
