@@ -2,10 +2,12 @@ package ailoader;
 
 import java.util.Map;
 
+import ai.ahtn.AHTNAI;
 import ai.core.AI;
 import ai.portfolio.NashPortfolioAI;
 import ai.portfolio.PortfolioAI;
 import ai.portfolio.portfoliogreedysearch.PGSAI;
+import ai.puppet.PuppetSearchAB;
 import ai.puppet.PuppetSearchMCTS;
 import rl.models.common.ScriptActionTypes;
 import rts.units.UnitTypeTable;
@@ -36,14 +38,18 @@ public class AILoader {
 	 * @param aiName
 	 * @param utt
 	 * @return
+	 * @throws Exception 
 	 */
-	public static AI loadAI(String aiName, UnitTypeTable utt){
+	public static AI loadAI(String aiName, UnitTypeTable utt) {
 		Map<String, AI> learnerAIs = ScriptActionTypes.getLearnerActionMapping(utt);
 		AI toReturn = null;
+		
+		// "regular" AIs are stored in learnerAIs
 		if(learnerAIs.containsKey(aiName)){
 			toReturn = learnerAIs.get(aiName);
 		}
 		
+		// "special" AIs are handled separately
 		else if (aiName.equalsIgnoreCase("PGS") || 
 					aiName.equalsIgnoreCase("PGSAI") || 
 					aiName.equalsIgnoreCase("PortfolioGreedySearch") ){
@@ -56,6 +62,22 @@ public class AILoader {
 				aiName.equalsIgnoreCase("PuppetSearchMCTS") ){
 			
 			toReturn = new PuppetSearchMCTS(utt);
+		}
+		
+		else if (aiName.equalsIgnoreCase("PuppetSearchAB")|| 
+				aiName.equalsIgnoreCase("PuppetSearchABCD")) { 
+			toReturn = new PuppetSearchAB(utt);
+		}
+		
+		else if (aiName.equalsIgnoreCase("AHTN")|| 
+				aiName.equalsIgnoreCase("AHTNAI")) { 
+			try {
+				toReturn = new AHTNAI(utt);
+			} catch (Exception e) {
+				System.err.println("Error while trying to load AHTNAI");
+				e.printStackTrace();
+				System.exit(0);
+			}
 		}
 		
 		else if (aiName.equalsIgnoreCase("PortfolioAI")) {
