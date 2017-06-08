@@ -27,11 +27,11 @@ if __name__ == '__main__':
     for rep_num in range(1, num_reps + 1):
         rep_name = os.path.join(path, '%s%s' % ('rep', str(rep_num).zfill(2)))
         if final_epi is None:
-            final_epi = len(glob.glob(os.path.join(rep_name, '*.game')))
+            final_epi = len(glob.glob(os.path.join(rep_name, '*.game'))) - 1
         for i, filename in enumerate(glob.glob(os.path.join(rep_name, '*.game'))):
             name = filename.split('episode_')[1]
             name = int(name.split('.')[0])
-            if initial_epi <= name < final_epi:
+            if initial_epi <= name <= final_epi:
                 num_games += 1
                 f = open(filename, 'r')
                 for line in f:
