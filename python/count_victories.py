@@ -51,7 +51,7 @@ if __name__ == '__main__':
     mean_victories = count / rep_num
 
     if output is not None:
-        output_file = open(output + 'victories.txt', 'w')
+        output_file = open(output, 'w')
         output_file.write('Number of games: ' + str(mean_games) + '\n')
         output_file.write('Number of victories: ' + str(mean_victories) + '\n')
         output_file.write('Victory rate: ' + str("{:.0%}".format(mean_victories / mean_games)) + '\n')
