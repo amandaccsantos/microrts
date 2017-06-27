@@ -13,7 +13,7 @@
 		<quiet-learning value="true" />
 	</parameters>
 
-	<player name="QLearning1" type="MinimaxQ">
+	<player name="MinimaxQ" type="MinimaxQ">
 		<discount value='0' />
 		<learning-rate type='constant' value='0' />
 		<initial-q value='0' />
