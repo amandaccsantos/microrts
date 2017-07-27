@@ -43,7 +43,7 @@ public class SingleAgentJAM implements JointModel {
 
 		// advance game until next state is reached or game finishes
 		do {
-			PlayerAction pa1 = null, pa2 = null;
+			PlayerAction pa1 = new PlayerAction(), pa2 = new PlayerAction();
 			try {
 				pa1 = ai1.getAction(0, gameState);
 				pa2 = ai2.getAction(1, gameState);
@@ -61,7 +61,7 @@ public class SingleAgentJAM implements JointModel {
 			
 			//checks whether any state variable has changed
 			changedStage = ! currentState.equals(new AggregateDiffState(gameState)); 
-				
+			System.out.print("\rFrame: " + gameState.getTime());
 		} while (!gameOver && !changedStage && gameState.getTime() < maxCycles);
 		
 		//returns the new State associated with current underlying game state

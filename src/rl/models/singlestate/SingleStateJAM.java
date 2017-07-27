@@ -2,18 +2,13 @@ package rl.models.singlestate;
 
 import java.util.Map;
 
-import javax.swing.JFrame;
-
 import ai.core.AI;
 import burlap.mdp.core.state.State;
 import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.model.JointModel;
-import gui.PhysicalGameStatePanel;
 import rl.RLParamNames;
 import rl.RLParameters;
-import rl.models.singlestate.SingleState;
 import rl.models.stages.GameStages;
-import rl.models.stages.StagesDomainGenerator;
 import rts.GameState;
 import rts.PlayerAction;
 
@@ -49,7 +44,7 @@ public class SingleStateJAM implements JointModel {
 		do {
 			if (System.currentTimeMillis() >= nextTimeToUpdate) {
 
-				PlayerAction pa1 = null, pa2 = null;
+				PlayerAction pa1 = new PlayerAction(), pa2 = new PlayerAction();
 				try {
 					pa1 = ai1.getAction(0, gameState);
 					pa2 = ai2.getAction(1, gameState);
