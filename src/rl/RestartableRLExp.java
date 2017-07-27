@@ -2,7 +2,6 @@ package rl;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -35,6 +34,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import com.thoughtworks.xstream.XStream;
+
 import burlap.behavior.stochasticgames.GameEpisode;
 import burlap.debugtools.DPrint;
 import burlap.mdp.stochasticgames.JointAction;
@@ -42,8 +43,6 @@ import burlap.mdp.stochasticgames.agent.SGAgent;
 import burlap.mdp.stochasticgames.world.World;
 import rl.adapters.learners.PersistentLearner;
 import rl.models.common.MicroRTSState;
-
-import com.thoughtworks.xstream.XStream;
 
 /**
  * Manages a Reinforcement Learning experiment in microRTS The RL experiment has
@@ -54,6 +53,7 @@ import com.thoughtworks.xstream.XStream;
  *
  */
 public class RestartableRLExp extends RLExperiment{
+	
 	static Map<String, Object> parameters;
 	static boolean quietLearning;
 	static World gameWorld;
@@ -63,55 +63,68 @@ public class RestartableRLExp extends RLExperiment{
 	static GameEpisode episode;
 	static Timestamp timestamp_i;
     static int startEpi;
+    
 	public static void main(String[] args) {
 		RLStateStore rlState;
 		rlState = null;
+		
 		// parses command line arguments
 		CommandLine cmdLine = processCommandLine(args);
 		if (!cmdLine.hasOption(RLParamNames.CONFIG_FILE) && !cmdLine.hasOption(RLParamNames.RESTART)) {
 			System.err.println("Please provide the configuration file with -c or " + RLParamNames.CONFIG_FILE);
 			System.exit(0);
 		}
+		
 		if(cmdLine.hasOption(RLParamNames.RESTART)){
 			String path = cmdLine.getOptionValue("restart");
 			try {
 				XStream xs = new XStream(); 
                     
 				ObjectInputStream oos = new ObjectInputStream(                                 
-				        new FileInputStream(path+"/rlState.ser")) ;
+				        new FileInputStream(path+"/rlState.ser")
+				);
+				
 				rlState = (RLStateStore) xs.fromXML(oos);
 				oos.close();
-			} catch (Exception e) {e.printStackTrace();}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
 			parameters = rlState.getparams();
-			quietLearning =rlState.getquietLearning();
+			quietLearning = rlState.getquietLearning();
 			gameWorld = rlState.getgameWorld();
 			agents = rlState.getagents();
-			numEpisodes =rlState.getnumEpisodes();
-			outDir=rlState.getoutDir();
-			episode=rlState.getepisode();
-			startEpi=rlState.getepisodecnt();
+			numEpisodes = rlState.getnumEpisodes();
+			outDir = rlState.getoutDir();
+			episode = rlState.getepisode();
+			startEpi = rlState.getepisodecnt();
+			
 			DPrint.toggleCode(gameWorld.getDebugId(), false);
 		}
-		else{ 
+		else { 
 			System.out.println(" Not Restarted");
 			loadParams(cmdLine);
 			rlState = new RLStateStore();
-			startEpi=0;
+			startEpi = 0;
 		}
 		
 		for (int episodeNumber = startEpi; episodeNumber < numEpisodes; episodeNumber++) {
 			Timestamp timestamp_epi_i = new Timestamp(System.currentTimeMillis());
+			System.out.print(String.format("\rMatch #%7d starting.", episodeNumber));
 			episode = gameWorld.runGame();
 			Timestamp timestamp_epi_f = new Timestamp(System.currentTimeMillis());
 			
 			// writes episode data using our format and BURLAP's default
-			printEpisodeInfo(episodeNumber, episode, outDir + "/episode_" + episodeNumber + 
-					".xml", timestamp_epi_i, timestamp_epi_f, agents);
-			
+			printEpisodeInfo(
+				episodeNumber, episode, outDir + "/episode_" + episodeNumber + 
+				".xml", timestamp_epi_i, timestamp_epi_f, agents
+			);
+			System.out.print(String.format("\rMatch #%7d finished.", episodeNumber));
 			episode.write(String.format("%s/episode_%d", outDir, episodeNumber));
 			
 			// let them know that episode has finished
 			System.out.print(String.format("\rEpisode #%7d finished.", episodeNumber));
+			
 			// writes knowledge of agents, unless we're meant to be quiet
 			if (!quietLearning) {
 				for (PersistentLearner agent : agents) {
@@ -119,8 +132,10 @@ public class RestartableRLExp extends RLExperiment{
 				}
 			}
 			//Store game state for restarting.
-			rlState.setValues(parameters,quietLearning, gameWorld,
-					agents,	numEpisodes,outDir,episode,episodeNumber);
+			rlState.setValues(
+				parameters, quietLearning, gameWorld,
+				agents,	numEpisodes, outDir, episode, episodeNumber
+			);
 			try {
 				XStream xs = new XStream(); 
 				ObjectOutputStream oos = new ObjectOutputStream( 
