@@ -11,5 +11,6 @@
 	<classpathentry kind="lib" path="lib/SCPSolver.jar"/>
 	<classpathentry kind="lib" path="lib/LPSOLVESolverPack.jar"/>
 	<classpathentry kind="lib" path="lib/commons-cli-1.4.jar" sourcepath="lib/commons-cli-1.4-sources.jar"/>
+	<classpathentry kind="lib" path="lib/xstream-1.4.10.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
