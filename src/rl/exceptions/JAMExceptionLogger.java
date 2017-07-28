@@ -40,4 +40,17 @@ public class JAMExceptionLogger {
 			new ExceptionListEntry(playerIndex, e, extraInfo)
 		);
 	}
+	
+	/**
+	 * Counts the number of exceptions thrown by a player
+	 * @param player
+	 * @return
+	 */
+	public int countExceptionsOfPlayer(int player){
+		int count = 0;
+		for (ExceptionListEntry entry : exceptions){
+			if(entry.playerIndex == player) count++;
+		}
+		return count;
+	}
 }
