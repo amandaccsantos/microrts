@@ -42,6 +42,7 @@ import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.agent.SGAgent;
 import burlap.mdp.stochasticgames.world.World;
 import rl.adapters.learners.PersistentLearner;
+import rl.exceptions.JAMExceptionLogger;
 import rl.models.common.MicroRTSState;
 
 /**
@@ -285,9 +286,13 @@ public class RestartableRLExp extends RLExperiment{
 				Element names = doc_writer.createElement("agent_" + num);
 				rootElement.appendChild(names);
 			
-				Attr attribute_dur = doc_writer.createAttribute("name");  
-				attribute_dur.setValue(agent.agentName());  
-				names.setAttributeNode(attribute_dur);
+				names.setAttribute("name", agent.agentName());
+				
+				// ""+int to perform a conversion to String
+				names.setAttribute(
+					"exceptions", ""+JAMExceptionLogger.getInstance().countExceptionsOfPlayer(num)
+				);
+				
 				num++;				
 			}
 			
