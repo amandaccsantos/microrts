@@ -5,21 +5,17 @@ import java.io.StringWriter;
 
 public class ExceptionListEntry {
 	public int playerIndex;
-	public String playerName;
-	
 	public String extraInfo;
 	public Exception exception;
 	
 	/**
 	 * 
 	 * @param playerIndex
-	 * @param playerName
 	 * @param e
 	 * @param extraInfo
 	 */
-	public ExceptionListEntry(int playerIndex, String playerName, Exception e, String extraInfo){
+	public ExceptionListEntry(int playerIndex, Exception e, String extraInfo){
 		this.playerIndex = playerIndex;
-		this.playerName = playerName;
 		this.extraInfo = (extraInfo == "" || extraInfo == null) ? "nothing" : extraInfo;
 		this.exception = e;
 	}
@@ -30,8 +26,8 @@ public class ExceptionListEntry {
 		exception.printStackTrace(new PrintWriter(errors));
 		
 		return String.format(
-			"Player: %d (%s)\nAdditional Info: %s\nStack trace: %s", 
-			playerIndex, playerName, extraInfo, errors.toString()
+			"Player: %d\nAdditional Info: %s\nStack trace: %s", 
+			playerIndex, extraInfo, errors.toString()
 		);
 	}
 }

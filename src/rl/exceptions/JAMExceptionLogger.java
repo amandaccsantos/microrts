@@ -22,7 +22,7 @@ public class JAMExceptionLogger {
 	 * Returns the singleton instance of this class
 	 * @return
 	 */
-	public JAMExceptionLogger getInstance(){
+	public static JAMExceptionLogger getInstance(){
 		if(instance == null){
 			instance = new JAMExceptionLogger();
 		}
@@ -33,12 +33,11 @@ public class JAMExceptionLogger {
 	 * Adds an exception to the list
 	 * @param e
 	 * @param playerIndex
-	 * @param playerName
 	 * @param extraInfo
 	 */
-	public void registerException(Exception e, int playerIndex, String playerName, String extraInfo){
+	public void registerException(Exception e, int playerIndex, String extraInfo){
 		exceptions.add(
-			new ExceptionListEntry(playerIndex, playerName, e, extraInfo)
+			new ExceptionListEntry(playerIndex, e, extraInfo)
 		);
 	}
 }
