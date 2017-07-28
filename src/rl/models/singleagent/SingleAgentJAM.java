@@ -8,6 +8,7 @@ import burlap.mdp.stochasticgames.JointAction;
 import burlap.mdp.stochasticgames.model.JointModel;
 import rl.RLParamNames;
 import rl.RLParameters;
+import rl.exceptions.JAMExceptionLogger;
 import rl.models.aggregatediff.AggregateDiffState;
 import rl.models.stages.GameStages;
 import rts.GameState;
@@ -35,33 +36,47 @@ public class SingleAgentJAM implements JointModel {
 		boolean gameOver = false;
 		boolean changedStage = false;	//stores whether game has moved to a different AggregateDiffState
 		
+		// the AIs selected by both players
+		AI playerAIs[] = new AI[2];
+		
+		
 		// instantiates the AI that player 1 selected (clones the object)
-		AI ai1 = actions.get(ja.action(0).actionName()).clone();
+		playerAIs[0] = actions.get(ja.action(0).actionName()).clone();
 		
 		// second AI is fixed: our 'embedded' opponent
-		AI ai2 = opponent.clone(); //actions.get(ja.action(1).actionName()).clone();
+		playerAIs[1] = opponent.clone(); //actions.get(ja.action(1).actionName()).clone();
 
 		// advance game until next state is reached or game finishes
 		do {
-			PlayerAction pa1 = new PlayerAction(), pa2 = new PlayerAction();
-			try {
-				pa1 = ai1.getAction(0, gameState);
-				pa2 = ai2.getAction(1, gameState);
+			//for each player...
+			for(int i = 0; i < playerAIs.length; i++){
+				// ... gets its active AI
+				AI ai = playerAIs[i];
 				
-			} catch (Exception e) {
-				System.err.println("An error happened when getting action for a player :(");
-				e.printStackTrace();
+				// ... then attempts to retrieve the actual microRTS action
+				PlayerAction action = new PlayerAction();	//constructs one by default
+				
+				try {
+					action = ai.getAction(i, gameState);
+				} catch (Exception e) {
+					System.err.println("Exception caught when getting action for player " + i);
+					
+					// registers the exception
+					JAMExceptionLogger.getInstance().registerException(
+						e, i, "frame: " + gameState.getTime()
+					);
+				}
+				
+				// ... finally issues the action
+				gameState.issueSafe(action);
 			}
 			
-			gameState.issueSafe(pa1);
-			gameState.issueSafe(pa2);
-
-			// simulate:
+			// actions issued, simulate:
 			gameOver = gameState.cycle();
 			
 			//checks whether any state variable has changed
 			changedStage = ! currentState.equals(new AggregateDiffState(gameState)); 
-			//System.out.print("\rFrame: " + gameState.getTime());
+			System.out.print("\rFrame: " + gameState.getTime());
 		} while (!gameOver && !changedStage && gameState.getTime() < maxCycles);
 		
 		//returns the new State associated with current underlying game state
