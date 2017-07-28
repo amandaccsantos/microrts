@@ -59,7 +59,12 @@ public class SingleAgentJAM implements JointModel {
 				try {
 					action = ai.getAction(i, gameState);
 				} catch (Exception e) {
-					System.err.println("Exception caught when getting action for player " + i);
+					System.err.println(
+						String.format(
+							"Frame: %d, Exception caught when getting action for player %d",
+							gameState.getTime(), i
+						)
+					);
 					
 					// registers the exception
 					JAMExceptionLogger.getInstance().registerException(
@@ -68,6 +73,7 @@ public class SingleAgentJAM implements JointModel {
 				}
 				
 				// ... finally issues the action
+				// if an exception occurs, the 'empty' action is issued
 				gameState.issueSafe(action);
 			}
 			
