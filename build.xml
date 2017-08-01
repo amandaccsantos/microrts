@@ -17,6 +17,7 @@
         <pathelement location="lib/SCPSolver.jar"/>
         <pathelement location="lib/LPSOLVESolverPack.jar"/>
         <pathelement location="lib/commons-cli-1.4.jar"/>
+        <pathelement location="lib/xstream-1.4.10.jar"/>
     </path>
     <target name="init">
         <mkdir dir="bin"/>
@@ -53,16 +54,121 @@
         <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
         <antcall target="build"/>
     </target>
+    <target name="CompareEpisodesTest.testListCompareWithListOfArrays">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="tests.rl.validate.CompareEpisodesTest" todir="${junit.output.dir}"/>
+            <jvmarg line="-ea"/>
+            <classpath refid="microrts_amanda.classpath"/>
+        </junit>
+    </target>
     <target name="RLExperiment">
         <java classname="rl.RLExperiment" failonerror="true" fork="yes">
-            <arg line="${file_prompt}"/>
+            <arg line="-c ${file_prompt}"/>
             <classpath refid="microrts_amanda.classpath"/>
         </java>
+    </target>
+    <target name="CompareEpisodesTest">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="tests.rl.validate.CompareEpisodesTest" todir="${junit.output.dir}"/>
+            <jvmarg line="-ea"/>
+            <classpath refid="microrts_amanda.classpath"/>
+        </junit>
+    </target>
+    <target name="SGQLearningAdapterTest.testSaveKnowledgeWithStagesModel">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="tests.rl.adapters.learners.SGQLearningAdapterTest" todir="${junit.output.dir}"/>
+            <jvmarg line="-ea"/>
+            <classpath refid="microrts_amanda.classpath"/>
+        </junit>
+    </target>
+    <target name="TestSimpleWeightedFeatures">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="tests.rl.models.common.TestSimpleWeightedFeatures" todir="${junit.output.dir}"/>
+            <jvmarg line="-ea"/>
+            <classpath refid="microrts_amanda.classpath"/>
+        </junit>
+    </target>
+    <target name="SingleStateDomainTest">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="tests.rl.models.singlestate.SingleStateDomainTest" todir="${junit.output.dir}"/>
+            <jvmarg line="-ea"/>
+            <classpath refid="microrts_amanda.classpath"/>
+        </junit>
+    </target>
+    <target name="CompareEpisodes">
+        <java classname="rl.validate.CompareEpisodes" failonerror="true" fork="yes">
+            <arg line="${folder_prompt}"/>
+            <classpath refid="microrts_amanda.classpath"/>
+        </java>
+    </target>
+    <target name="SingleStateTest">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="tests.rl.models.singlestate.SingleStateTest" todir="${junit.output.dir}"/>
+            <jvmarg line="-ea"/>
+            <classpath refid="microrts_amanda.classpath"/>
+        </junit>
+    </target>
+    <target name="SingleStateJAMTest">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="tests.rl.models.singlestate.SingleStateJAMTest" todir="${junit.output.dir}"/>
+            <jvmarg line="-ea"/>
+            <classpath refid="microrts_amanda.classpath"/>
+        </junit>
+    </target>
+    <target name="StagesJAMTest">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="tests.rl.models.stages.StagesJAMTest" todir="${junit.output.dir}"/>
+            <jvmarg line="-ea"/>
+            <classpath refid="microrts_amanda.classpath"/>
+        </junit>
+    </target>
+    <target name="TestAggregateDiffDomain">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="tests.rl.models.aggregatediff.TestAggregateDiffDomain" todir="${junit.output.dir}"/>
+            <jvmarg line="-ea"/>
+            <classpath refid="microrts_amanda.classpath"/>
+        </junit>
+    </target>
+    <target name="RLParametersTest.testSpecialLearningRates">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="tests.rl.RLParametersTest" todir="${junit.output.dir}"/>
+            <jvmarg line="-ea"/>
+            <classpath refid="microrts_amanda.classpath"/>
+        </junit>
     </target>
     <target name="MetaGameLearningExample">
         <java classname="tests.MetaGameLearningExample" failonerror="true" fork="yes">
             <classpath refid="microrts_amanda.classpath"/>
         </java>
+    </target>
+    <target name="SingleAgentJAMTest">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="tests.rl.models.singleagent.SingleAgentJAMTest" todir="${junit.output.dir}"/>
+            <jvmarg line="-ea"/>
+            <classpath refid="microrts_amanda.classpath"/>
+        </junit>
     </target>
     <target name="MetaBotTest">
         <java classname="tests.MetaBotTest" failonerror="true" fork="yes">
@@ -87,16 +193,143 @@
             <classpath refid="microrts_amanda.classpath"/>
         </junit>
     </target>
+    <target name="TestAggregateDiffState">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="tests.rl.models.aggregatediff.TestAggregateDiffState" todir="${junit.output.dir}"/>
+            <jvmarg line="-ea"/>
+            <classpath refid="microrts_amanda.classpath"/>
+        </junit>
+    </target>
+    <target name="SingleStateJAMTest.testSampleUntilTimeout">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="tests.rl.models.singlestate.SingleStateJAMTest" todir="${junit.output.dir}"/>
+            <jvmarg line="-ea"/>
+            <classpath refid="microrts_amanda.classpath"/>
+        </junit>
+    </target>
+    <target name="CompareEpisodesTest.tearDown">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="tests.rl.validate.CompareEpisodesTest" todir="${junit.output.dir}"/>
+            <jvmarg line="-ea"/>
+            <classpath refid="microrts_amanda.classpath"/>
+        </junit>
+    </target>
+    <target name="AllTests">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="tests.rl.AllTests" todir="${junit.output.dir}"/>
+            <jvmarg line="-ea"/>
+            <classpath refid="microrts_amanda.classpath"/>
+        </junit>
+    </target>
+    <target name="TestBackwardInduction">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="tests.rl.planners.TestBackwardInduction" todir="${junit.output.dir}"/>
+            <jvmarg line="-ea"/>
+            <classpath refid="microrts_amanda.classpath"/>
+        </junit>
+    </target>
+    <target name="SGQLearningAdapterTest.testLoadKnowledgeWithAggregateDiffModel">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="tests.rl.adapters.learners.SGQLearningAdapterTest" todir="${junit.output.dir}"/>
+            <jvmarg line="-ea"/>
+            <classpath refid="microrts_amanda.classpath"/>
+        </junit>
+    </target>
     <target name="RandomSwitch">
         <java classname="tests.RandomSwitch" failonerror="true" fork="yes">
             <classpath refid="microrts_amanda.classpath"/>
         </java>
+    </target>
+    <target name="FrontEnd (1)">
+        <java classname="gui.frontend.FrontEnd" failonerror="true" fork="yes">
+            <classpath refid="microrts_amanda.classpath"/>
+        </java>
+    </target>
+    <target name="TestAggregateDomain">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="tests.rl.models.aggregate.TestAggregateDomain" todir="${junit.output.dir}"/>
+            <jvmarg line="-ea"/>
+            <classpath refid="microrts_amanda.classpath"/>
+        </junit>
+    </target>
+    <target name="SGQLearningAdapterTest.testLoadKnowledgeWithStagesModel">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="tests.rl.adapters.learners.SGQLearningAdapterTest" todir="${junit.output.dir}"/>
+            <jvmarg line="-ea"/>
+            <classpath refid="microrts_amanda.classpath"/>
+        </junit>
+    </target>
+    <target name="SingleAgentDomainTest">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="tests.rl.models.singleagent.SingleAgentDomainTest" todir="${junit.output.dir}"/>
+            <jvmarg line="-ea"/>
+            <classpath refid="microrts_amanda.classpath"/>
+        </junit>
     </target>
     <target name="PersistentMultiAgentQLearningTest">
         <mkdir dir="${junit.output.dir}"/>
         <junit fork="yes" printsummary="withOutAndErr">
             <formatter type="xml"/>
             <test name="tests.rl.adapters.learners.PersistentMultiAgentQLearningTest" todir="${junit.output.dir}"/>
+            <jvmarg line="-ea"/>
+            <classpath refid="microrts_amanda.classpath"/>
+        </junit>
+    </target>
+    <target name="AggregateDiffStateJAMTest">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="tests.rl.models.aggregatediff.AggregateDiffStateJAMTest" todir="${junit.output.dir}"/>
+            <jvmarg line="-ea"/>
+            <classpath refid="microrts_amanda.classpath"/>
+        </junit>
+    </target>
+    <target name="TestSimpleWeightedFeaturesTerminal">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="tests.rl.models.common.TestSimpleWeightedFeaturesTerminal" todir="${junit.output.dir}"/>
+            <jvmarg line="-ea"/>
+            <classpath refid="microrts_amanda.classpath"/>
+        </junit>
+    </target>
+    <target name="StagesJAMTest.testSampleUntilTimeout">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="tests.rl.models.stages.StagesJAMTest" todir="${junit.output.dir}"/>
+            <jvmarg line="-ea"/>
+            <classpath refid="microrts_amanda.classpath"/>
+        </junit>
+    </target>
+    <target name="BackwardInduction">
+        <java classname="rl.planners.BackwardInduction" failonerror="true" fork="yes">
+            <classpath refid="microrts_amanda.classpath"/>
+        </java>
+    </target>
+    <target name="CompareEpisodesTest.testListCompare">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="tests.rl.validate.CompareEpisodesTest" todir="${junit.output.dir}"/>
             <jvmarg line="-ea"/>
             <classpath refid="microrts_amanda.classpath"/>
         </junit>
@@ -119,19 +352,34 @@
         <mkdir dir="${junit.output.dir}"/>
         <junit fork="yes" printsummary="withOutAndErr">
             <formatter type="xml"/>
-            <test name="tests.rl.models.simplecounting.AggregateJAMTest" todir="${junit.output.dir}"/>
+            <test name="tests.rl.models.aggregate.AggregateJAMTest" todir="${junit.output.dir}"/>
             <jvmarg line="-ea"/>
             <classpath refid="microrts_amanda.classpath"/>
         </junit>
     </target>
-    <target name="AllTests">
+    <target name="SGQLearningAdapterTest.testLoadKnowledgeWithAggregateModel">
         <mkdir dir="${junit.output.dir}"/>
         <junit fork="yes" printsummary="withOutAndErr">
             <formatter type="xml"/>
-            <test name="tests.rl.AllTests" todir="${junit.output.dir}"/>
+            <test name="tests.rl.adapters.learners.SGQLearningAdapterTest" todir="${junit.output.dir}"/>
             <jvmarg line="-ea"/>
             <classpath refid="microrts_amanda.classpath"/>
         </junit>
+    </target>
+    <target name="tests.rl.models.stages">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="tests.rl.models.stages.GameStageTest" todir="${junit.output.dir}"/>
+            <test name="tests.rl.models.stages.StagesJAMTest" todir="${junit.output.dir}"/>
+            <jvmarg line="-ea"/>
+            <classpath refid="microrts_amanda.classpath"/>
+        </junit>
+    </target>
+    <target name="SingleStageNormalFormGame">
+        <java classname="burlap.domain.stochasticgames.normalform.SingleStageNormalFormGame" failonerror="true" fork="yes">
+            <classpath refid="microrts_amanda.classpath"/>
+        </java>
     </target>
     <target name="junitreport">
         <junitreport todir="${junit.output.dir}">
