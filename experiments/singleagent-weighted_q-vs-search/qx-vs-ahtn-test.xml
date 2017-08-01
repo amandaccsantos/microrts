@@ -1,4 +1,5 @@
-
+<!-- IF THIS FILE WAS USED IN AN EXPERIMENT, WE'D HAVE WRONG RESULTS
+THE SPECIFIED OPPONENT IS PuppetSearchABCD instead of AHTN -->
 <experiment>
 	<parameters>
 		<episodes value="100" />
