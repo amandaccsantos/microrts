@@ -73,7 +73,7 @@ public class SingleAgentJAM implements JointModel {
 				}
 				
 				// ... finally issues the action
-				// if an exception occurs, the 'empty' action is issued
+				// if an exception occured, the 'empty' action is issued
 				gameState.issueSafe(action);
 			}
 			
@@ -82,7 +82,7 @@ public class SingleAgentJAM implements JointModel {
 			
 			//checks whether any state variable has changed
 			changedStage = ! currentState.equals(new AggregateDiffState(gameState)); 
-			System.out.print("\rFrame: " + gameState.getTime());
+			//System.out.print("\rFrame: " + gameState.getTime());
 		} while (!gameOver && !changedStage && gameState.getTime() < maxCycles);
 		
 		//returns the new State associated with current underlying game state
