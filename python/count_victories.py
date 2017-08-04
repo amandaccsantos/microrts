@@ -5,11 +5,21 @@ import argparse
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Count the number of victories of our agent')
-    parser.add_argument('path', help='Path to directory to be analysed')
-    parser.add_argument('-n', '--num-reps', help='Number of repetitions', type=int, required=False, default=30)
-    parser.add_argument('-o', '--output', help='Save result to this file instead of showing on screen', required=False)
-    parser.add_argument('-i', '--initial-epi', help='', required=False, default=0)
-    parser.add_argument('-f', '--final-epi', help='', required=False)
+    parser.add_argument(
+        'dir',
+        help='List of directories to analyse, each one is treated as an experiment repetition',
+        nargs='+'
+    )
+    parser.add_argument(
+        '-o', '--output', required=False,
+        help='Save result to this file instead of showing on screen')
+    parser.add_argument(
+        '-i', '--initial-epi', required=False, default=0,
+        help='First episode to consider'
+    )
+    parser.add_argument(
+        '-f', '--final-epi', help='Last episode to consider', required=False
+    )
 
     args = vars(parser.parse_args())
 
@@ -18,17 +28,17 @@ if __name__ == '__main__':
     num_games = 0
     rep_num = 0
 
-    path = args['path']
-    num_reps = args['num_reps']
+    directories = args['dir']
+    num_reps = len(directories)
     output = args['output']
     initial_epi = args['initial_epi']
     final_epi = args['final_epi']
 
-    for rep_num in range(1, num_reps + 1):
-        rep_name = os.path.join(path, '%s%s' % ('rep', str(rep_num).zfill(2)))
+    for repetition in directories:
         if final_epi is None:
-            final_epi = len(glob.glob(os.path.join(rep_name, '*.game'))) - 1
-        for i, filename in enumerate(glob.glob(os.path.join(rep_name, '*.game'))):
+            final_epi = len(glob.glob(os.path.join(repetition, '*.game'))) - 1
+
+        for i, filename in enumerate(glob.glob(os.path.join(repetition, '*.game'))):
             name = filename.split('episode_')[1]
             name = int(name.split('.')[0])
             if initial_epi <= name <= final_epi:
@@ -47,8 +57,8 @@ if __name__ == '__main__':
                                 break
                 count += num
 
-    mean_games = num_games / rep_num
-    mean_victories = count / rep_num
+    mean_games = num_games / num_reps
+    mean_victories = count / num_reps
 
     if output is not None:
         output_file = open(output, 'w')
@@ -56,6 +66,6 @@ if __name__ == '__main__':
         output_file.write('Number of victories: ' + str(mean_victories) + '\n')
         output_file.write('Victory rate: ' + str("{:.0%}".format(mean_victories / mean_games)) + '\n')
 
-    print 'Number of games: ' + str(mean_games)
-    print 'Number of victories: ' + str(mean_victories)
-    print 'Victory rate: ' + str("{:.0%}".format(mean_victories / mean_games))
+    print('Number of games: %d' % mean_games)
+    print('Mean #victories: %f' % mean_victories)
+    print('%mean victories: {:.3%}'.format(mean_victories / mean_games))
