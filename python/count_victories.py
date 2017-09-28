@@ -20,6 +20,9 @@ if __name__ == '__main__':
     parser.add_argument(
         '-f', '--final-epi', help='Last episode to consider', required=False
     )
+    parser.add_argument(
+        '-v', '--verbose', help='Output additional info?', action='store_true'
+    )
 
     args = vars(parser.parse_args())
 
@@ -66,6 +69,10 @@ if __name__ == '__main__':
         output_file.write('Number of victories: ' + str(mean_victories) + '\n')
         output_file.write('Victory rate: ' + str("{:.0%}".format(mean_victories / mean_games)) + '\n')
 
-    print('Number of games: %d' % mean_games)
-    print('Mean #victories: %f' % mean_victories)
-    print('%mean victories: {:.3%}'.format(mean_victories / mean_games))
+    if args['verbose']:
+        print('Number of games: %d' % mean_games)
+        print('Mean #victories: %f' % mean_victories)
+        print('%mean victories: {:.3%}'.format(mean_victories / mean_games))
+        
+    else:
+        print('%f' % (mean_victories / mean_games))
