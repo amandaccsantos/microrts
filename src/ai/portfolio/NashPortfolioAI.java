@@ -71,8 +71,8 @@ public class NashPortfolioAI extends PortfolioAI {
 	 */
 	public AI getBestScriptSoFar() {
 		int n = strategies.length;
-        if (DEBUG>=1) {
-            System.out.println("PortfolioAI, game cycle: " + gs_to_start_from.getTime());
+        if (DEBUG > 0) {
+            System.out.println("NashPortfolioAI, game cycle: " + gs_to_start_from.getTime());
             System.out.println("  counts:");
             for(int i = 0;i<n;i++) {
                 System.out.print("    ");
@@ -135,11 +135,14 @@ public class NashPortfolioAI extends PortfolioAI {
 			String.format("{\"Player0\" \"Player1\"}{%d %d}\n", strategies.length, strategies.length)
 		);
 		
-		//fills Q values for the given state 
-		for(int i = 0; i < strategies.length; i++){
-			for(int j = 0; j < strategies.length; j++){
+		//fills Q values for the given state
+		//IMPORTANT: traverses the matrix col,row (opponent,me) instead of the usual row,col
+		//because of Gambit's NFG file format (rolls over player1's strategies, then player2)
+		//http://gambitproject.readthedocs.io/en/v15.1.1/formats.html#the-strategic-game-nfg-file-format-payoff-version
+		for(int opp = 0; opp < strategies.length; opp++){
+			for(int me = 0; me < strategies.length; me++){
 				
-				double myPayoff = scores[i][j] / counts[i][j];
+				double myPayoff = scores[me][opp] / counts[me][opp];
 				
 				// replaces NaN with zero to avoid empty output from Gambit
 				myPayoff = Double.isNaN(myPayoff) ? 0. : myPayoff;
@@ -157,10 +160,12 @@ public class NashPortfolioAI extends PortfolioAI {
 		// using gambit-lcp because it returns a single equilibrium
 		// 15-digit precision, hope numeric errors don't accumulate
 		Process gambit = Runtime.getRuntime().exec("gambit-lcp -d 15 -q " + fileForGambit);
+		gambit.waitFor();
+		
 		BufferedReader bri = new BufferedReader (new InputStreamReader(gambit.getInputStream()));
 		String result = bri.readLine();	//get the first equilibrium
 	    bri.close();
-		gambit.waitFor();
+		
 		
 		// resulting String is NE,prob1a,prob1b,...,prob2a,prob2b 
 		String[] parts = result.trim().split(",");
