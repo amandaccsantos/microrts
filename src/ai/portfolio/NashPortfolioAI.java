@@ -33,7 +33,7 @@ public class NashPortfolioAI extends PortfolioAI {
 	public NashPortfolioAI(AI[] s, boolean[] d, int time, int max_playouts, int la, EvaluationFunction e) {
 		super(s, d, time, max_playouts, la, e);
 		
-		DEBUG = 1;
+		DEBUG = 0;
 		
 		workingDir = "/tmp/nash_" + UUID.randomUUID().toString() + "/";
 		
