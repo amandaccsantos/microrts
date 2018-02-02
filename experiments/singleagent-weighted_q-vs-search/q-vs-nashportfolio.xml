@@ -17,7 +17,7 @@
 		<initial-q value="1" />
 	</player>
 
-	<player name='pgsai' type='Dummy'>
+	<player name='Nash' type='Dummy'>
 		<dummy-policy value="WorkerRush" /> <!-- does not matter -->
 	</player>
 

@@ -9,8 +9,13 @@ import java.io.InputStreamReader;
 import java.util.Locale;
 import java.util.UUID;
 
+import ai.abstraction.HeavyRush;
+import ai.abstraction.LightRush;
+import ai.abstraction.RangedRush;
+import ai.abstraction.WorkerRush;
 import ai.core.AI;
 import ai.evaluation.EvaluationFunction;
+import ai.evaluation.SimpleSqrtEvaluationFunction3;
 import rl.planners.BackwardInduction;
 import rts.PlayerAction;
 import rts.units.UnitTypeTable;
@@ -27,7 +32,17 @@ public class NashPortfolioAI extends PortfolioAI {
 	String workingDir;
 	
 	public NashPortfolioAI(UnitTypeTable utt){
-		super(utt);
+		this(
+			new AI[]{
+				new WorkerRush(utt),
+                new LightRush(utt),
+                new RangedRush(utt),
+                new HeavyRush(utt)
+            },
+			new boolean[]{true,true,true,true},
+			100, -1, 100,
+			new SimpleSqrtEvaluationFunction3()
+	    );
 	}
 
 	public NashPortfolioAI(AI[] s, boolean[] d, int time, int max_playouts, int la, EvaluationFunction e) {
