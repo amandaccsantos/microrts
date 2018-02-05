@@ -58,13 +58,15 @@ public class AILoader {
 		}
 		
 		else if (aiName.equalsIgnoreCase("Puppet") || 
-				aiName.equalsIgnoreCase("PuppetSearch") || 
+				aiName.equalsIgnoreCase("PuppetSearch") ||
+				aiName.equalsIgnoreCase("PuppetMCTS") || 
 				aiName.equalsIgnoreCase("PuppetSearchMCTS") ){
 			
 			toReturn = new PuppetSearchMCTS(utt);
 		}
 		
 		else if (aiName.equalsIgnoreCase("PuppetSearchAB")|| 
+				aiName.equalsIgnoreCase("PuppetAB")|| 
 				aiName.equalsIgnoreCase("PuppetSearchABCD")) { 
 			toReturn = new PuppetSearchAB(utt);
 		}
