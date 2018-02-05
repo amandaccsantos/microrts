@@ -9,7 +9,7 @@
 		<quiet-learning value="true" />
 	</parameters>
 
-	<player name="Nash" type="BackwardInduction">
+	<player name="BI" type="BackwardInduction">
 		<path-to-knowledge value="/tmp/solution.xml" /> <!-- make sure it exists or you'll be in trouble -->
 	</player>
 
