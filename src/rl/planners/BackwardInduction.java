@@ -281,6 +281,7 @@ public class BackwardInduction implements PersistentLearner {
 	 * @throws InterruptedException
 	 * 
 	 * TODO extract the part that formulates the NFG so that it can be reused
+	 * FIXME use the correct NFG file format (see {@link NashPortfolioAI})
 	 */
 	public Pair<double[], double[]>  getPoliciesFor(State s) throws IOException, InterruptedException{
 		
@@ -295,8 +296,10 @@ public class BackwardInduction implements PersistentLearner {
 		);
 		
 		//fills Q values for the given state 
-		for(ActionType a : type.actions){
-			for(ActionType o : type.actions){
+		// Fix: Player1 (opponent) actions must be in the outer loop, because
+		// Gambit requires Player0 (agent) actions to roll over first
+		for(ActionType o : type.actions){
+			for(ActionType a : type.actions){
 				JointAction ja = new JointAction();
 				ja.addAction(a.associatedAction(null));
 				ja.addAction(o.associatedAction(null));
@@ -582,7 +585,7 @@ public class BackwardInduction implements PersistentLearner {
 		
 		System.out.println("Saving...");
 		bi.saveKnowledge("/tmp/backward-induction.xml");
-		System.out.println("Done.");
+		System.out.println("Done. Saved knowledge in /tmp/backward-induction.xml.");
 		
 	}
 }
