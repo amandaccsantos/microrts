@@ -1,0 +1,24 @@
+
+<experiment>
+	<parameters>
+		<episodes value="100" />
+		<game-duration value="3000" /> 
+		<abstraction-model value="aggregatediff" />
+		<output-dir value="/tmp/results" />
+		<reward-function value="winloss" />
+		<quiet-learning value="true" />
+		<debug-level value="0" />
+	</parameters>
+
+	<player name="Ranged" type="Dummy">
+		<dummy-policy value="RangedRush" />
+	</player>
+
+	<player name='Nash-PAIA' type='NashPortfolioAIAdapter'>
+		<timeout value="5000" />
+		<playouts value="36" />
+		<lookahead value="200" />
+		<evaluation-function value="SimpleSqrtEvaluationFunction3" />
+	</player>
+
+</experiment>
