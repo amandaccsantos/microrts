@@ -1,0 +1,20 @@
+ <!-- Backward Induction vs itself! -->
+<experiment>
+	<parameters>
+		<episodes value="100" />
+		<game-duration value="3000" /> 
+		<abstraction-model value="aggregatediff" />
+		<output-dir value="/tmp/bi-vs-bi" />
+		<reward-function value="winloss" />
+		<quiet-learning value="true" />
+	</parameters>
+
+	<player name="BI1" type="BackwardInduction">
+		<path-to-knowledge value="/tmp/solution.xml" /> <!-- make sure it exists or you'll be in trouble -->
+	</player>
+
+	<player name="BI2" type="BackwardInduction">
+		<path-to-knowledge value="/tmp/solution.xml" /> <!-- make sure it exists or you'll be in trouble -->
+	</player>
+
+</experiment>

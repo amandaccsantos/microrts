@@ -297,7 +297,6 @@ public class BackwardInduction implements PersistentLearner {
 	 * @throws InterruptedException
 	 * 
 	 * TODO extract the part that formulates the NFG so that it can be reused
-	 * FIXME use the correct NFG file format (see {@link NashPortfolioAI})
 	 */
 	public Pair<double[], double[]>  getPoliciesFor(State s) throws IOException, InterruptedException{
 		
