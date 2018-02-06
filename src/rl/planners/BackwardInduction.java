@@ -137,6 +137,20 @@ public class BackwardInduction implements PersistentLearner {
 	}
 	
 	/**
+	 * Runs the backward induction algorithm across all states
+	 * (might take a lot of time and memory...)
+	 * @param s
+	 */
+	public void solveAll(){
+		List<? extends State> allStates = domain.enumerate();
+		
+		for(State s : allStates){
+			MicroRTSState state = (MicroRTSState) s;
+			solve(state);
+		}
+	}
+	
+	/**
 	 * Uses the backward induction algorithm to solve and return the
 	 * value of a state. Caches solved states so that they don't need
 	 * to be solved twice
@@ -579,11 +593,18 @@ public class BackwardInduction implements PersistentLearner {
 		
 		BackwardInduction bi = new BackwardInduction("test", domain, tf);
 		
-		System.out.println("Solving...");
-		bi.solve((MicroRTSState) domain.getInitialState());
-		System.out.println("\nSolved.");
+		if(args.length > 1 && args[1].equals("--all")){
+			System.out.println("Solving for all states! Might take a lot of time and memory...");
+			bi.solveAll();
+			System.out.println("\nSolved for all!.");
+		}
+		else {
+			System.out.println("Solving from initial state...");
+			bi.solve((MicroRTSState) domain.getInitialState());
+			System.out.println("\nSolved.");
+		}
 		
-		System.out.println("Saving...");
+		System.out.println("Saving knowledge...");
 		bi.saveKnowledge("/tmp/backward-induction.xml");
 		System.out.println("Done. Saved knowledge in /tmp/backward-induction.xml.");
 		
