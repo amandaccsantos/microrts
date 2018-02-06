@@ -139,6 +139,8 @@ public class BackwardInduction implements PersistentLearner {
 	/**
 	 * Runs the backward induction algorithm across all states
 	 * (might take a lot of time and memory...)
+	 * FIXME: does not work because it must have an associated 
+	 * underlying microRTS GameState
 	 * @param s
 	 */
 	public void solveAll(){
@@ -593,7 +595,9 @@ public class BackwardInduction implements PersistentLearner {
 		
 		BackwardInduction bi = new BackwardInduction("test", domain, tf);
 		
-		if(args.length > 1 && args[1].equals("--all")){
+		//System.out.println(args[0]);
+		
+		if(args.length > 0 && args[0].equals("--all")){
 			System.out.println("Solving for all states! Might take a lot of time and memory...");
 			bi.solveAll();
 			System.out.println("\nSolved for all!.");
