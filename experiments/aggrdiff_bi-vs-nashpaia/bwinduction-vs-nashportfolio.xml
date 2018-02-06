@@ -14,9 +14,9 @@
 	</player>
 
 	<player name='NashPAIA' type='NashPortfolioAIAdapter'>
-		<timeout value="50" />
-		<playouts value="150" />
-		<lookahead value="1000" />
+		<timeout value="5000" />
+		<playouts value="36" />
+		<lookahead value="200" />
 		<evaluation-function value="SimpleSqrtEvaluationFunction3" />
 	</player>
 
