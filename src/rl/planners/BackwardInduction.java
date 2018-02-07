@@ -258,7 +258,7 @@ public class BackwardInduction implements PersistentLearner {
 						}
 						Q.get(s).put(ja, solve(next));		// recursive call
 					} catch (NullPointerException e) {
-						System.out.println("NPE in state " + s);
+						System.err.println("NullPointerException in state " + s);
 						e.printStackTrace();
 						System.exit(0);
 					}
@@ -374,7 +374,7 @@ public class BackwardInduction implements PersistentLearner {
 	}
 	
 	/**
-	 * Solves the game for a state and returns the equilibrium policy
+	 * Calculates the equilibrium of state and returns the policy
 	 * @param s
 	 * @return
 	 * @throws IOException
@@ -469,7 +469,7 @@ public class BackwardInduction implements PersistentLearner {
 			);
 		}
 		else {
-			System.out.println("State is not cached, will solve for its' policy");
+			System.out.println("State is not cached, will solve for its' policy " + s);
 			Pair<double[], double[]> policies = null;
 			try {
 				policies = getPoliciesFor(s);
