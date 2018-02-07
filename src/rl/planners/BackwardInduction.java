@@ -568,9 +568,15 @@ public class BackwardInduction implements PersistentLearner {
 							"\t<ja name='%s' value='%f' pi_0='%f' pi_1='%f' />\n",
 							ja.actionName(),
 							Q.get(s).get(ja),
-							getPolicyFor(0).get(s).get(playerAction),
-							getPolicyFor(1).get(s).get(opponentAction)
+							getPolicyFor(0).get(s).get(playerAction.associatedAction(null)),
+							getPolicyFor(1).get(s).get(opponentAction.associatedAction(null))
 						));
+						
+						/*if (visited.contains(s)){
+							System.out.println("Saving " + s);
+							System.out.println("pi1: " + getPolicyFor(0).get(s));
+							System.out.println("pi2: " + getPolicyFor(1).get(s));
+						}*/
 						
 					}
 				}
