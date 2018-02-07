@@ -19,6 +19,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.jdom.JDOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -73,6 +74,17 @@ public class BackwardInduction implements PersistentLearner {
 	Map<MicroRTSState, Map<JointAction, Double>> Q;
 	
 	/**
+	 * Maps the state to a probability distribution over actions for the 1st player
+	 */
+	Map<MicroRTSState, Map<Action, Double>> p1Policy;
+
+	/**
+	 * Maps the state to a probability distribution over actions for the 2nd player
+	 */
+	Map<MicroRTSState, Map<Action, Double>> p2Policy;
+	
+	
+	/**
 	 * Stores which states were already visited
 	 */
 	Set<MicroRTSState> visited;
@@ -99,6 +111,8 @@ public class BackwardInduction implements PersistentLearner {
 		
 		V = new HashMap<>();
 		Q = new HashMap<>();
+		p1Policy = new HashMap<>();
+		p2Policy = new HashMap<>();
 		visited = new HashSet<>();
 		
 		this.domain = domain;
@@ -137,9 +151,39 @@ public class BackwardInduction implements PersistentLearner {
 	}
 	
 	/**
+	 * Returns the policy for player 1 or 2 depending on the received index
+	 * @param playerIndex if 0, returns policy for player 1, otherwise, returns player 2 policy
+	 * @return
+	 */
+	Map<MicroRTSState, Map<Action, Double>> getPolicyFor(int playerIndex){
+		return playerIndex == 0 ? p1Policy : p2Policy;
+	}
+	
+	/**
+	 * Returns the policy for a given state
+	 * @param s
+	 * @param playerIndex 0 or 1 indicating the first or second player
+	 * @return
+	 */
+	public Map<Action, Double> policy(State s, int playerIndex){
+		return getPolicyFor(playerIndex).get(s);
+	}
+	
+	/**
+	 * Returns the probability of selecting an action in a given state
+	 * @param s
+	 * @param a
+	 * @param playerIndex 0 or 1 indicating the first or second player
+	 * @return
+	 */
+	public double probability(State s, Action a, int playerIndex){
+		return getPolicyFor(playerIndex).get(s).get(a);
+	}
+	
+	/**
 	 * Runs the backward induction algorithm across all states
 	 * (might take a lot of time and memory...)
-	 * FIXME: does not work because it must have an associated 
+	 * FIXME: does not work because states must have an associated 
 	 * underlying microRTS GameState
 	 * @param s
 	 */
@@ -231,8 +275,20 @@ public class BackwardInduction implements PersistentLearner {
 			// creates an entry in Q for each state and joint action
 			Q.put(state, new HashMap<>());
 			
+			// creates an entry in policies for each state and action
+			p1Policy.put(state, new HashMap<>());
+			p2Policy.put(state, new HashMap<>());
+			
 			for(ActionType a : type.actions){
+				
+				// starts with equiprobable / fully random policy
+				p1Policy.get(state).put(a.associatedAction(null), 1. / type.actions.size());
+				
 				for(ActionType o : type.actions){
+					
+					// starts with equiprobable / fully random policy
+					p2Policy.get(state).put(o.associatedAction(null), 1. / type.actions.size());
+					
 					JointAction ja = new JointAction();
 					ja.addAction(a.associatedAction(null));
 					ja.addAction(o.associatedAction(null));
@@ -248,7 +304,9 @@ public class BackwardInduction implements PersistentLearner {
 	}
 	
 	/**
-	 * Solves the game for a state and returns its value
+	 * Solves the game for a state and returns its value.
+	 * As a side effect, updates players' policies for the given state.
+	 * It also updates the cached state value in V
 	 * @param s
 	 * @return
 	 */
@@ -262,6 +320,7 @@ public class BackwardInduction implements PersistentLearner {
 			System.exit(0);
 		}
 		
+		// arrays filled with policies calculated from gambit
 		double[] agentPolicy = policies.m_a;
 		double[] opponentPolicy = policies.m_b;
 		
@@ -269,7 +328,14 @@ public class BackwardInduction implements PersistentLearner {
 		int agentActionIndex = 0;
 		for(ActionType a : type.actions){
 			int opponentActionIndex = 0;
+			
+			// updates the probability for this state-action pair for player 1
+			p1Policy.get(s).put(a.associatedAction(null), agentPolicy[agentActionIndex]);
+			
 			for(ActionType o : type.actions){
+				// updates the prob. for this state-action pair for player 2
+				p2Policy.get(s).put(o.associatedAction(null), opponentPolicy[opponentActionIndex]);
+				
 				JointAction ja = new JointAction();
 				ja.addAction(a.associatedAction(null));
 				ja.addAction(o.associatedAction(null));
@@ -285,7 +351,7 @@ public class BackwardInduction implements PersistentLearner {
 			}
 			agentActionIndex++;
 		}
-		
+		V.put((MicroRTSState) s, stateValue);
 		return stateValue;
 	}
 	
@@ -375,20 +441,32 @@ public class BackwardInduction implements PersistentLearner {
 
 	@Override
 	public Action action(State s) {
-		Pair<double[], double[]> policies = null;
-		try {
-			policies = getPoliciesFor(s);
-		} catch (IOException | InterruptedException e) {
-			System.err.println("Error while getting action for state " + s);
-			e.printStackTrace();
-			return null;
+		
+		double [] policyArray = null;
+		if(visited.contains(s)){
+			//policy is cached! just convert to an array of doubles...
+			Map<MicroRTSState, Map<Action, Double>> thePolicy = getPolicyFor(agentNumber);
+			policyArray =  ArrayUtils.toPrimitive(
+				thePolicy.get(s).values().toArray(new Double[type.actions.size()])
+			);
+		}
+		else {
+			System.out.println("State is not cached, will solve for its' policy");
+			Pair<double[], double[]> policies = null;
+			try {
+				policies = getPoliciesFor(s);
+			} catch (IOException | InterruptedException e) {
+				System.err.println("Error while getting action for state " + s);
+				e.printStackTrace();
+				return null;
+			}
+			
+			// uses the policy of row or column player depending on my number
+			policyArray = agentNumber == 0 ? policies.m_a : policies.m_b;
 		}
 		
-		// uses the policy of row or column player depending on my number
-		double[] myPolicy = agentNumber == 0 ? policies.m_a : policies.m_b;
-		
-		// use myPolicy to perform a roulette selection
-		return rouletteSelection(myPolicy);
+		// use the policy array to perform a roulette selection
+		return rouletteSelection(policyArray);
 		
 	}
 	
@@ -411,7 +489,7 @@ public class BackwardInduction implements PersistentLearner {
 	    
 	    //for (gene g : genes) {
 	    for(int i = 0; i < probabilities.length; i++){
-	        if (rnd >= runningScore && rnd<=runningScore+ probabilities[i]){
+	        if (rnd >= runningScore && rnd <= runningScore+ probabilities[i]){
 	            //selected
 	        	return actionTypes.get(i).associatedAction(null);
 	        }
@@ -458,15 +536,22 @@ public class BackwardInduction implements PersistentLearner {
 			
 			// a friendly remark
 			fileWriter.write(
-				"<!-- Note: 'ja' stands for joint action\n"
+				"<!-- Note: "
+				+ "'ja' stands for joint action\n"
 				+ "Joint action name is agent0Action;agent1Action;... "
-				+ " always in this order -->\n\n"
+				+ " always in this order.\n\n"
+				+ "pi_0 stands for the policy of player 1 and likewise for pi_1. \n"
+				+ "This indicates the probability of selecting each action -->\n\n"
 			);
 			
 			for (State s : enumDomain.enumerate()) {
 				// opens state tag
 				fileWriter.write(
-					String.format(Locale.ROOT, "<state id='%s' value='%f'>\n", s, V.get(s))
+					String.format(
+						Locale.ROOT, 
+						"<state id='%s' value='%f' visited='%s'>\n", 
+						s, V.get(s), visited.contains(s)? "true" : "false"
+					)
 				); 
 				
 				for(ActionType playerAction : this.type.actions){
@@ -480,9 +565,11 @@ public class BackwardInduction implements PersistentLearner {
 						// always in this order
 						fileWriter.write(String.format(
 							Locale.ROOT,
-							"\t<ja name='%s' value='%f' />\n",
+							"\t<ja name='%s' value='%f' pi_0='%f' pi_1='%f' />\n",
 							ja.actionName(),
-							Q.get(s).get(ja)
+							Q.get(s).get(ja),
+							getPolicyFor(0).get(s).get(playerAction),
+							getPolicyFor(1).get(s).get(opponentAction)
 						));
 						
 					}
@@ -536,7 +623,7 @@ public class BackwardInduction implements PersistentLearner {
 				if(Integer.parseInt(e.getAttribute("id")) != agentNumber){
 					System.err.println(
 						"WARNING! Loading knowledge with agent with different ID. "
-						+ "I'll be probably loading a transposed reward matrix >:("
+						+ "I'll be probably loading a transposed reward matrix."
 					);
 				}
 			}
@@ -549,9 +636,22 @@ public class BackwardInduction implements PersistentLearner {
 				MicroRTSState state = (MicroRTSState) nameToState.get(stateID);
 				V.put(state, Double.parseDouble(e.getAttribute("value")));
 				
-				// checks if need to allocate Q
+				// checks whether the state was visited during game solving
+				String visitedAttr = e.getAttribute("visited");
+				if (visitedAttr.equalsIgnoreCase("true")){
+					visited.add(state);
+				}
+				
+				
+				// checks if need to allocate Q and the policies
 				if(! Q.containsKey(state)){
 					Q.put(state, new HashMap<>());
+				}
+				if(! p1Policy.containsKey(state)){
+					p1Policy.put(state, new HashMap<>());
+				}
+				if(! p2Policy.containsKey(state)){
+					p2Policy.put(state, new HashMap<>());
 				}
 				
 				//jaNode stands for joint action node
@@ -577,6 +677,13 @@ public class BackwardInduction implements PersistentLearner {
 					JointAction ja = new JointAction(components);
 					//JAQValue jaq = myQSource.getQValueFor(s, ja); 
 					Q.get(state).put(ja, Double.parseDouble(jaElement.getAttribute("value")));
+					
+					//retrieves the policies of the players
+					double pi_1 = Double.parseDouble(jaElement.getAttribute("pi_1")); 
+					double pi_2 = Double.parseDouble(jaElement.getAttribute("pi_2"));
+					
+					p1Policy.get(state).put(ja.action(0), pi_1);
+					p2Policy.get(state).put(ja.action(1), pi_2);
 				}
 			}
 		}
