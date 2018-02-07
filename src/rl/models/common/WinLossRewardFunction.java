@@ -9,7 +9,7 @@ public class WinLossRewardFunction implements JointRewardFunction {
 
 	@Override
 	/**
-	 * Reward is zero for draws and non-terminals; otherwise +1 for victory, -1 for defeat
+	 * Reward is zero for draws and non-terminals; otherwise 0 for draw; +1 for victory, -1 for defeat
 	 */
 	public double[] reward(State s, JointAction ja, State sp) {
 		MicroRTSState resultingState = (MicroRTSState) sp;
