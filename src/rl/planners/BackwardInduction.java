@@ -223,10 +223,10 @@ public class BackwardInduction implements PersistentLearner {
 				V.put(s, 0.);
 			}
 			else if (winner == 0){ // first player wins
-				V.put(s, 1.);
+				V.put(s, 1e6);
 			}
 			else { // second player wins
-				V.put(s, -1.); 
+				V.put(s, -1e6); 
 			}
 			
 			return V.get(s);
@@ -361,6 +361,7 @@ public class BackwardInduction implements PersistentLearner {
 			agentActionIndex++;
 		}
 		V.put((MicroRTSState) s, stateValue);
+		visited.add((MicroRTSState) s);
 		return stateValue;
 	}
 	
@@ -496,7 +497,6 @@ public class BackwardInduction implements PersistentLearner {
 
 	    List<ActionType> actionTypes = this.type.actions;
 	    
-	    //for (gene g : genes) {
 	    for(int i = 0; i < probabilities.length; i++){
 	        if (rnd >= runningScore && rnd <= runningScore+ probabilities[i]){
 	            //selected
