@@ -36,9 +36,11 @@ import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.mdp.stochasticgames.world.World;
 import rl.adapters.domain.EnumerableSGDomain;
 import rl.adapters.learners.PersistentLearner;
+import rl.models.aggregatediff.AggregateDiffState;
 import rl.models.aggregatediff.AggregateDifferencesDomain;
 import rl.models.common.MicroRTSState;
 import rl.models.common.MicroRTSTerminalFunction;
+import rl.models.stages.GameStages;
 import util.Pair;
 
 public class BackwardInduction implements PersistentLearner {
@@ -213,8 +215,13 @@ public class BackwardInduction implements PersistentLearner {
 	 * @return
 	 */
 	public double solve(MicroRTSState s){
+		//note: maybe only the NEXT state is a finished one...
 		
-		// for a terminal state, store its value and return it
+		/*if(((AggregateDiffState)s).getStage() == GameStages.FINISHED ){
+			System.out.println("Reached a FINISHED state!");
+		}*/
+		
+		// for a terminal state, store its value
 		if(terminalFunction.isTerminal(s)){
 			// 0 or 1 if a player wins, or -1 for draw
 			int winner = s.getUnderlyingState().winner();
@@ -229,7 +236,9 @@ public class BackwardInduction implements PersistentLearner {
 				V.put(s, -1e6); 
 			}
 			
-			return V.get(s);
+			// marks as visited
+			visited.add(s);
+			//return V.get(s);
 		}
 		
 		// finds the value of the state
@@ -256,14 +265,13 @@ public class BackwardInduction implements PersistentLearner {
 					
 				}
 			}
+			// sets the value and mark as visited
 			V.put(s, calculateValue(s)); 
 			visited.add(s);
-			
-			
 			System.out.print(String.format("\rClosed state number %7d", visited.size()));
 		}
 		
-		// s is solved, return its value
+		// value of s is determined and it is marked as visited. Return its value!
 		return V.get(s);
 	}
 	
