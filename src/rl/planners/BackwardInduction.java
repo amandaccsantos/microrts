@@ -155,7 +155,7 @@ public class BackwardInduction implements PersistentLearner {
 	 * @param playerIndex if 0, returns policy for player 1, otherwise, returns player 2 policy
 	 * @return
 	 */
-	Map<MicroRTSState, Map<Action, Double>> getPolicyFor(int playerIndex){
+	public Map<MicroRTSState, Map<Action, Double>> getPolicyFor(int playerIndex){
 		return playerIndex == 0 ? p1Policy : p2Policy;
 	}
 	
@@ -167,6 +167,15 @@ public class BackwardInduction implements PersistentLearner {
 	 */
 	public Map<Action, Double> policy(State s, int playerIndex){
 		return getPolicyFor(playerIndex).get(s);
+	}
+	
+	/**
+	 * Returns whether a state was cached / solved during solving via backward induction
+	 * @param s
+	 * @return
+	 */
+	public boolean cached(State s){
+		return visited.contains(s);
 	}
 	
 	/**
@@ -660,6 +669,8 @@ public class BackwardInduction implements PersistentLearner {
 					p2Policy.put(state, new HashMap<>());
 				}
 				
+				//System.out.println("State: " + state);
+				
 				//jaNode stands for joint action node
 				for(Node jaNode = n.getFirstChild(); jaNode != null; jaNode = jaNode.getNextSibling()){
 					
@@ -688,8 +699,12 @@ public class BackwardInduction implements PersistentLearner {
 					double pi_1 = Double.parseDouble(jaElement.getAttribute("pi_1")); 
 					double pi_2 = Double.parseDouble(jaElement.getAttribute("pi_2"));
 					
+					//System.out.println("Putting " + pi_1 + " into " + ja.action(0));
+					
 					p1Policy.get(state).put(ja.action(0), pi_1);
 					p2Policy.get(state).put(ja.action(1), pi_2);
+					
+					//System.out.println("Put " + p1Policy.get(state).get(ja.action(0)) + " into " + ja.action(0) );
 				}
 			}
 		}

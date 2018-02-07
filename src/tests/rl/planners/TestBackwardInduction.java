@@ -53,25 +53,41 @@ public class TestBackwardInduction {
 		
 		state = AggregateDiffState.fromString("OPENING;BEHIND;BEHIND;BEHIND;BEHIND;BEHIND;BEHIND;BEHIND");
 		assertEquals(0., agent.value(state), 0.00001);
+		assertEquals(false, agent.cached(state));
 		ja = constructJointAction("LightRush", "LightRush");
 		assertEquals(0.01, agent.value(state, ja), 0.00001);
+		//System.out.println(agent.getPolicyFor(0).get(state));
+		assertEquals(0.3, agent.getPolicyFor(0).get(state).get(ja.action(0)), 0.00001);
+		assertEquals(0.6, agent.getPolicyFor(1).get(state).get(ja.action(1)), 0.00001);
 		
 		ja = constructJointAction("LightRush", "WorkerRush");
 		assertEquals(0.7, agent.value(state, ja), 0.00001);
+		assertEquals(0.3, agent.getPolicyFor(0).get(state).get(ja.action(0)), 0.00001);
+		assertEquals(0.1666, agent.getPolicyFor(1).get(state).get(ja.action(1)), 0.00001);
 		
 		ja = constructJointAction("HeavyRush", "WorkerRush");
 		assertEquals(0., agent.value(state, ja), 0.00001);
+		assertEquals(0.1666, agent.getPolicyFor(0).get(state).get(ja.action(0)), 0.00001);
+		assertEquals(0.1666, agent.getPolicyFor(1).get(state).get(ja.action(1)), 0.00001);
 		
 		state = AggregateDiffState.fromString("MID;EVEN;EVEN;BEHIND;EVEN;EVEN;EVEN;AHEAD");
 		assertEquals(1., agent.value(state), 0.00001);
+		assertEquals(true, agent.cached(state));
+		
 		ja = constructJointAction("LightRush", "LightRush");
 		assertEquals(1., agent.value(state, ja), 0.00001);
+		assertEquals(0.1666, agent.getPolicyFor(0).get(state).get(ja.action(0)), 0.00001);
+		assertEquals(0.1666, agent.getPolicyFor(1).get(state).get(ja.action(1)), 0.00001);
 		
 		ja = constructJointAction("LightRush", "Expand");
 		assertEquals(-1., agent.value(state, ja), 0.00001);
+		assertEquals(0.1666, agent.getPolicyFor(0).get(state).get(ja.action(0)), 0.00001);
+		assertEquals(0.1666, agent.getPolicyFor(1).get(state).get(ja.action(1)), 0.00001);
 		
 		ja = constructJointAction("BuildBarracks", "WorkerRush");
 		assertEquals(-1., agent.value(state, ja), 0.00001);
+		assertEquals(0.1666, agent.getPolicyFor(0).get(state).get(ja.action(0)), 0.00001);
+		assertEquals(0.1666, agent.getPolicyFor(1).get(state).get(ja.action(1)), 0.00001);
 		
 	}
 	
