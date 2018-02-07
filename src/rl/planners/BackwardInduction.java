@@ -574,7 +574,7 @@ public class BackwardInduction implements PersistentLearner {
 						// always in this order
 						fileWriter.write(String.format(
 							Locale.ROOT,
-							"\t<ja name='%s' value='%f' pi_0='%f' pi_1='%f' />\n",
+							"\t<ja name='%s' value='%f' pi_1='%f' pi_2='%f' />\n",
 							ja.actionName(),
 							Q.get(s).get(ja),
 							getPolicyFor(0).get(s).get(playerAction.associatedAction(null)),
