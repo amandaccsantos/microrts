@@ -547,7 +547,12 @@ public class BackwardInduction implements PersistentLearner {
 		// checks if the transition I knew is the same that happened
 		// (it can be different if the underlying state on the abstract states is different)
 		if(T.containsKey(s)){
-			if(!T.get(s).get(jointAction).equals(sprime)){
+			if(!T.get(s).containsKey(jointAction)){
+				System.out.println("I don't have a transition for " + s + " and " + jointAction);
+				System.out.println("This is  " + sprime);
+				
+			}
+			else if(!T.get(s).get(jointAction).equals(sprime)){
 				System.out.println("I had a different transition for " + s + " and " + jointAction);
 				System.out.println("Mine was " + T.get(s).get(jointAction));
 				System.out.println("This is  " + sprime);
