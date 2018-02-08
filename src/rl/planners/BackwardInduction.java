@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -237,6 +236,11 @@ public class BackwardInduction implements PersistentLearner {
 	 * Uses the backward induction algorithm to solve and return the
 	 * value of a state. Caches solved states so that they don't need
 	 * to be solved twice
+	 * 
+	 * This method is only approximate: we assume deterministic and markovian 
+	 * transitions, but neither of these are satisfied in microRTS: the next abstract
+	 * state depends on the whole sequence of actions taken previously (because 
+	 * different raw states map to the same abstract one).
 	 * @param s
 	 * @return
 	 */
@@ -495,29 +499,27 @@ public class BackwardInduction implements PersistentLearner {
 	public Action action(State s) {
 		
 		double [] policyArray = null;
-		if(!visited.contains(s)){
-			System.out.println("State is not cached, will solve for its' policy " + s);
-			/*Pair<double[], double[]> policies = null;
+		if(visited.contains(s)){
+			//policy is cached! just convert to an array of doubles...
+			Map<MicroRTSState, Map<Action, Double>> thePolicy = getPolicyFor(agentNumber);
+			policyArray =  ArrayUtils.toPrimitive(
+				thePolicy.get(s).values().toArray(new Double[type.actions.size()])
+			);
+		}
+		else {
+			//System.out.println("State is not cached, will solve for its' policy " + s);
+			Pair<double[], double[]> policies = null;
 			try {
 				policies = getPoliciesFor(s);
 			} catch (IOException | InterruptedException e) {
 				System.err.println("Error while getting action for state " + s);
 				e.printStackTrace();
 				return null;
-			}*/
-			solve((MicroRTSState) s);
+			}
 			
 			// uses the policy of row or column player depending on my number
-			//policyArray = agentNumber == 0 ? policies.m_a : policies.m_b;
-			
+			policyArray = agentNumber == 0 ? policies.m_a : policies.m_b;
 		}
-		
-		//policy is cached! just convert to an array of doubles...
-		Map<MicroRTSState, Map<Action, Double>> thePolicy = getPolicyFor(agentNumber);
-		policyArray =  ArrayUtils.toPrimitive(
-			thePolicy.get(s).values().toArray(new Double[type.actions.size()])
-		);
-		
 		
 		// use the policy array to perform a roulette selection
 		return rouletteSelection(policyArray);
@@ -558,8 +560,8 @@ public class BackwardInduction implements PersistentLearner {
 			boolean isTerminal) {
 		// checks if the transition I knew is the same that happened
 		// (it can be different if the underlying state on the abstract states is different)
-		// disabled because we don't load the learned transitions to play a game
-		if(T.containsKey(s)){
+		// disabled to become less verbose
+		/*if(T.containsKey(s)){
 			if(!T.get(s).containsKey(jointAction)){
 				System.out.println("I don't have a transition for " + s + " and " + jointAction);
 				System.out.println("This is  " + sprime);
@@ -570,7 +572,7 @@ public class BackwardInduction implements PersistentLearner {
 				System.out.println("Mine was " + T.get(s).get(jointAction));
 				System.out.println("This is  " + sprime);
 			}
-		}
+		}*/
 	}
 
 	@Override
