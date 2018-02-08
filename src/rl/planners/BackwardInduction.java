@@ -3,9 +3,14 @@ package rl.planners;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,6 +32,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+
+import com.thoughtworks.xstream.XStream;
 
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.action.Action;
@@ -256,6 +263,7 @@ public class BackwardInduction implements PersistentLearner {
 		
 		// finds the value of the state
 		if(! visited.contains(s)){
+			long start = System.currentTimeMillis();
 			//System.out.print("\rEntering " + s +"     ");
 			for(ActionType a : type.actions){
 				for(ActionType o : type.actions){
@@ -285,6 +293,8 @@ public class BackwardInduction implements PersistentLearner {
 					}
 					
 				}
+				long finish = System.currentTimeMillis();
+				System.out.println("Took " + (finish - start) + " ms to solve " + s);
 			}
 			// sets the value and mark as visited
 			V.put(s, calculateValue(s)); 
@@ -485,27 +495,29 @@ public class BackwardInduction implements PersistentLearner {
 	public Action action(State s) {
 		
 		double [] policyArray = null;
-		if(visited.contains(s)){
-			//policy is cached! just convert to an array of doubles...
-			Map<MicroRTSState, Map<Action, Double>> thePolicy = getPolicyFor(agentNumber);
-			policyArray =  ArrayUtils.toPrimitive(
-				thePolicy.get(s).values().toArray(new Double[type.actions.size()])
-			);
-		}
-		else {
+		if(!visited.contains(s)){
 			System.out.println("State is not cached, will solve for its' policy " + s);
-			Pair<double[], double[]> policies = null;
+			/*Pair<double[], double[]> policies = null;
 			try {
 				policies = getPoliciesFor(s);
 			} catch (IOException | InterruptedException e) {
 				System.err.println("Error while getting action for state " + s);
 				e.printStackTrace();
 				return null;
-			}
+			}*/
+			solve((MicroRTSState) s);
 			
 			// uses the policy of row or column player depending on my number
-			policyArray = agentNumber == 0 ? policies.m_a : policies.m_b;
+			//policyArray = agentNumber == 0 ? policies.m_a : policies.m_b;
+			
 		}
+		
+		//policy is cached! just convert to an array of doubles...
+		Map<MicroRTSState, Map<Action, Double>> thePolicy = getPolicyFor(agentNumber);
+		policyArray =  ArrayUtils.toPrimitive(
+			thePolicy.get(s).values().toArray(new Double[type.actions.size()])
+		);
+		
 		
 		// use the policy array to perform a roulette selection
 		return rouletteSelection(policyArray);
@@ -546,6 +558,7 @@ public class BackwardInduction implements PersistentLearner {
 			boolean isTerminal) {
 		// checks if the transition I knew is the same that happened
 		// (it can be different if the underlying state on the abstract states is different)
+		// disabled because we don't load the learned transitions to play a game
 		if(T.containsKey(s)){
 			if(!T.get(s).containsKey(jointAction)){
 				System.out.println("I don't have a transition for " + s + " and " + jointAction);
@@ -753,6 +766,9 @@ public class BackwardInduction implements PersistentLearner {
 				}
 			}
 		}
+		// TODO: this should be temporary, to test whether solving via BI covers all metagame states:
+		System.out.println("Loading transitions...");
+		loadTransitions("/tmp/transitions.xml");
 	}
 	
 	/**
@@ -783,7 +799,7 @@ public class BackwardInduction implements PersistentLearner {
 	 * @param path
 	 */
 	public void dumpTransitions(String path){
-		BufferedWriter fileWriter;
+		/*BufferedWriter fileWriter;
 		try {
 			fileWriter = new BufferedWriter(new FileWriter(path));
 			String lineSeparated = T.entrySet().stream()
@@ -797,6 +813,31 @@ public class BackwardInduction implements PersistentLearner {
 			System.err.println("ERROR: Unable to dump learned transitions to " + path);
 			e.printStackTrace();
 			return;
+		}*/
+		try {
+			XStream xs = new XStream(); 
+			ObjectOutputStream oos = new ObjectOutputStream( 
+				new FileOutputStream(path,false)
+			);
+			xs.toXML(T, oos);
+			oos.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void loadTransitions(String path){
+		try {
+			XStream xs = new XStream(); 
+                
+			ObjectInputStream oos = new ObjectInputStream(                                 
+			        new FileInputStream(path)
+			);
+			T = (Map<MicroRTSState, Map<JointAction, MicroRTSState>>) xs.fromXML(oos);
+			oos.close();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -827,18 +868,18 @@ public class BackwardInduction implements PersistentLearner {
 		}
 		
 		System.out.println("Saving knowledge...");
-		bi.saveKnowledge("/tmp/backward-induction.xml");
+		bi.saveKnowledge("/tmp/solution.xml");
 		
 		System.out.println("Dumping visited...");
 		bi.dumpVisited("/tmp/visited.txt");
 		
 		System.out.println("Dumping transitions...");
-		bi.dumpTransitions("/tmp/transitions.txt");
+		bi.dumpTransitions("/tmp/transitions.xml");
 		
-		System.out.println("Done. Saved knowledge in /tmp/backward-induction.xml.");
+		System.out.println("Done. Saved knowledge in /tmp/solution.xml.");
 		System.out.println(
 			"Check out visited in /tmp/visited.txt and transitions "
-			+ "in /tmp/transitions.txt."
+			+ "in /tmp/transitions.xml."
 		);
 		
 	}
