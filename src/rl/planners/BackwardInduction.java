@@ -14,6 +14,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -36,11 +37,9 @@ import burlap.mdp.stochasticgames.agent.SGAgentType;
 import burlap.mdp.stochasticgames.world.World;
 import rl.adapters.domain.EnumerableSGDomain;
 import rl.adapters.learners.PersistentLearner;
-import rl.models.aggregatediff.AggregateDiffState;
 import rl.models.aggregatediff.AggregateDifferencesDomain;
 import rl.models.common.MicroRTSState;
 import rl.models.common.MicroRTSTerminalFunction;
-import rl.models.stages.GameStages;
 import util.Pair;
 
 public class BackwardInduction implements PersistentLearner {
@@ -85,6 +84,12 @@ public class BackwardInduction implements PersistentLearner {
 	 */
 	Map<MicroRTSState, Map<Action, Double>> p2Policy;
 	
+	/**
+	 * A transition function learned by the agent while it performs
+	 * the backward induction
+	 */
+	Map<MicroRTSState, Map<JointAction, MicroRTSState>> T;
+	
 	
 	/**
 	 * Stores which states were already visited
@@ -113,6 +118,8 @@ public class BackwardInduction implements PersistentLearner {
 		
 		V = new HashMap<>();
 		Q = new HashMap<>();
+		T = new HashMap<>();
+		
 		p1Policy = new HashMap<>();
 		p2Policy = new HashMap<>();
 		visited = new HashSet<>();
@@ -150,6 +157,18 @@ public class BackwardInduction implements PersistentLearner {
 	 */
 	public double value(State s, JointAction ja){
 		return Q.get(s).get(ja);
+	}
+	
+	/**
+	 * Returns the resulting state of taking joint action 
+	 * ja in state s (if this transition has been learned, 
+	 * otherwise returns null)
+	 * @param s
+	 * @param ja
+	 * @return
+	 */
+	public State transition(State s, JointAction ja){
+		return T.get(s).get(ja);
 	}
 	
 	/**
@@ -215,11 +234,6 @@ public class BackwardInduction implements PersistentLearner {
 	 * @return
 	 */
 	public double solve(MicroRTSState s){
-		//note: maybe only the NEXT state is a finished one...
-		
-		/*if(((AggregateDiffState)s).getStage() == GameStages.FINISHED ){
-			System.out.println("Reached a FINISHED state!");
-		}*/
 		
 		// for a terminal state, store its value
 		if(terminalFunction.isTerminal(s)){
@@ -238,7 +252,6 @@ public class BackwardInduction implements PersistentLearner {
 			
 			// marks as visited
 			visited.add(s);
-			//return V.get(s);
 		}
 		
 		// finds the value of the state
@@ -250,12 +263,20 @@ public class BackwardInduction implements PersistentLearner {
 					ja.addAction(a.associatedAction(null));
 					ja.addAction(o.associatedAction(null));
 					
-					MicroRTSState next = (MicroRTSState) domain.getJointActionModel().sample(s, ja);
+					//makes a copy of the state to be sampled (let's see if it improves BI)
+					MicroRTSState next = (MicroRTSState) domain.getJointActionModel().sample(
+						s.copy(), ja
+					);
+					
+					//learns a transition
+					T.get(s).put(ja, next);
+					
 					try {
 						if(!Q.containsKey(s)){
 							System.err.println("WARNING: missing key for " + s);
 							Q.put(s, new HashMap<>());
 						}
+						
 						Q.get(s).put(ja, solve(next));		// recursive call
 					} catch (NullPointerException e) {
 						System.err.println("NullPointerException in state " + s);
@@ -291,6 +312,9 @@ public class BackwardInduction implements PersistentLearner {
 			
 			// creates an entry in Q for each state and joint action
 			Q.put(state, new HashMap<>());
+			
+			// creates an entry in the transition function for each state and joint action
+			T.put(state, new HashMap<>());
 			
 			// creates an entry in policies for each state and action
 			p1Policy.put(state, new HashMap<>());
@@ -520,7 +544,15 @@ public class BackwardInduction implements PersistentLearner {
 	@Override
 	public void observeOutcome(State s, JointAction jointAction, double[] jointReward, State sprime,
 			boolean isTerminal) {
-		// do nothing
+		// checks if the transition I knew is the same that happened
+		// (it can be different if the underlying state on the abstract states is different)
+		if(T.containsKey(s)){
+			if(!T.get(s).get(jointAction).equals(sprime)){
+				System.out.println("I had a different transition for " + s + " and " + jointAction);
+				System.out.println("Mine was " + T.get(s).get(jointAction));
+				System.out.println("This is  " + sprime);
+			}
+		}
 	}
 
 	@Override
@@ -719,6 +751,52 @@ public class BackwardInduction implements PersistentLearner {
 	}
 	
 	/**
+	 * Dumps the set of visited states to a file
+	 * @param path
+	 */
+	public void dumpVisited(String path){
+		BufferedWriter fileWriter;
+		try {
+			fileWriter = new BufferedWriter(new FileWriter(path));
+			String lineSeparated = visited.stream()
+		        .map( v -> v.toString() )
+		        .collect( Collectors.joining("\n") 
+    		);	
+			//fileWriter.write("" + visited);
+			fileWriter.write(lineSeparated);
+			
+			fileWriter.close();
+		} catch (IOException e) {
+			System.err.println("ERROR: Unable to dump visited to " + path);
+			e.printStackTrace();
+			return;
+		}
+	}
+	
+	/**
+	 * Dumps the learned transitions to a file
+	 * @param path
+	 */
+	public void dumpTransitions(String path){
+		BufferedWriter fileWriter;
+		try {
+			fileWriter = new BufferedWriter(new FileWriter(path));
+			String lineSeparated = T.entrySet().stream()
+		        .map( t -> t.toString() )
+		        .collect( Collectors.joining("\n") 
+    		);	
+			fileWriter.write(lineSeparated);
+			
+			fileWriter.close();
+		} catch (IOException e) {
+			System.err.println("ERROR: Unable to dump learned transitions to " + path);
+			e.printStackTrace();
+			return;
+		}
+	}
+	
+	
+	/**
 	 * Runs a test of Backward Induction
 	 * @param args
 	 * @throws IOException 
@@ -745,7 +823,18 @@ public class BackwardInduction implements PersistentLearner {
 		
 		System.out.println("Saving knowledge...");
 		bi.saveKnowledge("/tmp/backward-induction.xml");
+		
+		System.out.println("Dumping visited...");
+		bi.dumpVisited("/tmp/visited.txt");
+		
+		System.out.println("Dumping transitions...");
+		bi.dumpTransitions("/tmp/transitions.txt");
+		
 		System.out.println("Done. Saved knowledge in /tmp/backward-induction.xml.");
+		System.out.println(
+			"Check out visited in /tmp/visited.txt and transitions "
+			+ "in /tmp/transitions.txt."
+		);
 		
 	}
 }
