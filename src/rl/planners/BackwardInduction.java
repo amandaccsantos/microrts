@@ -769,8 +769,8 @@ public class BackwardInduction implements PersistentLearner {
 			}
 		}
 		// TODO: this should be temporary, to test whether solving via BI covers all metagame states:
-		System.out.println("Loading transitions...");
-		loadTransitions("/tmp/transitions.xml");
+		//System.out.println("Loading transitions...");
+		//loadTransitions("/tmp/transitions.xml");
 	}
 	
 	/**
