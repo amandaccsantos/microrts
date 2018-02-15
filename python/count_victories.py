@@ -2,9 +2,10 @@ from __future__ import division
 import os
 import glob
 import argparse
+import locale
 
 
-def run(directories, num_reps, output, initial_epi, final_epi, locale, verbose):
+def run(directories, num_reps, output, initial_epi, final_epi, verbose):
 
     num = 0
     count = 0
@@ -82,18 +83,19 @@ if __name__ == '__main__':
         '-v', '--verbose', help='Output additional info?', action='store_true'
     )
     parser.add_argument(
-        '-l', '--locale', choices=['pt_BR.utf8', 'en_US.utf-8'], default='pt_BR.utf8',
+        '-l', '--locale', choices=['pt_BR.utf8', 'en_US.utf-8'], default='pt_BR.utf-8',
         help='"pt_BR.utf8" for comma as decimal separator, "en_US.utf-8" for dot'
     )
 
     args = vars(parser.parse_args())
 
+    locale.setlocale(locale.LC_NUMERIC, args['locale'])
+
     # if aggregate is activated, runs once with the list of directories to output the average
     if args['aggregate']:
         run(
             args['dir'], len(args['dir']), args['output'],
-            args['initial_epi'], args['final_epi'], args['locale'],
-            args['verbose']
+            args['initial_epi'], args['final_epi'], args['verbose']
         )
     # if aggregate is deactivated, runs once for each dir, outputting to stdout
     else:
@@ -101,5 +103,5 @@ if __name__ == '__main__':
             # first argument must be a list, so we pass a single-member one
             run(
                 [directory], 1, None, args['initial_epi'],
-                args['final_epi'], args['locale'], args['verbose']
+                args['final_epi'], args['verbose']
             )
