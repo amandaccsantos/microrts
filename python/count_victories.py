@@ -16,6 +16,8 @@ def run(directories, num_reps, output, initial_epi, final_epi, verbose):
             final_epi = len(glob.glob(os.path.join(repetition, '*.game'))) - 1
 
         for i, filename in enumerate(glob.glob(os.path.join(repetition, '*.game'))):
+	    if verbose:
+		print('file: %s' % filename)
             name = filename.split('episode_')[1]
             name = int(name.split('.')[0])
             if initial_epi <= name <= final_epi:
@@ -44,6 +46,7 @@ def run(directories, num_reps, output, initial_epi, final_epi, verbose):
         output_file.write('Victory rate: ' + str("{:.0%}".format(mean_victories / mean_games)) + '\n')
 
     if verbose:
+	print('Dirs: %s' % directories)
         print('Number of games: %d' % mean_games)
         print('Mean #victories: %f' % mean_victories)
         print('%mean victories: {:.3%}'.format(mean_victories / mean_games))
@@ -89,7 +92,8 @@ if __name__ == '__main__':
     # if aggregate is deactivated, runs once for each dir, outputting to stdout
     else:
         for directory in args['dir']:
+	    #first argument must be a list, so we pass a single-member one
             run(
-                directory, 1, None, args['initial_epi'],
+                [directory], 1, None, args['initial_epi'],
                 args['final_epi'], args['verbose']
             )
