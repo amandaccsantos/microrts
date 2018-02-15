@@ -4,7 +4,7 @@ import glob
 import argparse
 
 
-def run(directories, num_reps, output, initial_epi, final_epi, verbose):
+def run(directories, num_reps, output, initial_epi, final_epi, locale, verbose):
 
     num = 0
     count = 0
@@ -49,7 +49,7 @@ def run(directories, num_reps, output, initial_epi, final_epi, verbose):
         print('%mean victories: {:.3%}'.format(mean_victories / mean_games))
 
     else:
-        print('%f' % (mean_victories / mean_games))
+        print('{0:n}'.format(mean_victories / mean_games))
 
 
 if __name__ == '__main__':
@@ -77,6 +77,10 @@ if __name__ == '__main__':
     parser.add_argument(
         '-v', '--verbose', help='Output additional info?', action='store_true'
     )
+    parser.add_argument(
+        '-l', '--locale', choices=['pt_BR.utf8', 'en_US.utf-8'], default='pt_BR.utf8',
+        help='"pt_BR.utf8" for comma as decimal separator, "en_US.utf-8" for dot'
+    )
 
     args = vars(parser.parse_args())
 
@@ -84,12 +88,13 @@ if __name__ == '__main__':
     if args['aggregate']:
         run(
             args['dir'], len(args['dir']), args['output'],
-            args['initial_epi'], args['final_epi'], args['verbose']
+            args['initial_epi'], args['final_epi'], args['locale'],
+            args['verbose']
         )
     # if aggregate is deactivated, runs once for each dir, outputting to stdout
     else:
         for directory in args['dir']:
             run(
                 directory, 1, None, args['initial_epi'],
-                args['final_epi'], args['verbose']
+                args['final_epi'], args['locale'], args['verbose']
             )
