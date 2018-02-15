@@ -3,39 +3,13 @@ import os
 import glob
 import argparse
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Count the number of victories of our agent')
-    parser.add_argument(
-        'dir',
-        help='List of directories to analyse, each one is treated as an experiment repetition',
-        nargs='+'
-    )
-    parser.add_argument(
-        '-o', '--output', required=False,
-        help='Save result to this file instead of showing on screen')
-    parser.add_argument(
-        '-i', '--initial-epi', required=False, default=0,
-        help='First episode to consider'
-    )
-    parser.add_argument(
-        '-f', '--final-epi', help='Last episode to consider', required=False
-    )
-    parser.add_argument(
-        '-v', '--verbose', help='Output additional info?', action='store_true'
-    )
 
-    args = vars(parser.parse_args())
+def run(directories, num_reps, output, initial_epi, final_epi, verbose):
 
     num = 0
     count = 0
     num_games = 0
     rep_num = 0
-
-    directories = args['dir']
-    num_reps = len(directories)
-    output = args['output']
-    initial_epi = args['initial_epi']
-    final_epi = args['final_epi']
 
     for repetition in directories:
         if final_epi is None:
@@ -69,10 +43,53 @@ if __name__ == '__main__':
         output_file.write('Number of victories: ' + str(mean_victories) + '\n')
         output_file.write('Victory rate: ' + str("{:.0%}".format(mean_victories / mean_games)) + '\n')
 
-    if args['verbose']:
+    if verbose:
         print('Number of games: %d' % mean_games)
         print('Mean #victories: %f' % mean_victories)
         print('%mean victories: {:.3%}'.format(mean_victories / mean_games))
-        
+
     else:
         print('%f' % (mean_victories / mean_games))
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Count the number of victories of our agent')
+    parser.add_argument(
+        'dir',
+        help='List of directories to analyse, each one is treated as an experiment repetition',
+        nargs='+'
+    )
+    parser.add_argument(
+        '-a', '--aggregate', required=False, action='store_true',
+        help='Calculate the mean results from a list of directories, otherwise shows them individually'
+    )
+    parser.add_argument(
+        '-o', '--output', required=False,
+        help='Save result to this file instead of showing on screen'
+    )
+    parser.add_argument(
+        '-i', '--initial-epi', required=False, default=0,
+        help='First episode to consider'
+    )
+    parser.add_argument(
+        '-f', '--final-epi', help='Last episode to consider', required=False
+    )
+    parser.add_argument(
+        '-v', '--verbose', help='Output additional info?', action='store_true'
+    )
+
+    args = vars(parser.parse_args())
+
+    # if aggregate is activated, runs once with the list of directories to output the average
+    if args['aggregate']:
+        run(
+            args['dir'], len(args['dir']), args['output'],
+            args['initial_epi'], args['final_epi'], args['verbose']
+        )
+    # if aggregate is deactivated, runs once for each dir, outputting to stdout
+    else:
+        for directory in args['dir']:
+            run(
+                directory, 1, None, args['initial_epi'],
+                args['final_epi'], args['verbose']
+            )
