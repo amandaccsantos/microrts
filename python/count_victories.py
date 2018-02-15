@@ -84,7 +84,8 @@ if __name__ == '__main__':
     )
     parser.add_argument(
         '-l', '--locale', choices=['pt_BR.utf8', 'en_US.utf-8'], default='pt_BR.utf-8',
-        help='"pt_BR.utf8" for comma as decimal separator, "en_US.utf-8" for dot'
+        help='"pt_BR.utf8" for comma as decimal separator, "en_US.utf-8" for dot. '
+             'If pt_BR is unsupported, install it with sudo apt-get install language-pack-pt'
     )
 
     args = vars(parser.parse_args())
