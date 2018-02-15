@@ -16,8 +16,9 @@ def run(directories, num_reps, output, initial_epi, final_epi, locale, verbose):
             final_epi = len(glob.glob(os.path.join(repetition, '*.game'))) - 1
 
         for i, filename in enumerate(glob.glob(os.path.join(repetition, '*.game'))):
-	    if verbose:
-		print('file: %s' % filename)
+            if verbose:
+                print('file: %s' % filename)
+
             name = filename.split('episode_')[1]
             name = int(name.split('.')[0])
             if initial_epi <= name <= final_epi:
@@ -41,9 +42,9 @@ def run(directories, num_reps, output, initial_epi, final_epi, locale, verbose):
 
     if output is not None:
         output_file = open(output, 'w')
-        output_file.write('Number of games: ' + str(mean_games) + '\n')
-        output_file.write('Number of victories: ' + str(mean_victories) + '\n')
-        output_file.write('Victory rate: ' + str("{:.0%}".format(mean_victories / mean_games)) + '\n')
+        output_file.write('Number of games: %d\n' % mean_games)
+        output_file.write('Mean #victories: %f\n' % mean_victories)
+        output_file.write('Victory rate: {:.0%}\n'.format(mean_victories / mean_games))
 
     if verbose:
         print('Dirs: %s' % directories)
