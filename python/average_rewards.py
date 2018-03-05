@@ -105,9 +105,9 @@ if __name__ == '__main__':
                         points_agent1[i / window] += float(rewards_agent1[i + count])
 
     line0, = plt.plot(points_agent0, color='b', label='Agent 0')
-    line1, = plt.plot(points_agent1, color='r', label='Agent 1')
-    plt.legend(handles=[line0, line1])
-    plt.xlabel('Cumulative reward for every %d episodes' % window)
+    #line1, = plt.plot(points_agent1, color='r', label='Agent 1')
+    #plt.legend(handles=[line0, line1])
+    plt.xlabel('Cumulative reward averaged over %d episodes' % window)
 
     if output is None:
         plt.show()
