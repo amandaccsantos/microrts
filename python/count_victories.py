@@ -73,7 +73,7 @@ if __name__ == '__main__':
         help='Save result to this file instead of showing on screen'
     )
     parser.add_argument(
-        '-i', '--initial-epi', required=False, default=0,
+        '-i', '--initial-epi', type=int, required=False, default=0,
         help='First episode to consider'
     )
     parser.add_argument(
