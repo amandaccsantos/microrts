@@ -77,7 +77,7 @@ if __name__ == '__main__':
         help='First episode to consider'
     )
     parser.add_argument(
-        '-f', '--final-epi', help='Last episode to consider', required=False
+        '-f', '--final-epi', type=int, help='Last episode to consider', required=False
     )
     parser.add_argument(
         '-v', '--verbose', help='Output additional info?', action='store_true'
