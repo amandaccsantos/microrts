@@ -40,6 +40,10 @@ if __name__ == '__main__':
         '-o', '--output', help='Save the plot to this file instead of showing on screen',
         required=False
     )
+    parser.add_argument(
+        '-r', '--raw', help='Output the raw numbers to a file',
+        required=False
+    )
 
     args = vars(parser.parse_args())
 
@@ -113,3 +117,7 @@ if __name__ == '__main__':
         plt.show()
     else:
         plt.savefig(output)
+
+    if args['raw'] is not None:
+        raw_file = open(args['raw'], 'w')
+        raw_file.write('\n'.join([str(x) for x in points_agent0]))
