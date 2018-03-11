@@ -36,6 +36,7 @@ import rl.adapters.learners.SGQLearningAdapter;
 import rl.models.aggregatediff.AggregateDifferencesDomain;
 import rl.models.common.MicroRTSRewardFactory;
 import rl.models.singleagent.SingleAgentDomain;
+import rl.models.singleagentstages.SingleAgentStagesDomain;
 import tests.rl.adapters.learners.SGQLearningAdapterTest;
 
 public class RLParametersTest {
@@ -294,6 +295,19 @@ public class RLParametersTest {
 		
 		assertEquals("PGSAI", rlParams.getOpponentName());
 		assertTrue(rlParams.getWorld().getDomain() instanceof SingleAgentDomain);
+	}
+	
+	@Test
+	/**
+	 * Tests loading of example_microrts-opponent-stages.xml
+	 */
+	public void testMicroRTSOpponentStages() throws SAXException, IOException, ParserConfigurationException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+		RLParameters rlParams = RLParameters.getInstance();
+		
+		rlParams.loadFromFile("src/tests/rl/example_microrts-opponent-stages.xml"); //may throw exceptions
+		
+		assertEquals("PGSAI", rlParams.getOpponentName());
+		assertTrue(rlParams.getWorld().getDomain() instanceof SingleAgentStagesDomain);
 	}
 	
 	/**
