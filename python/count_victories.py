@@ -4,6 +4,13 @@ import glob
 import argparse
 import locale
 
+"""
+This script counts the number of victories of the first player 
+in .game files by analysing the last joint reward.
+
+In some cases, it does not calculate the correct winner, because the last 
+joint reward logged into the file seems to be of a state before the terminal.
+"""
 
 def run(directories, num_reps, output, initial_epi, final_epi, verbose):
 
@@ -25,6 +32,7 @@ def run(directories, num_reps, output, initial_epi, final_epi, verbose):
             if initial_epi <= name <= final_epi:
                 num_games += 1
                 f = open(filename, 'r')
+                
                 for line in f:
                     if line.startswith('jointRewards'):
                         line = f.next()
